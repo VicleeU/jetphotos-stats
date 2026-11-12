@@ -1,0 +1,16 @@
+# Build output
+dist/
+site/
+start.html
+
+# Personal data / local caches (must not be committed)
+data.js
+photos.jsonl
+base-list.json
+scrape-errors.json
+*.log
+
+# OS / Python
+.DS_Store
+__pycache__/
+*.pyc

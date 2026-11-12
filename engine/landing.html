@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JetPhotos Stats · 摄影师统计仪表盘</title>
+<meta name="description" content="免登录、零服务器：一个书签按钮，为任意 JetPhotos 摄影师生成全量照片统计仪表盘。按机场、航空公司、机型分类，本地缓存，增量更新。">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23141619'/%3E%3Cpath d='M6 18l20-8-6 12-4-4-4 4 1-6z' fill='%23f5c518'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0b0c0d; --bg2:#101113; --panel:#141619; --panel2:#191c20;
+  --line:#272c32; --line2:#3a4148;
+  --ink:#f2f3ef; --ink2:#a5aca6; --ink3:#7c847e;
+  --cyan:#f5c518; --amber:#9fd6ff; --green:#93e0a6; --pink:#ff7ab6;
+  --blue:#86b4ff; --violet:#bca5ff; --coral:#ff6b8a;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --disp:'Barlow Condensed','Arial Narrow','PingFang SC',sans-serif;
+  --body:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  --nav-h:58px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 14px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14.5px;line-height:1.65;overflow-x:hidden}
+::selection{background:#f5c51840;color:#fff}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:#353c43;border-radius:6px;border:2px solid var(--bg2)}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:4px}
+
+.bg-fx{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(900px 500px at 12% -5%,#3b352455 0%,transparent 60%),
+  radial-gradient(800px 520px at 95% 108%,#4a2f1a33 0%,transparent 60%),var(--bg)}
+.bg-fx::before{content:"";position:absolute;inset:0;
+  background-image:linear-gradient(#22262b33 1px,transparent 1px),linear-gradient(90deg,#22262b33 1px,transparent 1px);
+  background-size:52px 52px;mask-image:radial-gradient(ellipse at 50% 0%,#000 30%,transparent 78%)}
+
+/* nav */
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:100;display:flex;align-items:center;gap:20px;padding:0 22px;
+  background:#101113e6;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:700;font-size:21px;letter-spacing:.06em;color:var(--ink)}
+.brand:hover{text-decoration:none}
+.brand svg{width:26px;height:26px;flex:none}
+.brand-logo{height:30px;width:auto;flex:none;display:block}
+.brand small{font-family:var(--body);font-weight:400;font-size:11px;color:var(--ink3);letter-spacing:.14em;margin-top:5px}
+.nav-links{display:flex;gap:4px;margin-left:8px}
+.nav-links a{font-size:13px;color:var(--ink2);padding:6px 12px;border-radius:8px;letter-spacing:.04em}
+.nav-links a:hover{color:var(--ink);background:#ffffff0a;text-decoration:none}
+.nav-links a.active{color:var(--cyan);background:#f5c51814}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.ver{font-family:var(--mono);font-size:11px;color:#f5c518;border:1px solid rgba(245,197,24,.35);background:rgba(245,197,24,.08);padding:4px 10px;border-radius:20px;letter-spacing:.1em;white-space:nowrap}
+.beacon{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+main{max-width:1180px;margin:0 auto;padding:calc(var(--nav-h) + 30px) 22px 40px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin:56px 0 20px;flex-wrap:wrap}
+.sec-head h2{font-family:var(--disp);font-weight:700;font-size:32px;letter-spacing:.05em}
+.sec-head .en{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.22em}
+.sec-head .hint{margin-left:auto;font-size:12px;color:var(--ink3)}
+
+/* hero */
+.hero{position:relative;border:1px solid var(--line);border-radius:18px;overflow:hidden;
+  background:linear-gradient(160deg,#171a1e 0%,#141619 55%,#101214 100%);padding:44px 40px 36px}
+.hero-radar{position:absolute;top:-70px;right:-60px;width:340px;height:340px;border-radius:50%;opacity:.5;pointer-events:none;
+  background:repeating-radial-gradient(circle at center,transparent 0 38px,#f5c51818 38px 39px);
+  mask-image:radial-gradient(circle,#000 55%,transparent 72%)}
+.hero-radar::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,#f5c51800 0deg,#f5c51800 300deg,#f5c51845 355deg,#f5c51800 360deg);animation:sweep 7s linear infinite}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.blip{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:blip 3.5s infinite}
+@keyframes blip{0%,100%{opacity:.15}12%{opacity:1}}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--cyan);margin-bottom:12px}
+.hero h1{font-family:var(--disp);font-weight:700;font-size:clamp(36px,5.2vw,58px);line-height:1.06;letter-spacing:.02em;max-width:640px}
+.hero h1 em{font-style:normal;color:var(--cyan)}
+.hero h1 .hw{display:inline-block;white-space:nowrap}
+.hero .lede{margin-top:14px;max-width:600px;color:var(--ink2);font-size:15px}
+.hero .lede b{color:var(--ink);font-weight:600}
+.hero-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.hbadge{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink2);border:1px solid var(--line2);background:#16181b80;padding:5px 12px;border-radius:20px}
+.hbadge b{color:var(--green);font-weight:500}
+.btn{background:#16181b;border:1px solid var(--line);color:var(--ink2);border-radius:10px;padding:11px 18px;font-size:13.5px;transition:all .2s}
+.btn:hover{border-color:var(--line2);color:var(--ink)}
+.btn.primary{background:linear-gradient(180deg,#c3e4ff,#6fa8e8);border-color:#9fd6ff;color:#0b1a2a;font-weight:700}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.cyan{background:#f5c51814;border-color:#f5c51855;color:var(--cyan);font-weight:600}
+.btn.cyan:hover{background:#f5c51822}
+.id-note{margin-top:24px;font-size:14.5px;line-height:1.75;color:var(--ink2);max-width:680px}
+.id-note b{color:var(--ink);font-weight:700}
+.id-note code{font-family:var(--mono);font-size:11.5px;color:var(--amber);background:#9fd6ff0f;padding:1px 6px;border-radius:5px}
+
+/* steps strip */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.step{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel),#17191c);padding:20px 22px;position:relative}
+.step .no{font-family:var(--disp);font-weight:700;font-size:40px;color:#f5c51828;position:absolute;top:10px;right:16px;line-height:1}
+.step h3{font-size:15.5px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.step p{font-size:12.5px;color:var(--ink2)}
+.step p code{font-family:var(--mono);font-size:11px;color:var(--amber)}
+
+/* install cards */
+.install-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;align-items:stretch}
+.icard{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--panel),#17191c);padding:24px 26px;position:relative;overflow:hidden}
+.icard.main{border-color:#f5c51855;box-shadow:0 0 0 1px #f5c51822,0 14px 40px #0006}
+.icard .tag{position:absolute;top:0;right:0;font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:5px 14px;border-radius:0 14px 0 12px}
+.icard.main .tag{background:#f5c518;color:#1b1f23;font-weight:600}
+.icard.alt .tag{background:#242a31;color:var(--ink2)}
+.icard h3{font-size:18px;font-weight:700;display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.icard .sub{font-size:12.5px;color:var(--ink3);margin-bottom:18px}
+.bm-drag{display:inline-flex;align-items:center;gap:10px;padding:13px 24px;border-radius:12px;
+  background:linear-gradient(160deg,#3b3524,#1a1d21);border:1px dashed #f5c51888;color:var(--ink);
+  font-size:15px;font-weight:700;letter-spacing:.03em;cursor:grab;user-select:none;-webkit-user-select:none;
+  box-shadow:0 6px 22px #0007,0 0 16px #f5c51818;transition:transform .2s,box-shadow .2s}
+.bm-drag:hover{transform:translateY(-2px);box-shadow:0 10px 28px #0009,0 0 24px #f5c51833;text-decoration:none}
+.bm-drag:active{cursor:grabbing}
+.bm-drag .ico{font-size:19px}
+.drag-hint{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.08em;margin:10px 0 16px;display:flex;align-items:center;gap:7px}
+.drag-hint::before{content:"⬆";animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.olist{list-style:none;display:flex;flex-direction:column;gap:9px;margin:14px 0 18px}
+.olist li{display:flex;gap:11px;font-size:13px;color:var(--ink2);align-items:baseline}
+.olist li b{font-family:var(--mono);font-size:11px;color:var(--cyan);border:1px solid #f5c51840;background:#f5c5180d;border-radius:6px;padding:1px 7px;flex:none;font-weight:500}
+.olist li code{font-family:var(--mono);font-size:11.5px;color:var(--amber);background:#9fd6ff0f;padding:1px 6px;border-radius:5px}
+.row-btns{display:flex;gap:9px;flex-wrap:wrap}
+.dl-link{display:inline-flex;align-items:center;gap:9px;padding:12px 20px;border-radius:11px;background:#16181b;border:1px solid var(--line2);color:var(--ink);font-size:14px;font-weight:600;transition:all .2s}
+.dl-link:hover{border-color:#f5c51866;color:var(--cyan);text-decoration:none}
+.dl-link small{font-family:var(--mono);font-size:10px;color:var(--ink3);font-weight:400}
+
+/* accordion */
+.acc{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel),#17191c);overflow:hidden;margin-top:14px}
+.acc-item + .acc-item{border-top:1px solid var(--line)}
+.acc-q{width:100%;display:flex;align-items:center;gap:12px;background:none;border:none;color:var(--ink);font-size:14px;font-weight:600;text-align:left;padding:16px 20px}
+.acc-q:hover{background:#ffffff06}
+.acc-q .pm{margin-left:auto;font-family:var(--mono);color:var(--cyan);font-size:15px;transition:transform .25s;flex:none}
+.acc-item.open .acc-q .pm{transform:rotate(45deg)}
+.acc-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.acc-a-in{padding:0 20px 18px;font-size:13px;color:var(--ink2)}
+.acc-a-in p + p{margin-top:8px}
+.acc-a-in code{font-family:var(--mono);font-size:11.5px;color:var(--amber);background:#9fd6ff0f;padding:1px 6px;border-radius:5px}
+.acc-a-in ol,.acc-a-in ul{margin:8px 0 0 20px}
+.acc-a-in li{margin-bottom:5px}
+.acc-a-in b{color:var(--ink)}
+.codebox{width:100%;height:84px;margin-top:10px;background:#0d0e10;border:1px solid var(--line);border-radius:9px;color:var(--ink3);font-family:var(--mono);font-size:10.5px;padding:10px;resize:vertical;word-break:break-all}
+.mob-note{margin-top:10px;font-size:12px;color:var(--ink2);line-height:1.6;border-left:2px solid #9fd6ff66;padding:4px 0 4px 10px;background:#9fd6ff08;border-radius:0 6px 6px 0}
+.mob-note code{font-family:var(--mono);font-size:11px;color:var(--amber)}
+.compat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:16px 0 4px}
+.compat span{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;padding:8px 12px;border-radius:10px;border:1px solid var(--line2);color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.code-tools{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);display:flex;flex-direction:column}
+.code-tools .btn{align-self:flex-start}
+@media (max-width:760px){.compat{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.compat .ok{border-color:#93e0a644;color:#b6eec2;background:#93e0a60a}
+.compat .no{border-color:#ff6b8a55;color:#ffb0c5;background:#ff6b8a0f}
+
+
+/* how / privacy */
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hcard{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--panel),#17191c);padding:24px 26px}
+.hcard h3{font-size:16.5px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:9px}
+.tier{display:flex;gap:13px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.tier:last-of-type{border-bottom:none}
+.tier .tk{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:#1b1f23;background:var(--cyan);border-radius:6px;padding:3px 8px;height:fit-content;flex:none;font-weight:600;margin-top:2px}
+.tier .tk.t2{background:var(--amber);color:#0b1a2a}
+.tier h4{font-size:13.5px;font-weight:600;margin-bottom:3px}
+.tier p{font-size:12.5px;color:var(--ink2)}
+.plist{list-style:none;display:flex;flex-direction:column;gap:12px}
+.plist li{display:flex;gap:11px;font-size:13px;color:var(--ink2)}
+.plist li .pi{flex:none;width:26px;height:26px;border-radius:8px;background:#f5c51812;border:1px solid #f5c51840;display:flex;align-items:center;justify-content:center;font-size:13px}
+.plist li b{color:var(--ink)}
+
+/* footer */
+footer{border-top:1px solid var(--line);margin-top:64px;padding:26px 0 10px;display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;font-size:12px;color:var(--ink3)}
+footer .fbrand{font-family:var(--disp);font-weight:700;font-size:16px;color:var(--ink2);letter-spacing:.06em}
+footer .right{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);z-index:300;
+  background:#16191df2;border:1px solid var(--line2);border-radius:11px;padding:11px 20px;font-size:13px;color:var(--ink);
+  box-shadow:0 12px 40px #000b;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;max-width:calc(100vw - 40px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast b{color:var(--cyan)}
+
+@media (max-width:900px){
+  .install-grid,.how-grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .hero{padding:32px 24px 28px}
+  .nav-links{display:none}
+}
+@media (max-width:560px){
+  main{padding-left:14px;padding-right:14px}
+  .hero h1{font-size:34px}
+  .icard{padding:20px 18px}
+}
+
+/* ---------- visual refresh: graphite + lime ---------- */
+body{-webkit-font-smoothing:antialiased}
+.nav{height:64px;background:#0b0c0dcc}
+.brand{letter-spacing:.02em}
+.nav-links a{border-radius:999px;font-size:12.5px}
+.nav-links a.active{background:#f5c51814}
+main{max-width:1220px}
+.sec-head{border-top:1px solid var(--line);padding-top:26px}
+.sec-head h2{font-size:34px;letter-spacing:.015em}
+.sec-head .en{letter-spacing:.26em}
+.hero{background:#141619;border-radius:20px;padding:52px 44px 44px}
+.hero h1{font-size:clamp(42px,5.6vw,66px);line-height:1.24;letter-spacing:.005em;max-width:700px}
+.hero-eyebrow{color:var(--ink3);letter-spacing:.34em;font-size:10.5px}
+.hero-radar{opacity:.3}
+.hero .lede{font-size:15px}
+.hbadge{background:#17191c;border-color:var(--line)}
+.btn{border-radius:999px;padding:11px 20px}
+.btn.primary{background:#f5c518;border-color:#f5c518;color:#1b1f23}
+.btn.cyan{background:#f5c51810;border-color:#f5c51855}
+.step{border-radius:16px;background:#141619}
+.step .no{color:#f5c51826}
+.icard{border-radius:18px;background:#141619}
+.icard.main{border-color:#f5c51855;box-shadow:none}
+.icard.main .tag{background:#f5c518;color:#1b1f23}
+.icard.alt .tag{background:#20242a;color:var(--ink2)}
+.bm-drag{background:#17191c;border:1px dashed #f5c51888;border-radius:999px;box-shadow:0 6px 22px #0007;padding:12px 26px}
+.bm-drag:hover{box-shadow:0 10px 28px #0009}
+.dl-link{border-radius:999px;background:#17191c}
+.acc{background:#141619;border-radius:16px}
+.compat span{border-radius:999px}
+
+
+.sec-head h2::before{content:"";display:inline-block;width:9px;height:9px;background:var(--cyan);border-radius:2px;margin-right:11px;vertical-align:5px}
+.hero::after{content:"";position:absolute;left:44px;right:44px;top:0;height:2px;background:linear-gradient(90deg,var(--cyan),#f5c51800 70%)}
+
+.brand{white-space:nowrap;flex:none}
+.lang-btn{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--ink2);background:#16181b;border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;line-height:1}
+.lang-btn:hover{color:var(--ink);border-color:#3b444d}
+html.lang-en .hero h1{font-size:clamp(34px,4.4vw,54px);line-height:1.22;max-width:760px}
+html.lang-en .hero h1 .hw{margin-right:.2em}
+html.lang-en code{margin:0 .18em}
+html.lang-en .lede b,html.lang-en .step p b,html.lang-en .olist b,html.lang-en .id-note b,html.lang-en .acc-a-in b,html.lang-en .hbadge b{margin:0 .16em}
+@media (max-width:560px){html.lang-en .hero h1{font-size:22px;line-height:1.25}}
+@media (max-width:560px){
+  .nav{gap:12px;padding:0 14px}
+  .brand small{display:none}
+  .nav-right .ver{font-size:10px;padding:3px 8px}
+  .hero{padding:24px 16px 22px}
+  .hero-eyebrow{letter-spacing:.1em;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hero h1{font-size:28px;line-height:1.22;letter-spacing:0;max-width:100%}
+  .hero .lede{font-size:13.5px;line-height:1.75}
+  .hero::after{left:16px;right:16px}
+}
+@media (max-width:360px){
+  .hero h1{font-size:25px}
+}
+
+.id-note code,.step p code,.olist li code,.acc-a-in code{color:#f2f3ef;background:#ffffff0a}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+
+<nav class="nav">
+  <a class="brand" href="#top">
+    <img class="brand-logo" alt="JetPhotos" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA5AAAADcCAMAAAAx4L6cAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABIUExURQAAAP///////////////////////////////////////////////////////////////////////////////////////////+d4eLAAAAAXdFJOUwAQIDBAUF9gb3B/gI+Qn6CvsL/Az9/vbTigkAAAGaRJREFUeNrs3d2O2yAQhuEB41LixLWQYe7/Tquuumq3C4n/sLzq+5yvxTr6MsOYJLKB6XwYpzklBVCW5jgN3hlpy4ZxVgALzVPopA3jx6wAVkqjN3IwE6IC2Gjq5UCO2gjsk0Z7VKtKcQQOcEQkzY3iCFwlkt+JI3CVSDqeNQLHSl42suwdgeMlS7cKXEcOlEfgQkZLeQTaaN+2mrsCaCj3spjlADnQ2k0W6njYAVwmkY7tI3CZRH5TAKe4kUfgQm7kEbiQcEge8/QIvbMAipzzwzTrAk6e6PS19PBWALxk+h9JX8hWquzrvx6cAFjMvcrkbDbnMZJGYDWf9Jm7VEz61EinCjSIpJOiG3EEGhm0Lhkp6GhWgWZsWte0mqRVOQiAfYZVTetdq2a6VWC/PmtFWtOwPowAaNm2BvlH0hraVaB1IrORD75rRe4FQOtEDguD2wmAJomsl8iRPAKn6PLrEmm1gjwCBwtalOWPkXkOcJaHFvXyzlaLKICjmaQlUd55LZoEwPGcFpnnzyAT53OAJn5oyfA8r14ANFDZJKanI51RAJx5ztzKL4aGFTiXyfWe1TNhBU421OeskxYkAdCMrc9ZMxMd4GxRC1xtxprZQQItBS14iEhgxAqczuTKJjJyqBw4X6wcMM+MdIDzBS2wYsutLICmOi3oxWkBX8L63zGd82+c+xoDPWOdf9O3WbD9fUOc64w0kfWzUC6cskk3fka0r68L45z1b/MUrvzCGX+P6eOC4+BMuxuSm9yQudibPoqznk3cnueZ1q/WSUXvd+m2rtK5zsp69UvbFf+hk03cPWtRnvyq1e/Sy2LuFrUsBiu7GTfm+vWbf+RjlFiM6fmBdAf+9mzUXcKuVaZ4D840vnvxmHdRc8v6RB6tLOR1l1mWMSHqM9HLLvaeX1y/8VQnStTPwtcIpPvJ3h2tt6krYRgeDWKpmIAdPYz++7/T/bRdXbsJcoIkZIQ931kPnBDqFwHGUiWQdoet9G+2eZA849tmfgjI94zjRzxJIJOzQ+TCtFMO64QE6+w5QHIlkN0+Wykztwxy9e7OJ1kOcqIN9YItSU9ZmQs2JUPFeQOEAtZ15wBJlUDut5XeNgvSCjYmQ32QA30be2xtZkqvE2xNbLXnywMhEp8C5FIJZNhzKz23CfINCc2mNkhL32UDtidMqf0ISOhSCyRODPK9Eki/7zh+aRCk8UhKuDLIjr7pUjjk7v3zhWuBtJHoFCCnSiDf9wUJ4dZAsiAx6eqC3NsLcKnqEZCuEshY5wDpKoEcdwYJ6doCyYLkQlcTZCjyUi7yBzL6R0F+zFYC6fYGidC1BNIIMgpcEaQv8VgukpGTGAX5IVMJpN0dJELXEEiPrITrgXwv8Vg+hAkyEtYR8kOBKoHs9gcJ4WZAXqoMY67aVQJ1yCxwzT2i15CfWmqBpAog4VsB2SO7t2ogh9Ir3niL2eQi5G2ygvzYeyWQUgUkhjZAsiCeH3smIjJ28Bkn867aVcKMeGFybIjIdO4aEO8tbYCM7xG2/bSsx/RXBOnnL+orgfTZW+mXgLsF0wTIecsjRXxNPilxta4S+k2PrDrJP68UxLrZj3icx19d6SVBOspr8pEWrFv8uqFkKzt3w53GFkAyYoV+40A63HfjY2Fd8JGSuUyGiDYcQ3zCGy+65+O/YjEKsjiHdbbCn8hXRAstgPRb7zjxkjbMxyuazzBxWv0x85m8+d6R5z5JYVKQpwF597ltezDItDl4jUQlPBpkwlaMeUPkkrKRTgAEJgV5JpDEAZHm40HeEMkl3HwM5rEgXcqO9FlDZNqL+Ar0pCDPBfLOSHQ4SEaKkAGRhseClJTPdDlkDJFd6v/UOJKCPBvIOwfro0HOiMRJJ3P+oSAtkt4VY8aNVps+oYiCPB9Ii0jD0SAlBiSRg30kyDntc2IT0i97nYJ8BZDx9/6xIOPAOHHi0PGRICVxA6b0KwV3x7yCfC6QE9b5g0HOqds0Yp1UAJl/BCkf09297y0oyKcC6bBODgYpWOeSQXQVQGYeQcqHVKIe8ZcoyOcCabEuHAuyS+cVsG54HEhJ/vVTMuEOkQIryCcDyYh0LMgB6yR9bm3/MJC8z61qmORfAmEFqSArg7xh3Xv6PgsPA9mnv2ENIvXJZwGAOAWpICuALDv/7BCJHwQya9kZSZ6F2SOeZwX5RCC75kAaZOwARHIPApm17Mw1+TRgxL28U5BPA7K9mzoWkThnwKkHsvyW0ph5dzuezKwgnwPkgHXLoSAHRCq77iwHWX49WP6xosdXLQMryCcAOe/yYMBo77Skg5ywbqGMF0kFkPmfgpa/yAH4zqSCPDvI9HM9i5TSQfqM19CISPVAlj9DwxnDqgAbTCpI4DbeybUOskMkdyjIBeves1BwNZDlBwODSAPtsOe9U5B3862DnBGpOxRkyLk/0yNS9xiQU9aHoDlPwk2bF/xUkOcEyYgkVBdk9js162nt+iCvWCdFXzErX1xhZgV5QpBGEGk+FKRJAJlw6l0MsvyitxwksWA7SQV5NpBmQaz+UJCcNSEHPwVITzuKFKcgzwXSCmIJtQfSPR/IhFdlisTtZWedOyNIe0O84WlAjo8BKY8ESWbC5qRTkA2DHO2f3DgH3En4WJBWQX6TE2zuHwXZLshtDXQsyE5BfhdfE0QqyHODFCI9ZW0cJBF7bM0qyFOD5CcC6R4DcqkLMp69YVuBFeSJQQ6kICvcZS1jHI+vAVvyCvK8IEf62QkfDLCI1B8Hcsk60X2npIzz2JBTkGcFOdKv9NG5Rh+dW8fDgu8K5uVATvZO3alAjvvvPb/Pw+Vzyw+XXys8XJ4QfztODi8H8hzfh/ymYKkJkJKjwyGSebKvX+Wa9AryhCA9Uxsgb0/xBWXOeRq+L0BzFdyNFeTZQHpLdBzI8kuyCeuWJ5vCI/8JnkFBngvkZ47nm+TKY52vALLkI5f6a+eMAdHeFeSJQIbJEjUEss856VqeYRrIhUpjQaygIE8CMvjBElFTIBmR+vyZGOuDXLBuzpq3spZIoyAbBBnkr/w8DT1TvNMtJWARqTtyKYEla4nX8jrE6hTkWaaBbBCkTx88hkMX23GIZLIWzCrvikhOQSrIBJCluuIngC0vR9cnGE7LKkgFuS9Ii0i25QVbA9ZNWWsul2cUpIJMA5n1/h5bXtI8/SJS6q1PHhSkgiwCWb4e8ox1QhVAJh0Qsl5QnihIBbkvSIdINnsxuvogTXRMTz6CKEgF2SRIE2JAEgFzBZBJY3owOROOlIdIVkEqyHyQNCESZ09qUx+kTRM2Zx9BLgvT11n9HFJB7g3SIoXYBZHcQ0GSpAyRnP286Q9ALH3ZrI/OKci9QZJPmNGQEUnosSBHRLpRPMk9q/wHP7skPzvnFaSCLAJpt8+fxoJI7sEgTUCkOJ1L7hGkC/iV9HS3Wb9+pSD3B0l+66TqZkEkoQeDpBFbRV6Q+SQ8h9XSVht/eKcgFWQZSItYYreNj3APB2lkm0jzhli31C9yzJaINv5webkpPPz8Zb2CTAVJfsuqh+YSEEvo4SDJYcsxxAqicaJHADJ0RFv2BtzLgfymUUEmg+SAeDfH9CvTvwXE4wNArv7UFRxj74nBmDcCy23sLROR4X7wAfFE52VVkMUgacDdwuK9hLT9XR8kB9xNvF8EQD6ZBdF0omQF+SCQdENmng4BSQ6ZBabvmpGd6FICCnIPkEaQlfBBIGlCXn3C6UJ6utiOgtwFJLFkDjdHgaRrrQUcWJDbqMvRKch9QFIXMjx2dBxIs+SJqShy0gVbFeReIKmTMo/lIOuLHGlTZkJOV13SXEFmgywfGISpAsia15EDbW0IOeOjglSQO4IkviEhb+hokDQiIbG0PfZI1q4gFWQmyPI3eBiIjgdJLNUOIE4StStIBZkJsnyQ9EwVQFYcJKWn5EbB1kZDClJB5oEsHxi8JWoFJPEV3xbywLATbGlmIgWpIItBxut9OsdykEUkA75KCsYvd9uE/VVA8picpZS6cR3TqvSt7Cha1R/txlWOVpUtpu/L337jup4SSnMTJktFsbuF+xpna4heB6R2VOyuK5TL7Aw1m538ZzhyGyztkR1uCz4n89ARESlI7UF11o3jNM/zOLqeqf2M7Ydx/HeDO7P73vj9w6dx+LM7FKSmPXUKUtO2pSA17dVSkJq2LQWpaa+WgtS0bSlITXu1OqwLClLTEqrsRRSkph1Tj3WLgtS0YxqwzitITTumCeveFaSmHZPHulFBatoxIdKgIDXtkCwiWQWpaYc0IJJRkJp2SB7rAilITTsiRiSvIDXtkBwijQpS0w7JI5I9Acgf8+9uM2nas8SIZdoHafEnBak9TzMieWofpNezX+35YsQa2gfp8F8dabm5cRwH0pppRqyufZCCPwXSsvMAhLRWYsQSah6kWz0H305ugVxoc51HmJkiKciXa0assX2Qsjq/bia3vtPEHX2IO0N/4gAAYmjdKUByZz79u+G1BmrUmbpSAHDzIB3+n6W2Wj7uROMFAP2XucmHXTx/sT9aB/n5b6GbBMDSK8VAWPw+KI0glqfmQQravYT8dJxg4ANI/nTM81+clbQO8vPfQgBeEORuY9gbornmQV5Wh4+GEvyq2wjyeuIRUkHuCvIHogm1DpJlxwte7qztzO7fnrnRRpAWPxOmSK2AZP87BVkTJCOeax7k225P+dm3gF8tl/1EjIIwm60gqRfAt32X1eF3VkHWA8mCaMKtg+S9nvJjX2mVeCaizSCJjKFY7YC84XeTgkwEWe4RI7UOct7pDlQXqp0aJIAsrj5Ig38TBZkIstyjcOsgGX83FU9HG0Tws5kUZDwHAAEArIJMAlnuEY5aBznj73rKjMNvhpaIyF4FrCC/OmMdAWBUkFVA2oCP/Y99M1puFQTCMKxLqSZyUgb43/9NT9SoAUo0Vme8yHfT6UBwd8mHSXac8OLsQtLig2L6Tr2uO+F5DlJ8hCwQAFgCAPcR8gghGxTRpxfyhmdc4QOWW1WDQGLmI2QBNeyXBwD6CLm7kGRRxIizC8mLAfs1v/WQ3xSErLRmKWa6/+kYIYk1s3wdjurCOVpIMwTcAsDl70ISK8VVuStcTpqUYpmXaHsBSWnFxa2OwsxGNfM+Qn4HFPF0eiE9Fr5C6lW/9eg3Pp/rsSfONm6QyCagw8XJtOYOrRayMXeSPGRtA3q8oWTI3OFhDnqsFjmS79AuQgYA7rGLdpuQeeMXtqZs0DwGnaGoPH2C2qFDRrPL+Tf+9w4zmzty2L1yv0tb9ASTZzNX/sZ/FpI9XqDF2YXUiKGCsfWi1+tjuAzvA3nDSOj9UQEj12xtXi2kze88OpQbpPRIr/KYuBYKpfcQkscDLow+bBaSLJLElrvCFoAVU/XdKMUNMz5LtAmYabLCVPGNqRERUW3h6IVDhv4kJFu8ohWnF9IjwpeM5RURefGGkCQdnqiSb+LXPYU0iPFVKsFFfOGZ64FCmjGdXoF6i5B54zc34SsZDDqKcPTvJ28T5EpJiwgrk8KoaPeSrJLaIvCLUc+bhaQm4CVenl5IjZif8sNPy46Zd4RU/cLO2vEkUAAQnA3o4f2ENEmDFAhV8nqj0OHtfPnDhPQA/LSk3S4khSkvnx2oX0ip5wiD+MaDS+Sjty4gN9IB8e7YtDDNY3ycSblx8NNo9Xv7OvR/twnJjcUCgcRBKOSoPW6Q0CX3V7wPod4R0gFopRCCbuj4DmPTpEaH3U3IBh3h0k2Ryqd7Q300oZshp+hgDxOSp7NLokNuFtKjw7IYO78AJ7K6moSQ/A9A+1we8qN+/LRUS/1KLr1q83Sh6t/gcVwYD8DrfjvbYan43BirK/VwYZl28B0PSbz/CDGRqq82YBkljkIjh3dZqPrVtOWux1xEvv5v79y25ETBMApIDWNTomE4vP+bTtIm/Rd8kWIRaatX2FdtW3LeioBqrL0rURIyPWXzkN1cLNRQTxBSJL1UFE7kA3ALBdhDSENtw1IpNAgpMzOY9qSBT7UQq+dJ8eynw7QdqKSIfJYqnT59I/I2tCURhKw+vEgE1Fn3Zc3v9sVRjtvRrBs6ItMZD1QHKIK69+xMvw6mO3sjniVf0zYZQVcOdZKQNt+/RQiPYqfoOwhJueGUcdsqpIYaE/x4aJyzxJf0RECSPPxGpUZlHyQ2mZBb1mZEtpleMAOnHKeBT6Eg5Iv6yJaI8BMWNKB3BnNzWFIuvff3siykyctZpLcs8zlCSphe5SHxQMD9haMAzhdy2iOntAXeKORKIQH+eNLNYo2q9NfZjIzIE8ETpVQ+XsLT39u8/PVj9AZyKAtCvqiPzDZ9Xmt626y1fif+Fk8/SH+mKp4htsLX9aI11T92iWit5zlCGqxf6hLT8XPe0pdOQi6P4QTaaBTSH1sf9UEKQVZwhrm9hCjFDvOQCClgCgx1pv+Q7R4CFwUhX9RHFiJga9YTtSNrBlnde0IWNa8wcoK/toUqWM8SktYZYb0qPJ6ip/Y525295dgd3S6kp9io89ck5HK8U1M4gMUuQxIQKOfg/KQeQ8AlIR58DUed9gnOhkUhX9RHGRFTs7StHV7Rhw4/BwqoRWxXC4lXX2qAyxMhaQMxzULSknLos7YN6nhxJJ1jBSEFDNpzUG55KK0bZqJOSIMnxI0ypSCDRSFf00dmGqYhW3ys7xCvtOAGuoXXCnnLapwC/HaJkPPe0pPbWdkgJKkVDe4PlMEKWTVW8Y0CkDhmyOmAp0I6LK+V9lMz6SnkzLoifERExTBoO65OyCkfOdGXCzlTwrJTtL9ESJcaZsnPaiFxoY43SqTCYOFDlMSKVSzpXwqdYfSvp0Im7QCqdyO1uwnpJ9aXt4h41lVIXyXkDL1Ye7mQmtpOntw6IZXZeQ/Vmh3VICRF5rMLZmgRMlv8G63iWW3PBSEV/CfYRxylU+/BJ1Aynwr5MVhIBDolWBK/l5BWsL5MTatmbex+D+lwVDJcKyS51yBkl1FWRUHDeErL4vI1Ev4NRq3qhURISKReSBEPMNRhsD2FnFlnhG/6WAF3sY3WpazTftwQsmADdSDbH79KlBQdhFz7CKnppx2F9NM1Plr2HOVjOzdWZD4q12kICYWChHohEX5b/UdA05lCumQVCsDPELJrlzVo1hvpq31BpMpwMeM/+QNB2LoL/w0qBYS8+h4SB3UuEFLF3yObhCSmX0563noP6QTyUILTwd6ikDTFJABOUftOQlrBOsPvBzGfNaHpwbS6e9SpMFh2rZCK9ma/sBcIaQuXiyYhcYEwBbPUCrlS7QFUgkj9KKthSO9RViu76/gWCr35JuzTwZtQ9xFXTIak8K4UUkIPghrJpwsp4gG+UUgscFs3D6nQZV581k+1CukK02Yd5yH76zjdw+nrEDCHt4MTr697HhJ7sdcKSatycLxJ9ROy3HZVgqboG4TE2Yvkzzohb1j1uK6pVciVFiMBvVbqhKWzjuXE+POWqWO581C1VGeBgw2dpC8RErqn0An7fCE3KiVcQdEuJF7oFjgOhATlTHEtQ2gVEpVD+/SpQtqZs88gdHgxAWTRHt2biIpwAodauV5IDQ2ChvYqhAQahIRJRxTEniDkTAUjI6gPQsK1lRdFl41CcmhX2Kpd5XyZvNBGRHd5MYF9tmiV1z3/7MgCuApdJyQ+/YiPx/cXEnvx6BFvEJKzBPNQgQ4yBUJCidyL5xHP24RktpQHvJYL3ypksIvk7PPgXVYiyKfjQ1vV4nVFF2sqVsO6CclrhKTY4ltW4559vpCGwoV6nRuEdAY/0/eNqiN95vQNhSQ8vNdKWk7lAV1asYlqISX24/6lmATZTrVTFBIJ3hqtBOsO1jWiTg5VPX91S8Uz6oK2zhYSO37JNgrJA7U2mslVFwgZ0g4N9lkxb4FkBe4x+jdBM9TJsTZ5v+pkYvwHhISW/hGatDHe87fbbeLhdYuuWki2JEnZ33MlM9udoFxQfQBCIOwyVASCPHuwaDlQ1lSGY5SUylBn+mQhSf15Ntn2nT8KCSnzRkk10wssPltIfOwQB2Mob495Cfojb/iMgdU3SfkymUTRb1obt1+jUMhMmujNrNRs/F590PK2WSl1t9TBLQkJb27yd6XUvIXskhh+xizl7T0XNuz18frw0GUpgn22xmBatNaKPWPG2ZguQtLNtMy2ZxDy6Ey2sguENAflKynxlJdbVqi6akzBi8JLlL+BkEmec8JcjGupFpIJX1pjKvMsuK8iJFugxM6fTwmsCTQyKNZJSO7p5IHbJCRx83DffYGQfo8aCZT4Qt4A4WLGxhkxedgJQhb8tqK0ENpLVi8kvj5m4YxQIfGRrV9GyFQdI7rcm06sGbFC6noISU2NZ2dgkQtJKQvxAzuxC4QsvE1teZh1EJC3Qr0oW1qcInSAnSAkWANhYd1GpzmrFRKFDovIY05MXb6MkMx1WRokzxu1FbN13vutPBnEs5txLn/AiCn90pT8AWeEUNZ7t9AhtE1Hp3C1Wv8dQ0mD2CH6U4UUSTy4hx/mzdF2jlDLe7acmQUjKNMuxOA3LbPc8d/X3uYoLIxqL8Ftlpj6ibapvhLkYt8DXxRngHzPxab5rwC/yCcxNenYbfjWsAHRKOTg74DTVyr6dIVHaxpCDoBidVvFewRLcDYYQg6qmGbec7ToL/yi/RBy8ILYSMxsMIQcXIpM5o8Hg8G12DGqMxi8DtMY1RkMXoiVhLyxwWBwLYKEXNhgMLgIvERaNhgMLgIvkYENBoMrwNfl+u98jZX2g8Gf8D/DdmN0Msh/RwAAAABJRU5ErkJggg=="> <small>STATS</small>
+  </a>
+  <div class="nav-links">
+    <a href="#install" data-sec="install">安装</a>
+    <a href="#how" data-sec="how">原理与隐私</a>
+    <a href="#faq" data-sec="faq">常见问题</a>
+  </div>
+  <div class="nav-right">
+    <button class="lang-btn" id="langBtn" type="button" aria-label="Switch to English">EN</button>
+    <span class="ver">v__VERSION__</span>
+    <span class="beacon" title="免登录 · 本地运行"></span>
+  </div>
+</nav>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-radar"></div>
+    <span class="blip" style="top:60px;right:120px"></span>
+    <span class="blip" style="top:150px;right:60px;animation-delay:1.2s"></span>
+    <span class="blip" style="top:100px;right:210px;animation-delay:2.1s"></span>
+    <div class="hero-eyebrow">COMMUNITY TOOL · NO LOGIN · NO SERVER</div>
+    <h1><span class="hw">任何 JetPhotos</span> <span class="hw">摄影师，</span><br><span class="hw"><em>一键生成</em></span><span class="hw">专属统计台</span></h1>
+    <p class="lede">输入任意摄影师的 <b>ID 或主页链接</b>，在你自己的浏览器里拉取 TA 的全部照片，生成按<b>机场 / 航空公司 / 机型</b>分类的统计仪表盘：浏览量排行、获奖统计、拍摄时间线、相机装备……全部可搜索、可筛选、可跳转原图。</p>
+    <div class="hero-badges">
+      <span class="hbadge"><b>✓</b> 免登录</span>
+      <span class="hbadge"><b>✓</b> 零扩展依赖（书签即可）</span>
+      <span class="hbadge"><b>✓</b> 数据只存本地</span>
+      <span class="hbadge"><b>✓</b> 增量更新 · 断点续抓</span>
+    </div>
+    <p class="id-note">ID 就在摄影师主页地址里：<code>jetphotos.com/photographer/</code> 后面那串数字 · 打开任意摄影师主页后，<b>点一下书签按钮</b>（或右下角悬浮按钮）即可开始统计。</p>
+  </section>
+
+  <!-- ============ STEPS ============ -->
+  <div class="steps">
+    <div class="step"><span class="no">01</span><h3>🔖 安装一次</h3><p>把下面的按钮<b>拖进书签栏</b>，10 秒完成。不需要注册、不需要扩展（也提供油猴版）。</p></div>
+    <div class="step"><span class="no">02</span><h3>✈️ 打开 JetPhotos</h3><p>访问 <code>jetphotos.com</code> 任意页面（无需登录），<b>点一下书签按钮</b>，右下角出现悬浮入口。</p></div>
+    <div class="step"><span class="no">03</span><h3>📊 输入 ID 开抓</h3><p>输入摄影师 ID 或主页链接 → 约 2 秒出基础统计；深度抓取后解锁机场、时间线与缩略图。</p></div>
+  </div>
+
+  <!-- ============ INSTALL ============ -->
+  <div class="sec-head" id="install"><h2>安装</h2><span class="en">INSTALL</span><span class="hint">两种方式任选其一 · 均免费开源</span></div>
+  <div class="install-grid">
+
+    <div class="icard main">
+      <span class="tag">推荐 · 零依赖</span>
+      <h3>🔖 书签按钮</h3>
+      <p class="sub">一个特殊的书签，点一下就在当前页面启动统计台。桌面浏览器拖拽即装。</p>
+      <a class="bm-drag" id="bmLink" href="@@BMRAW@@" draggable="true"><span class="ico">📊</span> JP 统计台 <span style="font-family:var(--mono);font-size:10px;color:var(--ink3);font-weight:400">v__VERSION__</span></a>
+      <p class="bm-note" id="bmLoadNote" style="display:none"></p>
+      <style>.bm-note{font-size:11px;color:#ff9db8;margin:6px 0 0;line-height:1.5}</style>
+      <div class="drag-hint">按住我，拖到浏览器的书签栏上</div>
+      <ol class="olist">
+        <li><b>1</b><span>显示书签栏：Safari / Chrome 按 <code>⌘⇧B</code>（Windows 为 <code>Ctrl+Shift+B</code>）</span></li>
+        <li><b>2</b><span>把上方「📊 JP 统计台」按钮拖到书签栏</span></li>
+        <li><b>3</b><span>打开 jetphotos.com 任意页面，<b>点这个书签</b>即可</span></li>
+      </ol>
+      <div class="row-btns">
+        <button class="btn cyan" id="copyBm" type="button">⧉ 复制书签代码</button>
+        <button class="btn" id="manualToggle" type="button">拖不动？手动安装 / 手机端</button>
+      </div>
+      <div class="acc" id="manualAcc" style="display:none">
+        <div class="acc-item open">
+          <button class="acc-q" type="button">手动安装步骤<span class="pm">＋</span></button>
+          <div class="acc-a"><div class="acc-a-in">
+            <p><b>桌面（Safari / Chrome / Edge / Firefox）：</b></p>
+            <ol>
+              <li>点上方「⧉ 复制书签代码」</li>
+              <li>随便收藏一个页面（<code>⌘D</code> / <code>Ctrl+D</code>），命名为「JP 统计台」</li>
+              <li>在书签管理器里编辑它，把<b>网址整段替换</b>为刚复制的代码，保存</li>
+            </ol>
+            <p style="margin-top:10px"><b>iOS Safari：</b>复制<b>在线版代码</b>（手机推荐）→ 在 jetphotos.com 点分享 →「添加书签」→ 打开书签列表编辑该书签，把地址替换为复制的代码 → 回到 jetphotos.com 点该书签。</p>
+            <p><b>Android Chrome / Firefox：</b>复制在线版代码 → 收藏当前页 → 在收藏夹里长按该条 →「编辑」→ 把网址整段替换为代码。注意 <b>手机版 Edge 不支持 javascript: 书签</b>，详见下方「手机安装教程」。</p>
+            <textarea class="codebox" id="bmCode" readonly aria-label="书签代码"></textarea>
+          </div></div>
+        </div>
+      </div>
+      <div class="acc" id="onlineAcc" style="display:none">
+        <div class="acc-item">
+          <button class="acc-q" type="button">🌐 在线版书签（更小，需联网加载引擎）<span class="pm">＋</span></button>
+          <div class="acc-a"><div class="acc-a-in">
+            <p>离线版把整个引擎打包进书签（约 1 MB，含全球机场与地形数据），个别浏览器可能嫌长。在线版书签只有几百字节，点击时从服务器加载引擎，功能完全相同：</p>
+            <p style="margin-top:8px"><a class="bm-drag" id="bmOnline" href="__BM_ONLINE__" style="padding:9px 18px;font-size:13px"><span class="ico">🌐</span> JP 统计台 · 在线版</a></p>
+            <p style="margin-top:8px">引擎地址：<code>__ENGINE_URL__</code></p>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="icard alt">
+      <span class="tag">进阶 · 自动注入</span>
+      <h3>🐒 油猴脚本</h3>
+      <p class="sub">装一次后，打开 jetphotos.com 自动出现悬浮按钮，无需点书签。适合重度用户与 iOS。</p>
+      <a class="dl-link" id="usLink" href="dist/jp-stats.user.js" download="jp-stats.user.js">⬇ 下载 jp-stats.user.js <small>v__VERSION__</small></a>
+      <ol class="olist" style="margin-top:16px">
+        <li><b>1</b><span>安装脚本管理器：桌面 <code>Tampermonkey</code> / <code>Violentmonkey</code>；iOS 用 <code>Userscripts</code>（App Store 免费）</span></li>
+        <li><b>2</b><span>点上方下载，管理器会弹出安装确认 → 安装</span></li>
+        <li><b>3</b><span>打开 jetphotos.com，右下角自动出现「📊 JP 统计」按钮</span></li>
+      </ol>
+      <p style="font-size:12px;color:var(--ink3)">脚本与书签使用<b style="color:var(--ink2)">同一个引擎</b>，数据缓存互通（同浏览器同 ID）。管理器里可随时禁用或更新。</p>
+    </div>
+
+    <div class="icard" style="grid-column:1/-1">
+      <span class="tag">手机 · 兼容说明</span>
+      <h3>📱 手机安装教程（Android / iPhone）</h3>
+      <p class="sub"><b>手机版 Edge 不能运行 javascript: 书签</b>——收藏后点击会提示「无法运行脚本，因为不允许以这种方式使用 JavaScript」。这是 Edge 的安全策略，任何书签代码都无法在手机 Edge 里执行，不是代码问题。手机版 <b>QQ 浏览器</b>同样不可用：自带书签不能编辑网址，也不开放油猴扩展。请换用支持书签的浏览器（见下方对照表）或改用油猴脚本。手机上请复制<b>在线版代码</b>（约 <b id="bmLen">600</b> 字符；离线版约 100 万字符，手机输入框容易被截断或卡顿）。</p>
+      <div class="compat">
+        <span class="ok">✅ Chrome · Android</span>
+        <span class="ok">✅ Firefox · Android</span>
+        <span class="ok">✅ Safari · iPhone</span>
+        <span class="no">❌ Edge 手机版</span>
+        <span class="no">❌ QQ 浏览器</span>
+        <span class="ok">✅ 油猴脚本</span>
+      </div>
+      <div class="code-tools">
+        <div class="row-btns">
+          <button class="btn cyan" id="copyBmOnline" type="button">⧉ 复制在线版代码（手机推荐）</button>
+        </div>
+        <textarea class="codebox" id="bmOnlineCode" readonly aria-label="在线版书签代码（手机手动复制）"></textarea>
+        <p class="mob-note" id="onlineNA" style="display:none">在线版代码只在托管站点上生成。你当前打开的是本地文件，请改用上面的离线版代码，或访问线上站点安装。</p>
+      </div>
+      <div class="acc">
+        <div class="acc-item open">
+          <button class="acc-q" type="button">Android：Chrome 书签安装步骤<span class="pm">＋</span></button>
+          <div class="acc-a"><div class="acc-a-in">
+            <ol class="olist">
+              <li><b>1</b><span>点上方「⧉ 复制在线版代码」</span></li>
+              <li><b>2</b><span>用 <b>Chrome</b> 打开 <code>jetphotos.com</code> 任意页面（无需登录）</span></li>
+              <li><b>3</b><span>点右上角 <b>⋮</b> →「☆ 收藏」→ 保存当前页，名称填「JP 统计」</span></li>
+              <li><b>4</b><span>点 <b>⋮</b> →「书签」→ <b>长按</b>「JP 统计」→「修改」</span></li>
+              <li><b>5</b><span>清空「网址 / URL」输入框，<b>粘贴</b>代码，确认开头是 <code>javascript:</code> → 保存</span></li>
+              <li><b>6</b><span>回到 jetphotos.com，点地址栏输入「JP」→ 在建议里点这条书签 → 右下角出现「📊 JP 统计」；点它输入摄影师 ID 即可开抓</span></li>
+            </ol>
+            <p class="mob-note">⚠️ 手机版 Edge 无法完成这套步骤（会提示不允许使用 JavaScript），请改用 Chrome 或 Firefox。Firefox for Android 操作基本相同：⋮ → 收藏 → 书签 → 长按 → 编辑 → 替换网址。</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q" type="button">Android 推荐：Firefox / Kiwi + Tampermonkey（不用书签）<span class="pm">＋</span></button>
+          <div class="acc-a"><div class="acc-a-in">
+            <p>如果你习惯用 Edge，最省事的替代方案是装一个支持油猴脚本的浏览器，装一次后打开 jetphotos.com 自动出现按钮：</p>
+            <ol class="olist">
+              <li><b>1</b><span>安装 <b>Firefox for Android</b>（Google Play）或 Kiwi / 狐猴浏览器（支持 Chrome 扩展）；国产可选 <b>X 浏览器</b>（原生支持用户脚本）</span></li>
+              <li><b>2</b><span>浏览器扩展商店里安装 <b>Tampermonkey</b></span></li>
+              <li><b>3</b><span>用该浏览器打开本站，点「下载 jp-stats.user.js」→ Tampermonkey 弹出安装确认 → 安装</span></li>
+              <li><b>4</b><span>打开 jetphotos.com，右下角自动出现「📊 JP 统计」</span></li>
+            </ol>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q" type="button">iPhone / iPad：Safari 书签或 Userscripts<span class="pm">＋</span></button>
+          <div class="acc-a"><div class="acc-a-in">
+            <p>iOS 版 Edge（以及 Chrome、Firefox 的 iOS 版）都基于系统 WebKit，<b>不能编辑收藏网址，也无法运行 javascript: 书签</b>。iPhone / iPad 上请任选其一：</p>
+            <ol class="olist">
+              <li><b>1</b><span><b>Safari 书签：</b>复制在线版代码 → 在 jetphotos.com 点「分享」→「添加书签」→ 打开书签列表编辑它 → 网址整段替换为代码 → 回到 jetphotos.com <b>点该书签</b></span></li>
+              <li><b>2</b><span><b>更省事：</b>App Store 安装 Userscripts（免费）→ 导入 <a href="dist/jp-stats.user.js">jp-stats.user.js</a> → 打开 jetphotos.com 自动出现按钮，无需每次点书签</span></li>
+            </ol>
+            <p class="mob-note">深度抓取时保持标签页在前台、屏幕常亮；iOS 后台会冻结网络与计时器。进度可随时暂停并自动保存，缓存只存在这台设备。</p>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ HOW ============ -->
+  <div class="sec-head" id="how"><h2>原理与隐私</h2><span class="en">HOW IT WORKS</span></div>
+  <div class="how-grid">
+    <div class="hcard">
+      <h3>⚙️ 两级抓取，先快后全</h3>
+      <div class="tier"><span class="tk">T1</span><div><h4>基础统计 · 约 2 秒</h4><p>一次请求拿到官方 photostats 全表：每张照片的航司、机型、注册号、浏览量、评论与 EP/PW/SC/PC 获奖标记。立刻可看排行与分类。</p></div></div>
+      <div class="tier"><span class="tk t2">T2</span><div><h4>深度抓取 · 后台渐进</h4><p>逐张访问照片详情页（默认快速模式约 4–5 张/秒，可切回标准约 2 张/秒；遇到限流会自动降速），解锁机场、国家、拍摄/上传日期、相机镜头、备注与缩略图。可随时暂停/继续，失败自动重试并标明原因。</p></div></div>
+      <div class="tier"><span class="tk" style="background:var(--violet);color:#241a33">♻</span><div><h4>本地缓存 · 增量更新</h4><p>结果存在浏览器 localStorage。下次打开同一 ID 秒出缓存，只抓新增照片；也可一键全量重抓刷新浏览量。</p></div></div>
+    </div>
+    <div class="hcard">
+      <h3>🔒 你的数据不出浏览器</h3>
+      <ul class="plist">
+        <li><span class="pi">🚫</span><span><b>没有服务器。</b>本页只是安装说明书；抓取与统计全部发生在你的浏览器里，直连 jetphotos.com，不经过任何第三方。</span></li>
+        <li><span class="pi">👤</span><span><b>无需登录。</b>公开统计接口对所有人开放，不读取你的账号、Cookie 或任何隐私信息。</span></li>
+        <li><span class="pi">💾</span><span><b>缓存只存本地。</b>localStorage 按摄影师 ID 隔离，清除浏览器数据即可完全删除。</span></li>
+        <li><span class="pi">🐢</span><span><b>礼貌抓取。</b>内置限速、退避与重试，避免给 JetPhotos 造成压力；请仅用于个人统计欣赏。</span></li>
+        <li><span class="pi">📖</span><span><b>代码透明。</b>引擎是单个可读的 JS 文件，无混淆、无埋点、无网络上报。</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ FAQ ============ -->
+  <div class="sec-head" id="faq"><h2>常见问题</h2><span class="en">FAQ</span></div>
+  <div class="acc" id="faqAcc">
+    <div class="acc-item"><button class="acc-q" type="button">需要登录 JetPhotos 吗？<span class="pm">＋</span></button>
+      <div class="acc-a"><div class="acc-a-in"><p>不需要。摄影师统计页与照片详情页对未登录访客完全开放，本工具全程匿名访问。你登录与否都不影响结果。</p></div></div></div>
+    <div class="acc-item"><button class="acc-q" type="button">抓取要多久？会不会被封？<span class="pm">＋</span></button>
+      <div class="acc-a"><div class="acc-a-in"><p>基础统计约 2 秒。深度抓取默认<b>快速模式</b>（约 4–5 张/秒，800 张约 3–4 分钟），进度条上可切回<b>标准模式</b>（约 2 张/秒）；<b>后台渐进渲染</b>——抓一张亮一张，随时可暂停，进度自动保存。内置 429/503 退避与自动降速重试；请不要同时开多个窗口抓同一个 ID。</p></div></div></div>
+    <div class="acc-item"><button class="acc-q" type="button">为什么会有个别照片「抓取失败」？<span class="pm">＋</span></button>
+      <div class="acc-a"><div class="acc-a-in"><p>常见四类原因：① <b>限流 / Cloudflare 拦截</b>（429/503）——请求过快或触发风控，引擎会自动退避 20 秒、降低并发并重试最多 4 次；② <b>照片已删除</b>（404）——摄影师删除或下架，重试也无法恢复；③ <b>页面无照片信息</b>——页面返回成功但内容为空（仅会员可见或已撤下）；④ <b>请求超时</b>——网络波动。点进度条上的「⚠ 失败详情」可查看每张照片的失败原因与原图链接：可恢复的失败一键重试，永久失败可放心忽略，不影响其余照片的统计。</p></div></div></div>
+    <div class="acc-item"><button class="acc-q" type="button">为什么机场 / 时间线显示「深度抓取后解锁」？<span class="pm">＋</span></button>
+      <div class="acc-a"><div class="acc-a-in"><p>官方统计总表只有航司/机型/注册号/浏览量/获奖，不含机场与日期。这些字段来自每张照片的详情页，需要点「开始深度抓取」后逐张补齐。抓过的照片会永久缓存，之后秒开。</p></div></div></div>
+    <div class="acc-item"><button class="acc-q" type="button">手机上怎么用？<span class="pm">＋</span></button>
+      <div class="acc-a"><div class="acc-a-in"><p><b>Android：</b>手机版 Edge 禁止运行 javascript: 书签（提示「不允许以这种方式使用 JavaScript」），<b>手机版 QQ 浏览器也不行</b>（书签不能编辑网址、无油猴扩展）；请改用 <b>Chrome</b> 或 <b>Firefox</b>：复制「在线版代码」→ 收藏当前页 → 收藏夹里长按 → 编辑 → 网址替换为代码 → 地址栏输入书签名并从建议中选择。更省事的是 Firefox/Kiwi + Tampermonkey 油猴版。<b>iOS：</b>iPhone 的 Edge / Chrome 同样无法运行 javascript: 书签，推荐 Userscripts（App Store 免费）+ 油猴脚本，Safari 打开 jetphotos.com 自动出现按钮；或把代码存进 Safari 书签。抓取时请保持屏幕常亮、页面在前台（iOS 后台会冻结网络）。</p></div></div></div>
+    <div class="acc-item"><button class="acc-q" type="button">点了书签没反应？<span class="pm">＋</span></button>
+      <div class="acc-a"><div class="acc-a-in"><p>① 确认当前在 <code>jetphotos.com</code> 页面上（书签只在 JetPhotos 域内工作）；② 检查书签网址是否以 <code>javascript:</code> 开头、是否被浏览器截断（改用在线版或油猴版）；③ Safari 首次可能拦截，地址栏右侧允许弹出；④ 页面若停在 Cloudflare 验证页，先手动过一次验证再点书签。</p></div></div></div>
+    <div class="acc-item"><button class="acc-q" type="button">数据存在哪里？会上传吗？<span class="pm">＋</span></button>
+      <div class="acc-a"><div class="acc-a-in"><p>只存在你浏览器的 localStorage（键名 <code>jpstats.v1.&lt;ID&gt;</code>），不上传、不同步、无统计埋点。换浏览器或清除站点数据后需重新抓取。引擎本身是纯前端单文件，可自行审计。</p></div></div></div>
+    <div class="acc-item"><button class="acc-q" type="button">和 JetPhotos 官方统计页有什么区别？<span class="pm">＋</span></button>
+      <div class="acc-a"><div class="acc-a-in"><p>官方 photostats 是一张朴素表格。本工具在其上叠加：机场/国家地图式分类、拍摄与上传时间线、相机装备统计、获奖筛选、全文搜索、缩略图画廊、大图灯箱与原图跳转，图表中的「其他」还能一键展开完整航司 / 机型 / 制造商列表——且支持任意摄影师，不限本人。</p></div></div></div>
+    <div class="acc-item"><button class="acc-q" type="button">这是官方工具吗？<span class="pm">＋</span></button>
+      <div class="acc-a"><div class="acc-a-in"><p>不是。这是爱好者制作的社区工具，与 JetPhotos 官方无关联。请遵守 JetPhotos 服务条款，仅将数据用于个人统计与欣赏，不要批量转售或高频爬取。</p></div></div></div>
+  </div>
+
+  <footer>
+    <span class="fbrand">✈ JP 统计台</span>
+    <span>非官方社区工具 · 与 JetPhotos 无关联</span>
+    <a href="https://www.jetphotos.com" target="_blank" rel="noopener">jetphotos.com ↗</a>
+    <span class="right">ENGINE v__VERSION__ · MADE FOR SPOTTERS</span>
+  </footer>
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+
+  /* toast */
+  var toastEl = $('#toast'), toastTimer = 0;
+  function toast(msg) {
+    toastEl.innerHTML = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+  }
+
+  /* copy helper (file:// friendly) */
+  function copyText(text, okMsg) {
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); toast(okMsg); }
+      catch (e) { toast('复制失败，请手动全选代码框复制'); }
+      ta.remove();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, fallback);
+    } else fallback();
+  }
+
+  /* bookmarklet：离线代码体积大，按需从 dist 载入，避免落地页本身过大 */
+  var bmLink = $('#bmLink');
+  var bmUrl = '';
+  var bmInline = bmLink.getAttribute('href') || '';
+  if (bmInline.indexOf('javascript:') === 0 && bmInline.length > 100) {
+    bmUrl = bmInline;
+    $('#bmCode').value = bmUrl;
+  }
+  var bmCands = ['dist/bookmarklet-offline.txt', '../dist/bookmarklet-offline.txt', 'bookmarklet-offline.txt', '/dist/bookmarklet-offline.txt'];
+  function fetchCands() {
+    var i = 0;
+    function next() {
+      if (i >= bmCands.length) return Promise.resolve('');
+      var u = bmCands[i++];
+      return fetch(u, { cache: 'no-cache' }).then(function (r) {
+        if (!r.ok) throw new Error('http ' + r.status);
+        return r.text();
+      }).catch(next);
+    }
+    return next();
+  }
+  var bmReady = (function () {
+    if (bmUrl) return Promise.resolve(bmUrl).then(function (t) {
+      bmLink.setAttribute('href', bmUrl);
+      var n0 = $('#bmLoadNote'); if (n0) n0.style.display = 'none';
+      return true;
+    });
+    return fetchCands().then(function (t) {
+      if (t && t.indexOf('javascript:') === 0) return t;
+      return '';
+    }).then(function (t) {
+      if (t && t.indexOf('javascript:') === 0) {
+        bmUrl = t.trim();
+        bmLink.setAttribute('href', bmUrl);
+        $('#bmCode').value = bmUrl;
+        var n0 = $('#bmLoadNote'); if (n0) n0.style.display = 'none';
+        return true;
+      }
+      bmLink.setAttribute('href', bmCands[0]);
+      var note = $('#bmLoadNote');
+      if (note) {
+        note.style.display = '';
+        note.textContent = document.documentElement.lang === 'en'
+          ? 'Offline bookmarklet code could not load in this browser. Use the online bookmarklet at the bottom instead.'
+          : '离线书签代码在当前浏览器加载失败，请改用页面下方的在线版书签。';
+      }
+      return false;
+    });
+  })();
+  function ensureBm(fn) {
+    if (bmUrl) return fn();
+    var raw = bmLink.getAttribute('href') || '';
+    if (raw.length > 100 && raw.indexOf('javascript:') === 0) {
+      bmUrl = raw;
+      bmLink.setAttribute('href', bmUrl);
+      $('#bmCode').value = bmUrl;
+      return fn();
+    }
+    bmReady.then(function () { if (bmUrl) fn(); else toast('离线书签加载失败，请改用在线版或稍后重试'); });
+  }
+  function withBm(fn) { ensureBm(fn); }
+  bmLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    toast('请<b>拖拽</b>此按钮到书签栏安装；或点「⧉ 复制书签代码」手动添加');
+  });
+  bmLink.addEventListener('dragstart', function (e) {
+    if (!bmUrl) {
+      var raw = bmLink.getAttribute('href') || '';
+      if (raw.length > 100 && raw.indexOf('javascript:') === 0) { bmUrl = raw; bmLink.setAttribute('href', bmUrl); $('#bmCode').value = bmUrl; }
+      else { e.preventDefault(); withBm(function () { toast('书签代码加载完成，请再拖一次'); }); return; }
+    }
+    try { e.dataTransfer.setData('text/uri-list', bmUrl); e.dataTransfer.setData('text/plain', bmUrl); } catch (err) {}
+  });
+  $('#copyBm').addEventListener('click', function () {
+    withBm(function () { copyText(bmUrl, '✓ 书签代码已复制 · 新建书签后把网址整段替换即可'); });
+  });
+  $('#manualToggle').addEventListener('click', function () {
+    var acc = $('#manualAcc');
+    var show = acc.style.display === 'none';
+    acc.style.display = show ? '' : 'none';
+    if (show) { acc.querySelector('.acc-item').classList.add('open'); syncAcc(acc); }
+  });
+
+  /* online variant visibility */
+  var bmOnline = $('#bmOnline');
+  var onlineUrl = bmOnline.getAttribute('href') || '';
+  if (onlineUrl.indexOf('javascript:') === 0) {
+    $('#onlineAcc').style.display = '';
+    $('#bmOnlineCode').value = onlineUrl;
+    $('#bmLen').textContent = onlineUrl.length;
+    $('#copyBmOnline').addEventListener('click', function () {
+      copyText(onlineUrl, '✓ 在线版代码已复制（' + onlineUrl.length + ' 字符）· 粘贴到收藏的「网址」即可');
+    });
+    bmOnline.addEventListener('click', function (e) {
+      e.preventDefault();
+      toast('请<b>拖拽</b>到书签栏，或复制其网址手动添加');
+    });
+  } else {
+    $('#copyBmOnline').style.display = 'none';
+    $('#bmOnlineCode').style.display = 'none';
+    $('#bmLen').textContent = '—';
+    $('#onlineNA').style.display = '';
+  }
+
+  /* userscript link: file:// 下 download 属性可能无效，提示即可 */
+  $('#usLink').addEventListener('click', function () {
+    setTimeout(function () { toast('若未弹出安装确认：打开脚本管理器 →「添加新脚本」→ 粘贴文件内容'); }, 800);
+  });
+
+  /* accordions */
+  function syncAcc(root) {
+    root.querySelectorAll('.acc-item').forEach(function (it) {
+      var a = it.querySelector('.acc-a');
+      a.style.maxHeight = it.classList.contains('open') ? a.scrollHeight + 'px' : '0px';
+    });
+  }
+  document.querySelectorAll('.acc').forEach(function (acc) {
+    acc.querySelectorAll('.acc-q').forEach(function (q) {
+      q.addEventListener('click', function () {
+        var it = q.parentElement;
+        it.classList.toggle('open');
+        syncAcc(acc);
+      });
+    });
+    syncAcc(acc);
+  });
+  window.addEventListener('resize', function () {
+    document.querySelectorAll('.acc').forEach(syncAcc);
+  });
+
+
+  /* nav active state */
+  var secs = ['install', 'how', 'faq'].map(function (id) { return document.getElementById(id); });
+  var links = {};
+  document.querySelectorAll('.nav-links a').forEach(function (a) { links[a.getAttribute('data-sec')] = a; });
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          Object.keys(links).forEach(function (k) { links[k].classList.remove('active'); });
+          var a = links[en.target.id];
+          if (a) a.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    secs.forEach(function (s) { if (s) io.observe(s); });
+  }
+
+  /* touch devices: hint drag unavailable */
+  if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+    document.querySelector('.drag-hint').innerHTML = '📱 触屏设备请点「复制书签代码」→ 手动安装（见下方步骤）';
+  }
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var DICT = {"JetPhotos Stats · 摄影师统计仪表盘": "JetPhotos Stats · Photographer statistics dashboard", "安装": "Install", "原理与隐私": "How it works & privacy", "常见问题": "FAQ", "任何 JetPhotos": "Any JetPhotos", "摄影师，": "photographer,", "一键生成": "one-click", "专属统计台": "stats dashboard", "输入任意摄影师的": "Enter any photographer's ", "ID 或主页链接": "ID or profile link", "，在你自己的浏览器里拉取 TA 的全部照片，生成按": " — fetch all their photos in your browser and build a dashboard by", "机场 / 航空公司 / 机型": "airports / airlines / aircraft types", "分类的统计仪表盘：浏览量排行、获奖统计、拍摄时间线、相机装备……全部可搜索、可筛选、可跳转原图。": " categories: view rankings, awards, shot timeline, camera gear… all searchable, filterable and linked to originals.", "免登录": "No login", "零扩展依赖（书签即可）": "No extension (bookmarklet)", "数据只存本地": "Data stays local", "增量更新 · 断点续抓": "Incremental / resumable", "ID 就在摄影师主页地址里：": "The ID is in the profile URL:", "后面那串数字 · 打开任意摄影师主页后，": "the trailing number. On any photographer page, ", "点一下书签按钮": "click the bookmarklet", "（或右下角悬浮按钮）即可开始统计。": " (or the floating button) to start.", "🔖 安装一次": "🔖 Install once", "把下面的按钮": "Drag the button below ", "拖进书签栏": "into your bookmarks bar", "，10 秒完成。不需要注册、不需要扩展（也提供油猴版）。": " — done in 10 seconds. No signup, no extension (userscript also available).", "✈️ 打开 JetPhotos": "✈️ Open JetPhotos", "访问": "Visit", "任意页面（无需登录），": " any page (no login),", "，右下角出现悬浮入口。": " and a floating button appears bottom-right.", "📊 输入 ID 开抓": "📊 Enter an ID", "输入摄影师 ID 或主页链接 → 约 2 秒出基础统计；深度抓取后解锁机场、时间线与缩略图。": "Enter a photographer ID or profile link → base stats in ~2s; deep fetch unlocks airports, timeline and thumbnails.", "输入摄影师 ID 或主页链接": "Enter a photographer ID or profile link", "→ 约 2 秒出基础统计；深度抓取后解锁机场、时间线与缩略图。": "→ base stats in ~2s; deep fetch unlocks airports, timeline and thumbnails.", "两种方式任选其一 · 均免费开源": "Two options · free & open source", "推荐 · 零依赖": "Recommended · zero dependency", "🔖 书签按钮": "🔖 Bookmarklet", "一个特殊的书签，点一下就在当前页面启动统计台。桌面浏览器拖拽即装。": "A special bookmark that launches the dashboard on the current page. Drag to install on desktop.", "JP 统计台": "JP Stats", "按住我，拖到浏览器的书签栏上": "Hold and drag me to your bookmarks bar", "显示书签栏：Safari / Chrome 按": "Show the bookmarks bar: press", "（Windows 为": "(Windows:", "把上方「📊 JP 统计台」按钮拖到书签栏": "Drag the 「📊 JP Stats」 button above to the bookmarks bar", "打开 jetphotos.com 任意页面，": "Open any page on jetphotos.com,", "点这个书签": "click this bookmark", "即可": "to start", "⧉ 复制书签代码": "⧉ Copy bookmarklet code", "拖不动？手动安装 / 手机端": "Can't drag? Manual install / mobile", "手动安装步骤": "Manual install steps", "桌面（Safari / Chrome / Edge / Firefox）：": "Desktop (Safari / Chrome / Edge / Firefox):", "点上方「⧉ 复制书签代码」": "Click 「⧉ Copy bookmarklet code」 above", "随便收藏一个页面（": "Bookmark any page (", "），命名为「JP 统计台」": ") and name it 「JP Stats」", "在书签管理器里编辑它，把": "Edit it in the bookmark manager and replace the", "网址整段替换": "whole URL", "为刚复制的代码，保存": "with the copied code, then save", "复制": "Copy", "在线版代码": "online code", "（手机推荐）→ 在 jetphotos.com 点分享 →「添加书签」→ 打开书签列表编辑该书签，把地址替换为复制的代码 → 回到 jetphotos.com 点该书签。": "(recommended on mobile) → on jetphotos.com tap Share → Add Bookmark → edit it → replace the URL with the code → tap the bookmark on jetphotos.com.", "复制在线版代码 → 收藏当前页 → 在收藏夹里长按该条 →「编辑」→ 把网址整段替换为代码。注意": "Copy the online code → bookmark this page → long-press it in bookmarks → Edit → replace the whole URL with the code. Note:", "手机版 Edge 不支持 javascript: 书签": "Mobile Edge does not support javascript: bookmarks", "，详见下方「手机安装教程」。": " — see “Mobile install” below.", "🌐 在线版书签（更小，需联网加载引擎）": "🌐 Online bookmarklet (smaller, loads engine online)", "离线版把整个引擎打包进书签（约 1 MB，含全球机场与地形数据），个别浏览器可能嫌长。在线版书签只有几百字节，点击时从服务器加载引擎，功能完全相同：": "The offline version packs the whole engine into the bookmark (~1 MB incl. global airport & terrain data) and may be too long for some browsers. The online bookmarklet is only a few hundred bytes and loads the engine from the server on click — same features:", "JP 统计台 · 在线版": "JP Stats · Online", "引擎地址：": "Engine URL:", "进阶 · 自动注入": "Advanced · auto-inject", "🐒 油猴脚本": "🐒 Userscript", "装一次后，打开 jetphotos.com 自动出现悬浮按钮，无需点书签。适合重度用户与 iOS。": "Install once; a floating button appears automatically on jetphotos.com. Great for power users and iOS.", "⬇ 下载 jp-stats.user.js": "⬇ Download jp-stats.user.js", "安装脚本管理器：桌面": "Install a userscript manager: desktop", "；iOS 用": "; on iOS use", "（App Store 免费）": "(free on the App Store)", "点上方下载，管理器会弹出安装确认 → 安装": "Click the download above and confirm in the manager → Install", "打开 jetphotos.com，右下角自动出现「📊 JP 统计」按钮": "Open jetphotos.com; the 「📊 JP Stats」 button appears bottom-right", "脚本与书签使用": "The script and bookmarklet share", "同一个引擎": "the same engine", "，数据缓存互通（同浏览器同 ID）。管理器里可随时禁用或更新。": "with shared cache (same browser & ID). Disable or update it anytime.", "手机 · 兼容说明": "Mobile · compatibility", "📱 手机安装教程（Android / iPhone）": "📱 Mobile install (Android / iPhone)", "手机版 Edge 不能运行 javascript: 书签": "Mobile Edge cannot run javascript: bookmarks", "——收藏后点击会提示「无法运行脚本，因为不允许以这种方式使用 JavaScript」。这是 Edge 的安全策略，任何书签代码都无法在手机 Edge 里执行，不是代码问题。手机版": "— it shows “Cannot run script because JavaScript is not allowed this way”. This is Edge's security policy; no bookmarklet code can run there. Mobile", "QQ 浏览器": "QQ Browser", "同样不可用：自带书签不能编辑网址，也不开放油猴扩展。请换用支持书签的浏览器（见下方对照表）或改用油猴脚本。手机上请复制": "is also unusable: its bookmarks can't edit URLs and it has no userscript support. Use a bookmarklet-capable browser (see the table below) or the userscript. On mobile, copy the", "（约": "(approx.", "字符；离线版约 100 万字符，手机输入框容易被截断或卡顿）。": "chars; the offline version is ~1M chars and may be truncated or lag in mobile inputs.)", "❌ Edge 手机版": "❌ Mobile Edge", "❌ QQ 浏览器": "❌ QQ Browser", "✅ 油猴脚本": "✅ Userscript", "⧉ 复制在线版代码（手机推荐）": "⧉ Copy online code (recommended on mobile)", "在线版代码只在托管站点上生成。你当前打开的是本地文件，请改用上面的离线版代码，或访问线上站点安装。": "The online code is only generated on the hosted site. You are viewing a local file; use the offline code above or visit the hosted site.", "Android：Chrome 书签安装步骤": "Android: Chrome bookmark install", "点上方「⧉ 复制在线版代码」": "Tap 「⧉ Copy online code」 above", "用": "Open", "打开": "Open", "任意页面（无需登录）": "any page (no login)", "点右上角": "Tap the top-right", "→「☆ 收藏」→ 保存当前页，名称填「JP 统计」": "→ ☆ Bookmark → save with the name “JP Stats”", "点": "Tap", "→「书签」→": "→ Bookmarks →", "长按": "long-press", "「JP 统计」→「修改」": "“JP Stats” → Edit", "清空「网址 / URL」输入框，": "Clear the URL field,", "粘贴": "paste", "代码，确认开头是": "the code, verify it starts with", "→ 保存": "→ save", "回到 jetphotos.com，点地址栏输入「JP」→ 在建议里点这条书签 → 右下角出现「📊 JP 统计」；点它输入摄影师 ID 即可开抓": "Back on jetphotos.com, type “JP” in the address bar → tap the bookmark suggestion → the 「📊 JP Stats」 button appears bottom-right; tap it and enter a photographer ID.", "⚠️ 手机版 Edge 无法完成这套步骤（会提示不允许使用 JavaScript），请改用 Chrome 或 Firefox。Firefox for Android 操作基本相同：⋮ → 收藏 → 书签 → 长按 → 编辑 → 替换网址。": "⚠️ Mobile Edge cannot complete this (JavaScript is disallowed); use Chrome or Firefox. Firefox for Android is similar: ⋮ → Bookmark → Bookmarks → long-press → Edit → replace URL.", "Android 推荐：Firefox / Kiwi + Tampermonkey（不用书签）": "Android recommendation: Firefox / Kiwi + Tampermonkey (no bookmarklet)", "如果你习惯用 Edge，最省事的替代方案是装一个支持油猴脚本的浏览器，装一次后打开 jetphotos.com 自动出现按钮：": "If you prefer Edge, the easiest alternative is a userscript-capable browser; after installing once, the button appears automatically on jetphotos.com:", "（Google Play）或 Kiwi / 狐猴浏览器（支持 Chrome 扩展）；国产可选": "(Google Play) or Kiwi / Lemur Browser (Chrome extensions); or", "X 浏览器": "X Browser", "（原生支持用户脚本）": "(native userscript support)", "浏览器扩展商店里安装": "Install from the browser's extension store", "用该浏览器打开本站，点「下载 jp-stats.user.js」→ Tampermonkey 弹出安装确认 → 安装": "Open this site in that browser, tap “Download jp-stats.user.js” → confirm in Tampermonkey → Install", "打开 jetphotos.com，右下角自动出现「📊 JP 统计」": "Open jetphotos.com; 「📊 JP Stats」 appears bottom-right", "iPhone / iPad：Safari 书签或 Userscripts": "iPhone / iPad: Safari bookmark or Userscripts", "iOS 版 Edge（以及 Chrome、Firefox 的 iOS 版）都基于系统 WebKit，": "iOS Edge (and iOS Chrome/Firefox) all use WebKit,", "不能编辑收藏网址，也无法运行 javascript: 书签": "cannot edit bookmark URLs and cannot run javascript: bookmarks", "。iPhone / iPad 上请任选其一：": "— choose one:", "Safari 书签：": "Safari bookmark:", "复制在线版代码 → 在 jetphotos.com 点「分享」→「添加书签」→ 打开书签列表编辑它 → 网址整段替换为代码 → 回到 jetphotos.com": "Copy the online code → on jetphotos.com tap Share → Add Bookmark → edit it → replace the URL with the code → return to jetphotos.com", "点该书签": "tap the bookmark", "更省事：": "Easier:", "App Store 安装 Userscripts（免费）→ 导入": "Install Userscripts (free) from the App Store → import", "→ 打开 jetphotos.com 自动出现按钮，无需每次点书签": "→ open jetphotos.com and the button appears automatically.", "深度抓取时保持标签页在前台、屏幕常亮；iOS 后台会冻结网络与计时器。进度可随时暂停并自动保存，缓存只存在这台设备。": "During deep fetch keep this tab in front and the screen on; iOS freezes network and timers in the background. Progress can be paused and saves automatically; cache stays on this device.", "⚙️ 两级抓取，先快后全": "⚙️ Two-stage fetch: fast first, complete later", "基础统计 · 约 2 秒": "Base stats · ~2 s", "一次请求拿到官方 photostats 全表：每张照片的航司、机型、注册号、浏览量、评论与 EP/PW/SC/PC 获奖标记。立刻可看排行与分类。": "One request gets the official photostats table: airline, type, registration, views, comments and EP/PW/SC/PC awards for every photo. Rankings and categories are available immediately.", "深度抓取 · 后台渐进": "Deep fetch · progressive in background", "逐张访问照片详情页（默认快速模式约 4–5 张/秒，可切回标准约 2 张/秒；遇到限流会自动降速），解锁机场、国家、拍摄/上传日期、相机镜头、备注与缩略图。可随时暂停/继续，失败自动重试并标明原因。": "Visits each photo page (fast mode ~4–5/s, standard ~2/s; auto-throttles when rate-limited) to unlock airports, countries, shot/upload dates, camera/lens, remarks and thumbnails. Pause/resume anytime; failures retry automatically with reasons.", "本地缓存 · 增量更新": "Local cache · incremental", "结果存在浏览器 localStorage。下次打开同一 ID 秒出缓存，只抓新增照片；也可一键全量重抓刷新浏览量。": "Results live in browser localStorage. Reopening the same ID loads instantly; only new photos are fetched. A full re-fetch refreshes view counts.", "🔒 你的数据不出浏览器": "🔒 Your data never leaves the browser", "没有服务器。": "No server.", "本页只是安装说明书；抓取与统计全部发生在你的浏览器里，直连 jetphotos.com，不经过任何第三方。": "This page is just an install guide; fetching and stats happen in your browser, directly against jetphotos.com, with no third parties.", "无需登录。": "No login.", "公开统计接口对所有人开放，不读取你的账号、Cookie 或任何隐私信息。": "The public stats endpoints are open to everyone; no account, cookie or private data is read.", "缓存只存本地。": "Cache stays local.", "localStorage 按摄影师 ID 隔离，清除浏览器数据即可完全删除。": "localStorage is scoped by photographer ID; clear browser data to remove it.", "礼貌抓取。": "Polite fetching.", "内置限速、退避与重试，避免给 JetPhotos 造成压力；请仅用于个人统计欣赏。": "Built-in throttling, backoff and retries avoid stressing JetPhotos; use it for personal viewing only.", "代码透明。": "Transparent code.", "引擎是单个可读的 JS 文件，无混淆、无埋点、无网络上报。": "The engine is one readable JS file — no obfuscation, tracking or telemetry.", "需要登录 JetPhotos 吗？": "Do I need a JetPhotos account?", "不需要。摄影师统计页与照片详情页对未登录访客完全开放，本工具全程匿名访问。你登录与否都不影响结果。": "No. Photographer stats and photo detail pages are open to guests; this tool is fully anonymous. Logged in or not, results are the same.", "抓取要多久？会不会被封？": "How long does it take? Will I get blocked?", "基础统计约 2 秒。深度抓取默认": "Base stats take ~2 s. Deep fetch defaults to", "快速模式": "fast mode", "（约 4–5 张/秒，800 张约 3–4 分钟），进度条上可切回": "(~4–5/s; ~3–4 min for 800 photos); switch back on the progress bar to", "标准模式": "standard mode", "（约 2 张/秒）；": "(~2/s).", "后台渐进渲染": "Progressive background rendering", "——抓一张亮一张，随时可暂停，进度自动保存。内置 429/503 退避与自动降速重试；请不要同时开多个窗口抓同一个 ID。": "— items light up as fetched; pause anytime, progress saves automatically. Built-in 429/503 backoff and retries; don't fetch the same ID in multiple windows.", "为什么会有个别照片「抓取失败」？": "Why do some photos fail?", "常见四类原因：①": "Four common reasons: ①", "限流 / Cloudflare 拦截": "rate limiting / Cloudflare", "（429/503）——请求过快或触发风控，引擎会自动退避 20 秒、降低并发并重试最多 4 次；②": "(429/503) — too fast or flagged; the engine backs off 20 s, lowers concurrency and retries up to 4 times; ②", "照片已删除": "photo deleted", "（404）——摄影师删除或下架，重试也无法恢复；③": "(404) — removed by the photographer; retries won't help; ③", "页面无照片信息": "page has no photo data", "——页面返回成功但内容为空（仅会员可见或已撤下）；④": "— the page loads but is empty (members-only or removed); ④", "请求超时": "request timeout", "——网络波动。点进度条上的「⚠ 失败详情」可查看每张照片的失败原因与原图链接：可恢复的失败一键重试，永久失败可放心忽略，不影响其余照片的统计。": "— network hiccup. Click 「⚠ Failure details」 on the progress bar to see each failure and its original link: retry recoverable ones; permanent failures can be ignored without affecting other stats.", "为什么机场 / 时间线显示「深度抓取后解锁」？": "Why do airports / timeline show “unlocked after deep fetch”?", "官方统计总表只有航司/机型/注册号/浏览量/获奖，不含机场与日期。这些字段来自每张照片的详情页，需要点「开始深度抓取」后逐张补齐。抓过的照片会永久缓存，之后秒开。": "The official table only has airline/type/registration/views/awards, not airports or dates. Those come from each photo's detail page and require 「Start deep fetch」. Fetched photos are cached permanently.", "手机上怎么用？": "How do I use it on mobile?", "手机版 Edge 禁止运行 javascript: 书签（提示「不允许以这种方式使用 JavaScript」），": "Mobile Edge blocks javascript: bookmarks (“JavaScript is not allowed this way”).", "手机版 QQ 浏览器也不行": "Mobile QQ Browser also fails", "（书签不能编辑网址、无油猴扩展）；请改用": "(can't edit bookmark URLs, no userscripts); use", "或": "or", "：复制「在线版代码」→ 收藏当前页 → 收藏夹里长按 → 编辑 → 网址替换为代码 → 地址栏输入书签名并从建议中选择。更省事的是 Firefox/Kiwi + Tampermonkey 油猴版。": ": copy the online code → bookmark this page → long-press it → Edit → replace the URL → type the bookmark name in the address bar and pick it. Easier: Firefox/Kiwi + Tampermonkey.", "iPhone 的 Edge / Chrome 同样无法运行 javascript: 书签，推荐 Userscripts（App Store 免费）+ 油猴脚本，Safari 打开 jetphotos.com 自动出现按钮；或把代码存进 Safari 书签。抓取时请保持屏幕常亮、页面在前台（iOS 后台会冻结网络）。": "iOS Edge/Chrome also cannot run javascript: bookmarks. Use Userscripts (free) + the userscript; in Safari the button appears automatically on jetphotos.com, or save the code as a Safari bookmark. Keep the screen on and page in front while fetching (iOS freezes background network).", "点了书签没反应？": "Bookmarklet does nothing?", "① 确认当前在": "① Make sure you are on", "页面上（书签只在 JetPhotos 域内工作）；② 检查书签网址是否以": "(bookmarklets only work on JetPhotos domains); ② check that the bookmark URL starts with", "开头、是否被浏览器截断（改用在线版或油猴版）；③ Safari 首次可能拦截，地址栏右侧允许弹出；④ 页面若停在 Cloudflare 验证页，先手动过一次验证再点书签。": "and wasn't truncated (use the online or userscript version); ③ Safari may block it first — allow pop-ups in the address bar; ④ if a Cloudflare challenge is shown, complete it manually then click the bookmark.", "数据存在哪里？会上传吗？": "Where is data stored? Is it uploaded?", "只存在你浏览器的 localStorage（键名": "Only in your browser's localStorage (key", "），不上传、不同步、无统计埋点。换浏览器或清除站点数据后需重新抓取。引擎本身是纯前端单文件，可自行审计。": " ) — no uploads, sync or analytics. Switching browsers or clearing site data requires re-fetching. The engine is a single front-end file you can audit.", "和 JetPhotos 官方统计页有什么区别？": "How is it different from JetPhotos' official stats?", "官方 photostats 是一张朴素表格。本工具在其上叠加：机场/国家地图式分类、拍摄与上传时间线、相机装备统计、获奖筛选、全文搜索、缩略图画廊、大图灯箱与原图跳转，图表中的「其他」还能一键展开完整航司 / 机型 / 制造商列表——且支持任意摄影师，不限本人。": "The official photostats is a plain table. This tool adds map-style airport/country categories, shot & upload timelines, camera gear stats, award filters, full-text search, thumbnail gallery, lightbox and original links; “Other” expands full airline/type/maker lists — for any photographer, not just yourself.", "这是官方工具吗？": "Is this an official tool?", "不是。这是爱好者制作的社区工具，与 JetPhotos 官方无关联。请遵守 JetPhotos 服务条款，仅将数据用于个人统计与欣赏，不要批量转售或高频爬取。": "No. It's a community tool by enthusiasts, not affiliated with JetPhotos. Follow JetPhotos' terms; use the data for personal viewing only — no bulk resale or aggressive scraping.", "✈ JP 统计台": "✈ JP Stats", "非官方社区工具 · 与 JetPhotos 无关联": "Unofficial community tool · not affiliated with JetPhotos"};
+  var LANG_KEY = 'jpstats.lang';
+  var LANG = 'zh';
+  try { if (localStorage.getItem(LANG_KEY) === 'en') LANG = 'en'; } catch (e) {}
+  function tr(s) {
+    var t = String(s).trim();
+    if (!t || DICT[t] === undefined) return s;
+    return s.replace(t, DICT[t]);
+  }
+  function swapPairs() {
+    [].forEach.call(document.querySelectorAll('.sec-head'), function (h) {
+      var big = h.querySelector('h2'), small = h.querySelector('.en');
+      if (!big || !small) return;
+      if (!big.__zh) big.__zh = big.textContent;
+      if (!small.__zh) small.__zh = small.textContent;
+      big.setAttribute('data-i18n-skip', '1');
+      small.setAttribute('data-i18n-skip', '1');
+      big.textContent = LANG === 'en' ? small.__zh : big.__zh;
+      small.textContent = LANG === 'en' ? big.__zh : small.__zh;
+    });
+  }
+  function walk(root) {
+    if (!root) return;
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = w.nextNode())) {
+      var p = n.parentElement;
+      if (!p || /^(SCRIPT|STYLE|TEXTAREA)$/.test(p.tagName) || p.closest('[data-i18n-skip]')) continue;
+      if (n.__zh === undefined) n.__zh = n.nodeValue;
+      n.nodeValue = LANG === 'en' ? tr(n.__zh) : n.__zh;
+    }
+    [].forEach.call(root.querySelectorAll('[title],[aria-label],[placeholder],[alt]'), function (el) {
+      ['title', 'aria-label', 'placeholder', 'alt'].forEach(function (a) {
+        var v = el.getAttribute(a);
+        if (v === null) return;
+        if (!el.__zhA) el.__zhA = {};
+        if (!(a in el.__zhA)) el.__zhA[a] = v;
+        el.setAttribute(a, LANG === 'en' ? tr(el.__zhA[a]) : el.__zhA[a]);
+      });
+    });
+  }
+  function apply() {
+    document.documentElement.lang = LANG === 'en' ? 'en' : 'zh-CN';
+    document.documentElement.classList.toggle('lang-en', LANG === 'en');
+    swapPairs();
+    walk(document.body);
+    var ti = document.querySelector('title');
+    if (ti) {
+      if (!ti.__zh) ti.__zh = ti.textContent;
+      ti.textContent = LANG === 'en' ? tr(ti.__zh) : ti.__zh;
+    }
+    var b = document.getElementById('langBtn');
+    if (b) {
+      b.textContent = LANG === 'en' ? '中' : 'EN';
+      b.setAttribute('aria-label', LANG === 'en' ? 'Switch to Chinese' : 'Switch to English');
+      b.setAttribute('title', LANG === 'en' ? 'Switch to Chinese' : 'Switch to English');
+    }
+  }
+  var btn = document.getElementById('langBtn');
+  if (btn) btn.addEventListener('click', function () {
+    LANG = LANG === 'en' ? 'zh' : 'en';
+    try { localStorage.setItem(LANG_KEY, LANG); } catch (e) {}
+    apply();
+  });
+  apply();
+})();
+</script>
+</body>
+</html>
