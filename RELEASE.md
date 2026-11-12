@@ -48,7 +48,7 @@ python3 tools/build-dist.py https://vicleeu.github.io/jetphotos-stats/dist/jp-st
 # copy site/ to a temporary git repository and push to gh-pages
 ```
 
-Do not commit `site/` to `main`. Verify the install page and `dist/jp-stats.user.js` return HTTP 200 and the new version.
+Do not commit `site/` to `main`. Verify the install page and `assets/jp-stats.user.js` return HTTP 200 and the new version.
 
 ## 5. Greasy Fork
 

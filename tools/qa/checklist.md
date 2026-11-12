@@ -7,6 +7,7 @@ Run before each release. Use a local server and synthetic data where possible.
 - [ ] `python3 tools/build-dist.py` completes without errors.
 - [ ] `node tools/qa/check-inline.js engine/dashboard.html engine/landing.html` passes.
 - [ ] `dist/jp-stats.user.js` and `dist/jp-stats.greasyfork.user.js` have the expected version.
+- [ ] Install page userscript card shows both the Greasy Fork install button and the file download, with matching version.
 - [ ] No personal data, logs, caches or `dist/` files are staged.
 
 ## Desktop
@@ -41,6 +42,6 @@ Run before each release. Use a local server and synthetic data where possible.
 
 ## Publish checks
 
-- [ ] GitHub Pages install page and `dist/jp-stats.user.js` return 200.
+- [ ] GitHub Pages install page and `assets/jp-stats.user.js` return 200.
 - [ ] Greasy Fork listing shows the new version and install asset `@version` matches.
 - [ ] `CHANGELOG.md` updated.

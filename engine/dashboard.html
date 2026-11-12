@@ -764,7 +764,8 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
   </div>
     <button class="icon-btn lang-btn" id="langBtn" title="Switch to English" aria-label="Switch to English">EN</button>
     <button class="icon-btn" id="switchBtn" title="换个摄影师 ID" aria-label="换个摄影师 ID">⇄</button>
-    <button class="icon-btn" id="jpClose" title="退出并清理缓存" aria-label="退出并清理缓存">✕</button>
+    <button class="icon-btn" id="cacheBtn" title="清理缓存" aria-label="清理缓存"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M6.5 7l.8 12.1A2 2 0 0 0 9.3 21h5.4a2 2 0 0 0 2-1.9L17.5 7"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
+    <button class="icon-btn" id="jpClose" title="退出统计台" aria-label="退出统计台">✕</button>
   </div>
 </header>
 
@@ -1064,15 +1065,23 @@ function clearLocalCaches() {
   } catch (e) {}
   return n;
 }
+$('cacheBtn').addEventListener('click', function () {
+  if (deep.status === 'running') {
+    pauseDeep();
+    toast(tt('已暂停深度抓取 · 再点一次清理缓存', 'Paused — click again to clear the cache'));
+    return;
+  }
+  var msg = tt('清理本地缓存？\n将删除所有摄影师的照片详情缓存，下次打开需要重新抓取。\n主题和语言设置会保留。', 'Clear local cache?\nThis deletes cached photo details for all photographers; reopening requires re-fetching.\nTheme and language settings are kept.');
+  if (!confirm(msg)) return;
+  var n = clearLocalCaches();
+  toast(n ? tt('已清理 ' + n + ' 个摄影师的本地缓存', 'Cleared local cache for ' + n + ' photographer(s)') : tt('没有可清理的本地缓存', 'No local cache to clear'));
+});
 $('jpClose').addEventListener('click', function () {
   if (deep.status === 'running') {
     pauseDeep();
-    toast(tt('已暂停深度抓取 · 再点一次退出并清理缓存', 'Paused — click again to exit and clear the cache'));
+    toast(tt('已暂停深度抓取 · 再点一次退出统计台', 'Paused — click again to exit the dashboard'));
     return;
   }
-  var msg = tt('退出统计台并清理本地缓存？\n将删除所有摄影师的照片详情缓存，下次打开需要重新抓取。', 'Exit and clear local cache?\nThis deletes cached photo details for all photographers; reopening requires re-fetching.');
-  if (!confirm(msg)) return;
-  clearLocalCaches();
   closeOverlay();
 });
 $('switchBtn').addEventListener('click', function () { guardedExit(switchPhotographer, '⇄'); });
@@ -3653,6 +3662,7 @@ var Globe = (function () {
   }
   function animateZoomTo(z, dur) {
     var t = Math.max(0.3, Math.min(8, z));
+    if (t > 1.02 && spin) setSpin(false);
     zoomAnim = { z0: zoom, z1: t, t0: performance.now(), dur: dur || 460 };
     idle = 0;
     wake();
@@ -3834,7 +3844,7 @@ var Globe = (function () {
     idle = 0;
     wake();
   }
-  function selectGroup(codes) {
+  function selectGroup(codes, focusCode) {
     var list = codes.map(markerByCode).filter(Boolean);
     if (!list.length) return;
     selGroup = list.map(function (m) { return m.code; });
@@ -3845,6 +3855,10 @@ var Globe = (function () {
       if (on) listEl.scrollTop = Math.max(0, on.offsetTop - listEl.offsetTop - listEl.clientHeight / 2);
     }
     if (ctx) draw(performance.now());
+    if (focusCode) {
+      var fm = markerByCode(focusCode);
+      if (fm) animateTo(-fm.lon * D2R, Math.max(-1.15, Math.min(1.15, fm.lat * D2R)));
+    }
   }
   function pick(clientX, clientY) {
     if (!canvas) return;
@@ -3862,8 +3876,8 @@ var Globe = (function () {
     for (var k = 1; k < cands.length; k++) {
       if (Math.hypot(cands[k].h.x - near.x, cands[k].h.y - near.y) <= 5) group.push(cands[k].h);
     }
-    if (group.length > 1) selectGroup(group.map(function (g) { return g.code; }));
-    else select(near.code, false, false, true);
+    if (group.length > 1) selectGroup(group.map(function (g) { return g.code; }), near.code);
+    else select(near.code, true, false, true);
   }
   var ALIAS = [[/dafangshen/i, 43.90667, 125.1975, 'Dafangshen']];
   function coordsFor(name) {
@@ -3919,8 +3933,7 @@ var Globe = (function () {
     function loop(ts) {
       loopRaf = 0;
       if (!visible || document.hidden) { loopRunning = false; return; }
-      var busy = dragging || anim || zoomAnim || Math.abs(vel) > 0.00004;
-      var gap = busy ? 1000 / 60 : 1000 / 30;
+      var gap = 1000 / 60;
       if (!lastStep) lastStep = ts;
       if (ts - lastStep < gap - 0.5) {
         loopRaf = requestAnimationFrame(loop);
@@ -4012,8 +4025,8 @@ var Globe = (function () {
       e.preventDefault();
       setZoom(zoom * Math.exp(-e.deltaY * 0.0014));
     }, { passive: false });
-    $('globeZin').addEventListener('click', function () { setZoom(zoom * 1.5); });
-    $('globeZout').addEventListener('click', function () { setZoom(zoom / 1.5); });
+    $('globeZin').addEventListener('click', function () { animateZoomTo(zoom * 1.5); });
+    $('globeZout').addEventListener('click', function () { animateZoomTo(zoom / 1.5); });
     $('globeZreset').addEventListener('click', function () { animateZoomTo(1); });
     if (listEl) listEl.addEventListener('click', function (e) {
       var row = e.target.closest('.gl-row');
@@ -4115,7 +4128,6 @@ var I18N_DICT = {
  "照片图库": "Gallery",
  "换个摄影师 ID": "Switch photographer ID",
  "关闭统计台": "Close dashboard",
- "退出并清理缓存": "Exit and clear cache",
  "关闭统计台 (Esc)": "Close dashboard (Esc)",
  "首次上传": "First upload",
  "通过率": "Accept ratio",
@@ -4291,7 +4303,9 @@ var I18N_DICT = {
  "每月上传数量时间线": "Monthly upload timeline",
  "可拖动旋转的世界机场地球仪": "Draggable world airports globe",
  "点赞量 Likes": "Likes",
- "点击某个月份筛选图库": "Click a month to filter the gallery"
+ "点击某个月份筛选图库": "Click a month to filter the gallery",
+ "退出统计台": "Exit dashboard",
+ "清理缓存": "Clear cache"
 };
 var I18N_RULES = [
     [/^其他 (\d+) 个机场$/, "Other $1 airports"],

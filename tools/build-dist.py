@@ -8,7 +8,7 @@ DIST = ROOT / 'dist'
 SITE = ROOT / 'site'
 DIST.mkdir(exist_ok=True)
 
-VERSION = '2.4.0'
+VERSION = '2.4.4'
 ENGINE_URL = sys.argv[1] if len(sys.argv) > 1 else ''
 
 
@@ -91,9 +91,11 @@ bm_offline = 'javascript:' + urllib.parse.quote(engine_js + '\nvoid 0;', safe=''
 (DIST / 'bookmarklet-offline.txt').write_text(bm_offline, encoding='utf-8')
 
 if ENGINE_URL:
+    # 引擎地址可能已带查询串（例如托管平台的 sharecode），此时用 & 追加版本号
+    sep = '&' if '?' in ENGINE_URL else '?'
     loader = (
         "javascript:(function(){if(window.__JP_STATS__){window.__JP_OPEN_PANEL&&window.__JP_OPEN_PANEL();return;}"
-        "var s=document.createElement('script');s.src='" + ENGINE_URL + "?v=" + VERSION + "';"
+        "var s=document.createElement('script');s.src='" + ENGINE_URL + sep + "v=" + VERSION + "';"
         "s.onerror=function(){alert('JP 统计引擎加载失败，请检查网络或使用离线版书签。')};"
         "document.body.appendChild(s);})();void 0;"
     )
@@ -114,11 +116,12 @@ if landing.exists():
     for stale in ('demo.html', 'data.js'):
         try: (SITE / stale).unlink()
         except FileNotFoundError: pass
-    (SITE / 'dist').mkdir(parents=True, exist_ok=True)
+    # 静态托管把资源放在 assets/：部分托管平台会把 dist/ 当成构建产物跳过
+    (SITE / 'assets').mkdir(parents=True, exist_ok=True)
     (SITE / 'index.html').write_text(html, encoding='utf-8')
     shutil.copytree(ROOT / 'fonts', SITE / 'fonts', dirs_exist_ok=True)
     for fn in ('jp-stats-engine.js', 'jp-stats.user.js', 'bookmarklet-offline.txt'):
-        shutil.copyfile(DIST / fn, SITE / 'dist' / fn)
+        shutil.copyfile(DIST / fn, SITE / 'assets' / fn)
 
 print('engine.js      %8d bytes' % len(engine_js.encode()))
 print('user.js        %8d bytes' % len((header + engine_js).encode()))

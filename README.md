@@ -25,7 +25,10 @@
 
 ### 书签 / 离线版
 
-安装页：[GitHub Pages](https://vicleeu.github.io/jetphotos-stats/)（部署后替换为实际地址）
+安装页（二选一，内容相同）：
+
+- [云端镜像](https://jetphotos-stats.app.workbuddy.host/?sharecode=HKO7DWA6IW) — 国内访问更稳定
+- [GitHub Pages](https://vicleeu.github.io/jetphotos-stats/)
 
 ## 使用
 

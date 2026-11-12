@@ -4,7 +4,7 @@
 
 Unofficial, client-side JetPhotos photographer statistics dashboard. The public repository contains the engine, install page, build scripts and fonts. Personal photographer data and caches belong outside this repository and must never be committed.
 
-- Current version: **2.4.0**
+- Current version: **2.4.4**
 - Repository: https://github.com/VicleeU/jetphotos-stats
 - Install page: https://vicleeu.github.io/jetphotos-stats/
 - Greasy Fork: https://greasyfork.org/zh-CN/scripts/605109
@@ -61,4 +61,6 @@ Use synthetic fixtures for testing. Do not add real photographer data to the rep
 - No server-side scraping. Runtime fetching happens in the visitor's browser and can be blocked by Cloudflare (403) or same-origin policy.
 - Keep the built-in rate limits, backoff and retries.
 - The official JetPhotos logo is used for identification only; the project is unofficial and unaffiliated. Keep the disclaimer.
-- Qoder Sites publishing is paused; GitHub Pages is the current install-page host.
+- Qoder Sites publishing is paused. The install page is hosted twice from the same `site/` output: GitHub Pages (primary) and a WorkBuddy cloud mirror at `jetphotos-stats.app.workbuddy.host` for better reachability from mainland China. The mirror requires its `?sharecode=` query parameter on every request, so the online bookmarklet built against it embeds that sharecode; if the sharecode ever changes, rebuild and redeploy.
+- Hosted assets live under `site/assets/`, not `site/dist/`: some hosts treat `dist/` as build output and skip it. `tools/build-dist.py` copies to `assets/` for this reason.
+- No server-side scraping is technically possible on the mirror: it only serves static files. jetphotos.com returns `X-Frame-Options: SAMEORIGIN` and no CORS headers, and blocks non-browser clients with 403, so the engine can only ever run inside a jetphotos.com page.
