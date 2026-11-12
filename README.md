@@ -54,6 +54,15 @@ python3 tools/build-dist.py
 python3 tools/build-dist.py https://vicleeu.github.io/jetphotos-stats/dist/jp-stats-engine.js
 ```
 
+### 发布 GitHub Pages
+
+`main` 分支只放源码；安装页发布在 `gh-pages` 分支：
+
+```bash
+python3 tools/build-dist.py https://<owner>.github.io/jetphotos-stats/dist/jp-stats-engine.js
+# 将生成的 site/ 内容提交并推送到 gh-pages 分支
+```
+
 构建产物：
 
 - `dist/jp-stats.user.js`：标准油猴脚本
