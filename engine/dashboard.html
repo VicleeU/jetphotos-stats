@@ -2628,11 +2628,12 @@ $('tpTabs').addEventListener('click', function (e) {
   renderTopPhotos();
 });
 
+function deepComplete() { return G.photos > 0 && detailCount >= G.photos; }
 var LOCK_CARDS = [
   { el: 'cardAirport', need: function () { return airportRank.length > 0; }, txt: '机场分布需要逐张读取照片详情' },
   { el: 'cardTimeline', need: function () { return PHOTOS.some(function (p) { return p.uploaded; }); }, txt: '上传 / 拍摄时间线来自照片详情' },
   { el: 'cardCountry', need: function () { return countryRank.length > 0; }, txt: '国家 / 地区分布来自照片详情' },
-  { el: 'cardCamera', need: function () { return cameraRank.length > 0; }, txt: '器材统计来自照片详情（相机 / 镜头）' }
+  { el: 'cardCamera', need: function () { return cameraRank.length > 0 || lensRank.length > 0 || deepComplete(); }, txt: '器材统计来自照片详情（相机 / 镜头）' }
 ];
 function renderLocks() {
   var running = deep.status === 'running';
@@ -2773,7 +2774,12 @@ function renderFamilyCard() {
   renderStack($('typeStack'), tRank, typeFam ? 'fam' : 'family', G.photos);
 }
 function renderCameraCard() {
-  renderBars($('cameraBars'), (camMode === 'lens' ? lensRank : cameraRank).slice(0, 6), Math.max(1, detailCount), '#bca5ff', camMode === 'lens' ? 'lens' : 'camera', function (d) { return '<b style="font-size:11px">' + esc(d.name) + '</b>'; });
+  var list = camMode === 'lens' ? lensRank : cameraRank;
+  if (!list.length && deepComplete()) {
+    $('cameraBars').innerHTML = '<div class="tp-empty">' + tt('无设备信息', 'No gear information') + '</div>';
+  } else {
+    renderBars($('cameraBars'), list.slice(0, 6), Math.max(1, detailCount), '#bca5ff', camMode === 'lens' ? 'lens' : 'camera', function (d) { return '<b style="font-size:11px">' + esc(d.name) + '</b>'; });
+  }
   syncCamTabs();
 }
 
@@ -4145,6 +4151,7 @@ var I18N_DICT = {
  "子型号": "Type",
  "相机": "Camera",
  "镜头": "Lens",
+ "无设备信息": "No gear information",
  "按上传月": "By upload",
  "按拍摄月": "By shot",
  "最高浏览": "Most viewed",
