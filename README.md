@@ -25,7 +25,7 @@
 
 ### 书签 / 离线版
 
-安装页：[GitHub Pages](https://VicleeU.github.io/jetphotos-stats/)（部署后替换为实际地址）
+安装页：[GitHub Pages](https://vicleeu.github.io/jetphotos-stats/)（部署后替换为实际地址）
 
 ## 使用
 
@@ -51,7 +51,7 @@ python3 tools/build-dist.py
 # 生成 dist/、site/、start.html
 
 # 指定线上引擎地址（用于在线书签）
-python3 tools/build-dist.py https://VicleeU.github.io/jetphotos-stats/dist/jp-stats-engine.js
+python3 tools/build-dist.py https://vicleeu.github.io/jetphotos-stats/dist/jp-stats-engine.js
 ```
 
 构建产物：
@@ -68,7 +68,6 @@ python3 tools/build-dist.py https://VicleeU.github.io/jetphotos-stats/dist/jp-st
 engine/      引擎与安装页（dashboard.html / landing.html / bootstrap.js / geo-data.js）
 tools/       构建脚本
 fonts/       字体与 OFL 许可证
-.github/     GitHub Pages 部署工作流
 ```
 
 ## 许可
