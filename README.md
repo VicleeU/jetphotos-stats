@@ -79,6 +79,15 @@ tools/       构建脚本
 fonts/       字体与 OFL 许可证
 ```
 
+## 维护与交接
+
+- [AGENTS.md](AGENTS.md) — 给接手 agent 的构建、测试、发布和隐私约束
+- [RELEASE.md](RELEASE.md) — 版本发布 SOP
+- [CHANGELOG.md](CHANGELOG.md) — 版本记录
+- [CONTRIBUTING.md](CONTRIBUTING.md) — 贡献流程
+- `docs/` — 架构与隐私说明
+- `tools/qa/` — 本地 QA 工具和检查清单
+
 ## 许可
 
 代码以 MIT License 发布，见 [LICENSE](LICENSE)。字体、地理数据与 JetPhotos 商标的说明见 [NOTICE.md](NOTICE.md)。
