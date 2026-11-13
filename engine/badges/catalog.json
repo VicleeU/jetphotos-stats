@@ -1,0 +1,219 @@
+[
+ {
+  "slug": "badge-screeners-choice",
+  "name": "Screeners' choice",
+  "desc": "A selection of our photo screeners' favorite shots!",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-screeners-choice.svg"
+ },
+ {
+  "slug": "badge-photo-of-the-week",
+  "name": "Photo of the week",
+  "desc": "Award for an outstanding photo as decided by site administrators",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-photo-of-the-week.svg"
+ },
+ {
+  "slug": "badge-first-photo-taken",
+  "name": "First registration",
+  "desc": "First uploaded photo of this registration",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-first-photo-taken.svg"
+ },
+ {
+  "slug": "badge-bronze-globetrotter",
+  "name": "Bronze globetrotter",
+  "desc": "Photographer has taken photos in at least 5 locations",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-bronze-globetrotter.svg"
+ },
+ {
+  "slug": "badge-silver-globetrotter",
+  "name": "Silver globetrotter",
+  "desc": "Photographer has taken photos in at least 50 locations",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-silver-globetrotter.svg"
+ },
+ {
+  "slug": "badge-gold-globetrotter",
+  "name": "Gold globetrotter",
+  "desc": "Photographer has taken photos in at least 250 locations",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-gold-globetrotter.svg"
+ },
+ {
+  "slug": "badge-50-airlines",
+  "name": "50 airlines",
+  "desc": "Photographer has taken photos of at least 50 airlines",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-50-airlines.svg"
+ },
+ {
+  "slug": "badge-100-airlines",
+  "name": "100 airlines",
+  "desc": "Photographer has taken photos of at least 100 airlines",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-100-airlines.svg"
+ },
+ {
+  "slug": "badge-500-airlines",
+  "name": "500 airlines",
+  "desc": "Photographer has taken photos of at least 500 airlines",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-500-airlines.svg"
+ },
+ {
+  "slug": "badge-50-registrations",
+  "name": "50 registrations",
+  "desc": "Photographer has taken photos of at least 50 different aircraft",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-50-registrations.svg"
+ },
+ {
+  "slug": "badge-500-registrations",
+  "name": "500 registrations",
+  "desc": "Photographer has taken photos of at least 500 different aircraft",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-500-registrations.svg"
+ },
+ {
+  "slug": "badge-2500-registrations",
+  "name": "2,500 registrations",
+  "desc": "Photographer has taken photos of at least 2,500 different aircraft",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-2500-registrations.svg"
+ },
+ {
+  "slug": "badge-100-accepted",
+  "name": "100 accepted photos",
+  "desc": "Photographer has 100 or more photos accepted in the database",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-100-accepted.svg"
+ },
+ {
+  "slug": "badge-1000-accepted",
+  "name": "1,000 accepted photos",
+  "desc": "Photographer has 1,000 or more photos accepted in the database",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-1000-accepted.svg"
+ },
+ {
+  "slug": "badge-5000-accepted",
+  "name": "5,000 accepted photos",
+  "desc": "Photographer has 5,000 or more photos accepted in the database",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-5000-accepted.svg"
+ },
+ {
+  "slug": "badge-business-50",
+  "name": "50 accepted business jets photos",
+  "desc": "Photographer has taken photos of at least 50 business jets",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-business-50.svg"
+ },
+ {
+  "slug": "badge-business-250",
+  "name": "250 accepted business jets photos",
+  "desc": "Photographer has taken photos of at least 250 business jets",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-business-250.svg"
+ },
+ {
+  "slug": "badge-business-500",
+  "name": "500 accepted business jets photos",
+  "desc": "Photographer has taken photos of at least 500 business jets",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-business-500.svg"
+ },
+ {
+  "slug": "badge-special-scheme-50",
+  "name": "50 accepted special livery photos",
+  "desc": "Photographer has taken photos of at least 50 special liveries",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-special-scheme-50.svg"
+ },
+ {
+  "slug": "badge-special-scheme-250",
+  "name": "250 accepted special livery photos",
+  "desc": "Photographer has taken photos of at least 250 special liveries",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-special-scheme-250.svg"
+ },
+ {
+  "slug": "badge-special-scheme-500",
+  "name": "500 accepted special livery photos",
+  "desc": "Photographer has taken photos of at least 500 special liveries",
+  "section": "Photographer achievements",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-special-scheme-500.svg"
+ },
+ {
+  "slug": "badge-air-force-one",
+  "name": "Air Force One",
+  "desc": "Photographer has taken a photo of Air Force One",
+  "section": "Unique aircraft",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-air-force-one.svg"
+ },
+ {
+  "slug": "badge-boeing-dreamlifter",
+  "name": "Boeing Dreamlifter",
+  "desc": "Photographer has taken a photo of a Dreamlifter",
+  "section": "Unique aircraft",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-boeing-dreamlifter.svg"
+ },
+ {
+  "slug": "badge-airbus-beluga",
+  "name": "Airbus Beluga",
+  "desc": "Photographer has taken a photo of a Beluga",
+  "section": "Unique aircraft",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-airbus-beluga.svg"
+ },
+ {
+  "slug": "badge-anton-an-225",
+  "name": "Antonov AN-225",
+  "desc": "Photographer has taken a photo of the AN-225",
+  "section": "Unique aircraft",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-anton-an-225.svg"
+ },
+ {
+  "slug": "badge-anton-an-22",
+  "name": "Antonov AN-22",
+  "desc": "Photographer has taken a photo of a AN-22",
+  "section": "Unique aircraft",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-anton-an-22.svg"
+ },
+ {
+  "slug": "badge-ilyushin-IL-96-300PU",
+  "name": "Ilyushin IL-96-300PU",
+  "desc": "Photographer has taken a photo of the Russian President's plane",
+  "section": "Unique aircraft",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-ilyushin-IL-96-300PU.svg"
+ },
+ {
+  "slug": "badge-japan-air-self-defenser-force",
+  "name": "Japan - Air Self Defence Force (JASDF)",
+  "desc": "Photographer has taken a photo of the Japanese Air Force One",
+  "section": "Unique aircraft",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-japan-air-self-defenser-force.svg"
+ },
+ {
+  "slug": "badge-burkina-faso-government-jet",
+  "name": "Burkina Faso - Government boeing 727",
+  "desc": "Photographer has taken a photo of Burkina Faso’s Government jet",
+  "section": "Unique aircraft",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-burkina-faso-government-jet.svg"
+ },
+ {
+  "slug": "badge-editors-choice",
+  "name": "Editor's pick",
+  "desc": "A selection of our photo editor's favorite shots!",
+  "section": "Retired badges",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-editors-choice.svg"
+ },
+ {
+  "slug": "badge-peoples-choice",
+  "name": "People's choice",
+  "desc": "As voted by our members",
+  "section": "Retired badges",
+  "src": "https://www.jetphotos.com/assets/img/badges/badge-peoples-choice.svg"
+ }
+]

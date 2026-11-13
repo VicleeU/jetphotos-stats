@@ -8,7 +8,7 @@ DIST = ROOT / 'dist'
 SITE = ROOT / 'site'
 DIST.mkdir(exist_ok=True)
 
-VERSION = '2.4.4'
+VERSION = '2.5.5'
 ENGINE_URL = sys.argv[1] if len(sys.argv) > 1 else ''
 
 
@@ -120,6 +120,7 @@ if landing.exists():
     (SITE / 'assets').mkdir(parents=True, exist_ok=True)
     (SITE / 'index.html').write_text(html, encoding='utf-8')
     shutil.copytree(ROOT / 'fonts', SITE / 'fonts', dirs_exist_ok=True)
+    shutil.copytree(ENGINE / 'badges', SITE / 'assets' / 'badges', dirs_exist_ok=True)
     for fn in ('jp-stats-engine.js', 'jp-stats.user.js', 'bookmarklet-offline.txt'):
         shutil.copyfile(DIST / fn, SITE / 'assets' / fn)
 

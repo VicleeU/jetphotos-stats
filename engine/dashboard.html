@@ -96,6 +96,15 @@ main{max-width:1320px;margin:0 auto;padding:calc(var(--nav-h) + 26px) 22px 40px}
 .hero-meta .mono{font-family:var(--mono);font-size:12px;color:var(--ink3)}
 .hero-meta a{color:var(--amber)}
 .hero-meta .aw{font-family:var(--mono);font-size:11px;color:var(--amber)}
+.hero-badges{position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:14px}
+.hero-badges[hidden]{display:none}
+.hero-badges .hb-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--ink3);margin-right:2px}
+.hero-badge{width:36px;height:36px;padding:0;border:0;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:10px;filter:drop-shadow(0 4px 8px #0008);transition:transform .18s,filter .18s}
+.hero-badge img{width:100%;height:100%;object-fit:contain;display:block}
+.hero-badge:hover{transform:translateY(-2px) scale(1.05);filter:drop-shadow(0 7px 12px #000a)}
+.hero-badge.on{box-shadow:0 0 0 2px rgba(var(--accent-rgb),.7),0 0 14px rgba(var(--accent-rgb),.28)}
+.hero-badge:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+@media (max-width:560px){.hero-badge{width:32px;height:32px}.hero-badges{gap:7px 8px;margin-top:12px}.hero-badges .hb-label{font-size:8.5px}}
 .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:28px 0 26px;position:relative}
 .kpi{background:#131518cc;border:1px solid var(--line);border-top:2px solid var(--kc,var(--cyan));border-radius:12px;padding:14px 16px 12px;position:relative;overflow:hidden}
 .kpi::after{content:"";position:absolute;inset:0;background:radial-gradient(120px 60px at 20% 0%,color-mix(in srgb,var(--kc,var(--cyan)) 12%,transparent),transparent);pointer-events:none}
@@ -184,6 +193,47 @@ main{max-width:1320px;margin:0 auto;padding:calc(var(--nav-h) + 26px) 22px 40px}
 .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center}
 .donut-center .n{font-family:var(--disp);font-weight:700;font-size:34px;line-height:1}
 .donut-center .t{font-size:10.5px;color:var(--ink3);margin-top:4px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}
+.cat-item{border:1px solid var(--line);border-radius:12px;background:#141619;padding:13px 14px 12px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.cat-item-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.cat-item-h b{font-size:12.5px;color:var(--ink)}
+.cat-item-h small{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--ink3)}
+.cat-donut{position:relative;width:148px;height:148px;flex:none;margin:2px auto 0}
+.cat-donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+.cat-donut circle.seg{fill:none;stroke-width:22;cursor:pointer;transition:stroke-width .2s,opacity .2s}
+.cat-donut circle.seg:hover,.cat-donut circle.seg.active{stroke-width:28}
+.cat-donut .donut-center .n{font-size:25px}
+.cat-donut .donut-center .t{max-width:100px}
+.cat-legend{display:flex;flex-direction:column;gap:3px}
+.cat-legend .lg-row{padding:3px 6px;font-size:11.5px}
+.cat-legend .lg-pct{width:38px}
+.pie-row{display:flex;gap:18px;align-items:flex-start;min-width:0}
+.pie-chart{position:relative;width:150px;height:150px;flex:none;align-self:flex-start}
+.pie-chart svg{width:100%;height:100%;transform:rotate(-90deg);display:block}
+.pie-chart circle.seg{fill:none;stroke-width:22;cursor:pointer;transition:stroke-width .2s,opacity .2s}
+.pie-chart circle.seg:hover,.pie-chart circle.seg.active{stroke-width:28}
+.pie-chart .donut-center .n{font-size:25px}
+.pie-chart .donut-center .t{max-width:100px}
+.pie-row .bars,.pie-row .maker-legend{flex:1;min-width:0}
+.pie-row .maker-legend{grid-template-columns:1fr}
+.pie-key-dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
+@media (max-width:760px){.pie-row{flex-direction:column;align-items:stretch}.pie-chart{align-self:center}.pie-row .maker-legend{grid-template-columns:1fr 1fr}}
+.card.wide-card{height:350px;display:flex;flex-direction:column;min-width:0}
+.wide-card-foot{flex:none;display:flex;justify-content:center;border-top:1px dashed var(--line);padding-top:7px;margin-top:4px}
+.wide-card-foot[hidden]{display:none}
+.wide-toggle{border:0;background:none;color:var(--ink3);font-size:11.5px;font-family:var(--mono);letter-spacing:.02em;cursor:pointer;padding:3px 10px;border-radius:6px}
+.wide-toggle:hover{color:var(--cyan);background:rgba(var(--accent-rgb),0.06)}
+.wide-card .pie-items.maker-items{grid-template-columns:repeat(2,minmax(0,1fr))}
+.wide-card .pie-row{flex:1;min-height:0;height:100%;overflow:hidden;gap:24px;align-items:flex-start}
+.wide-card .pie-chart{width:220px;height:220px;align-self:flex-start}
+.wide-card .pie-chart .donut-center .n{font-size:34px}
+.wide-card .pie-items{flex:1;min-width:0;height:100%;max-height:none;overflow-y:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 14px;align-content:start;padding-right:4px}
+.wide-card .bar-row{min-width:0;grid-template-columns:minmax(82px,110px) minmax(140px,1fr) 50px;gap:8px}
+.wide-card .maker-legend.pie-items{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pie-items .pie-picked{background:rgba(var(--accent-rgb),0.10);border-color:rgba(var(--accent-rgb),0.33)}
+@media (max-width:760px){.card.wide-card{height:500px}.wide-card .pie-row{flex-direction:column;align-items:stretch;gap:12px;height:auto}.wide-card .pie-chart{width:190px;height:190px;align-self:center}.wide-card .pie-items,.wide-card .pie-items.maker-items{grid-template-columns:repeat(2,minmax(0,1fr));height:auto;max-height:180px}.wide-card .bar-row{grid-template-columns:minmax(70px,90px) 1fr 42px;gap:6px}}
+@media (max-width:760px){.cat-stats{grid-template-columns:1fr}.cat-donut{width:170px;height:170px}}
+html.theme-fr24 .cat-item{background:#fff;border-color:var(--line);border-radius:8px}
 .legend{flex:1;min-width:200px;display:flex;flex-direction:column;gap:5px}
 .lg-row{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--ink2);padding:4px 8px;border-radius:7px;cursor:pointer;border:1px solid transparent}
 .lg-row:hover{background:#ffffff07}
@@ -246,6 +296,14 @@ main{max-width:1320px;margin:0 auto;padding:calc(var(--nav-h) + 26px) 22px 40px}
 .toolbar select{background:#16181b;border:1px solid var(--line);color:var(--ink2);border-radius:9px;padding:8px 10px;font-size:12.5px;font-family:var(--body);max-width:170px}
 .toolbar select:focus{border-color:rgba(var(--accent-rgb),0.4);outline:none}
 .toolbar select.on{color:var(--cyan);border-color:rgba(var(--accent-rgb),0.33)}
+.filter-toggle{display:inline-flex;align-items:center;gap:6px;flex:none;background:#16181b;border:1px solid var(--line);color:var(--ink2);border-radius:9px;padding:8px 11px;font-size:11.5px;font-family:var(--mono);letter-spacing:.03em;line-height:1;cursor:pointer;transition:color .2s,border-color .2s}
+.filter-toggle[hidden]{display:none}
+.filter-toggle:hover{color:var(--cyan);border-color:rgba(var(--accent-rgb),0.33)}
+.filter-toggle svg{width:13px;height:13px;flex:none;transition:transform .2s}
+.toolbar.collapsed{overflow:hidden}
+.toolbar.collapsed .filter-toggle svg{transform:rotate(180deg)}
+html.theme-fr24 .filter-toggle{background:#fff;border-color:var(--line);color:var(--ink2)}
+html.theme-fr24 .filter-toggle:hover{background:#f5f7f8;color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
 .chip{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-family:var(--mono);background:rgba(var(--accent-rgb),0.07);border:1px solid rgba(var(--accent-rgb),0.25);color:var(--cyan);padding:4px 6px 4px 11px;border-radius:16px}
 .chip button{background:none;border:none;color:var(--cyan);font-size:13px;line-height:1;padding:2px 5px;border-radius:50%;opacity:.7}
@@ -391,7 +449,7 @@ body.settled .kpi,body.settled .hero-eyebrow,body.settled .hero h1,body.settled 
   .utc{display:none}
   .hero{padding:24px 20px 0}
   .ticker-wrap{margin:0 -20px}
-  .kpis{grid-template-columns:repeat(2,1fr);gap:9px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .span4{grid-column:span 12}
   .modal-body{grid-template-columns:1fr}
   .modal-info{border-left:none;border-top:1px solid var(--line)}
@@ -469,10 +527,11 @@ main{max-width:1360px;padding:calc(var(--nav-h) + 30px) 24px 48px}
 
 .btn{white-space:nowrap}
 @media (max-width:760px){
-  .kpi{padding:13px 14px 11px}
-  .kpi .lab{font-size:9px;letter-spacing:.12em;white-space:nowrap}
-  .kpi .lab b{letter-spacing:.04em}
-  .kpi .num{font-size:29px}
+  .kpi{padding:12px 12px 10px;min-width:0}
+  .kpi .lab{font-size:8.5px;letter-spacing:.06em;white-space:nowrap}
+  .kpi .lab b{font-size:8.5px;letter-spacing:0}
+  .kpi .num{font-size:clamp(21px,7vw,29px);line-height:1.05}
+  .kpi .sub{font-size:10px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.3}
   .hero-eyebrow{letter-spacing:.18em;font-size:9.5px}
   .hero h1{font-size:38px}
   .ds-actions{width:100%}
@@ -561,7 +620,8 @@ main{max-width:1360px;padding:calc(var(--nav-h) + 30px) 24px 48px}
   .globe-list{flex:1.4;max-height:300px;min-height:0}
 }
 @media (max-width:760px){
-  .globe-stage{height:380px;min-height:0}
+  #cardGlobe{padding:16px 14px}
+  .globe-stage{height:clamp(400px,118vw,480px);min-height:0}
   .globe-side{flex-direction:column;height:auto}
   .gs-multi{max-height:150px}
   .globe-list{max-height:260px}
@@ -727,6 +787,15 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
   html.theme-fr24 .kpi{padding:12px 12px 10px}
   html.theme-fr24 .kpi .num{font-size:24px}
 }
+
+/* phone layout: keep desktop rules above untouched */
+@media (max-width:760px){
+  main{padding-left:14px;padding-right:14px}
+  .hero{padding:24px 18px 0}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #cardGlobe{padding:16px 14px}
+  .globe-stage{flex:none;height:clamp(400px,118vw,480px);min-height:0}
+}
 </style>
 </head>
 <body>
@@ -780,6 +849,7 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
     <p class="hero-eyebrow">JETPHOTOS PHOTOGRAPHER STATS · 摄影师数据统计</p>
     <h1 id="heroName">—</h1>
     <div class="hero-meta" id="heroMeta"></div>
+    <div class="hero-badges" id="heroBadges" hidden></div>
     <div class="kpis" id="kpis"></div>
     <div class="ticker-wrap" aria-hidden="true">
       <span class="ticker-label" id="tickerLabel">RECENT ✈ UPLOADS</span>
@@ -833,15 +903,21 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
       <div class="card-h"><h3>国家 / 地区</h3><span class="en">COUNTRIES</span></div>
       <div class="bars" id="countryBars"></div>
     </div>
-    <div class="card span7">
+    <div class="card span12 wide-card">
       <div class="card-h"><h3>机型</h3><span class="en">AIRCRAFT TYPES</span><span class="act" id="familyTotal"></span><div class="tl-toggle" id="typeTabs"><button type="button" data-mode="family" class="on">系列</button><button type="button" data-mode="type">子型号</button></div></div>
-      <div class="stack-bar" id="typeStack"></div>
-      <div class="bars" id="familyBars"></div>
+      <div class="pie-row">
+        <div class="pie-chart" id="typePie"></div>
+        <div class="bars pie-items" id="familyBars"></div>
+      </div>
+      <div class="wide-card-foot" id="typeFoot"><button type="button" class="wide-toggle" id="typeFootBtn"></button></div>
     </div>
-    <div class="card span5">
+    <div class="card span12 wide-card">
       <div class="card-h"><h3>制造商</h3><span class="en">MANUFACTURERS</span></div>
-      <div class="stack-bar" id="makerStack"></div>
-      <div class="maker-legend legend" id="makerLegend"></div>
+      <div class="pie-row">
+        <div class="pie-chart" id="makerPie"></div>
+        <div class="maker-items pie-items" id="makerLegend"></div>
+      </div>
+      <div class="wide-card-foot" id="makerFoot"><button type="button" class="wide-toggle" id="makerFootBtn"></button></div>
     </div>
     <div class="card span5" id="cardAirline">
       <div class="card-h"><h3>航空公司</h3><span class="en">AIRLINES</span><span class="act" id="airlineTotal"></span></div>
@@ -864,6 +940,26 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
       </div>
       <div class="stack-bar" id="atStack"></div>
       <div class="bars" id="airlineTypeBars"></div>
+    </div>
+    <div class="card span12" id="cardCategoryStats">
+      <div class="card-h"><h3>分类统计</h3><span class="en">CATEGORY STATS</span><span class="act">点击图表筛选图库</span></div>
+      <div class="cat-stats">
+        <div class="cat-item">
+          <div class="cat-item-h"><b>客机 / 货机 / 军机</b><small>TYPE</small></div>
+          <div class="cat-donut" id="catTypeDonut"></div>
+          <div class="cat-legend" id="catTypeLegend"></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-item-h"><b>特殊涂装</b><small>SPECIAL LIVERY</small></div>
+          <div class="cat-donut" id="catSpecialDonut"></div>
+          <div class="cat-legend" id="catSpecialLegend"></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-item-h"><b>夜拍 / 黄昏</b><small>NIGHT / DUSK</small></div>
+          <div class="cat-donut" id="catNightDonut"></div>
+          <div class="cat-legend" id="catNightLegend"></div>
+        </div>
+      </div>
     </div>
     <div class="card span12" id="cardTimeline">
       <div class="card-h"><h3>上传时间线</h3><span class="en">UPLOAD TIMELINE</span>
@@ -894,7 +990,8 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
     <span class="hint">点击照片展开详情，可跳转 JetPhotos 原图</span>
   </div>
   <section>
-    <div class="toolbar" role="search">
+    <div class="toolbar" id="filterToolbar" role="search">
+      <button type="button" class="filter-toggle" id="filterToggle" aria-controls="filterToolbar" aria-expanded="true" aria-label="收起筛选" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg><span class="ft-txt">收起筛选</span></button>
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <input type="search" id="q" placeholder="搜索注册号 / 航司 / 机型 / 机场 / 序列号…" aria-label="搜索照片">
@@ -910,10 +1007,11 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
       <select id="fLens" aria-label="按镜头筛选"></select>
       <select id="fMonthUpload" aria-label="按上传月份筛选"></select>
       <select id="fMonthDate" aria-label="按拍摄月份筛选"></select>
-      <select id="fCargo" aria-label="按货机或客机筛选">
+      <select id="fCargo" aria-label="按客机、货机或军机筛选">
         <option value="">全部类型</option>
-        <option value="1">货机</option>
-        <option value="0">客机</option>
+        <option value="1">货机（民机）</option>
+        <option value="0">客机（民机）</option>
+        <option value="military">军机</option>
       </select>
       <select id="fAward" aria-label="按获奖筛选">
         <option value="">全部获奖</option>
@@ -922,6 +1020,14 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
         <option value="pw">PW 每周精选</option>
         <option value="sc">SC 筛选之选</option>
         <option value="pc">PC 大众之选</option>
+      </select>
+
+      <select id="fBadge" aria-label="按徽章筛选" hidden>
+        <option value="">全部徽章</option>
+      </select>
+
+      <select id="fCategory" aria-label="按照片类别筛选">
+        <option value="">全部类别</option>
       </select>
       <select id="fSort" aria-label="排序方式">
         <option value="uploaded_desc">最新上传</option>
@@ -1282,6 +1388,15 @@ function parseDetail(html, id) {
       if (ta && ta.value && ta.value.trim() !== 'None') o.remarks = ta.value.trim();
     }
   } catch (e) {}
+  var bd = d.querySelector('.badges');
+  if (bd) {
+    var bl = [];
+    [].forEach.call(bd.querySelectorAll('img[src*="/badges/"]'), function (im) {
+      var m = (im.getAttribute('src') || '').match(/badge-([^/]+)\.svg/i);
+      if (m) { var sl = 'badge-' + m[1]; if (bl.indexOf(sl) < 0) bl.push(sl); }
+    });
+    if (bl.length) o.badges = bl;
+  }
   var owner = d.querySelector('a[href*="/photographer/"]');
   if (owner) {
     var on = (owner.textContent || '').replace(/\s+/g, ' ').trim();
@@ -1359,6 +1474,19 @@ function parsePhotographer(html) {
     if (m) out.firstUpload = m[1];
     m = txt.match(/Accept(?:ance)?\s*(?:ratio|rate)[^0-9]{0,20}(\d+(?:\.\d+)?\s*%)/i) || txt.match(/(\d+(?:\.\d+)?\s*%)\s*Accept(?:ance)?\s*(?:ratio|rate)/i);
     if (m) out.acceptRatio = m[1].replace(/\s+/g, '');
+    var bset = {};
+    d.querySelectorAll('.badges__badgeImg').forEach(function (im) {
+      var src = im.getAttribute('src') || '';
+      var bm = src.match(/badge-([^/]+)\.svg/i);
+      if (!bm) return;
+      var sl = 'badge-' + bm[1];
+      if (bset[sl]) return;
+      var link = im.closest('.badges__badgeLink');
+      var nm = (im.getAttribute('alt') || '').replace(/\s+badge$/i, '').trim();
+      var ds = link ? (link.getAttribute('data-tooltip') || '') : '';
+      bset[sl] = { slug: sl, name: nm || sl, desc: ds };
+    });
+    if (Object.keys(bset).length) out.badges = Object.keys(bset).map(function (k) { return bset[k]; });
   } catch (e) {}
   return out;
 }
@@ -1366,7 +1494,7 @@ function parsePhotographer(html) {
 /* ---------- state ---------- */
 var BASE = [];
 var DETAIL = {};
-var PHOTOGRAPHER = { id: ID, name: '', firstUpload: '', acceptRatio: '', cover: '', coverKind: '' };
+var PHOTOGRAPHER = { id: ID, name: '', firstUpload: '', acceptRatio: '', cover: '', coverKind: '', badges: [], badgeIds: {}, badgeIdsVersion: 0, categoryIds: {} };
 var PHOTOS = [], BY_ID = {};
 var detailCount = 0, cacheTime = '', cacheOk = true;
 var G = {}, airportRank = [], airlineRank = [], familyRank = [], famRank = [], makerRank = [], countryRank = [], cameraRank = [], lensRank = [];
@@ -1703,13 +1831,20 @@ function cleanCam(s) {
   return s;
 }
 function camKey(s) { return cleanCam(s).toLowerCase().replace(CAM_BRAND, '').replace(/\s+/g, ' ').trim(); }
+function isMilitary(aircraft, airline, reg) {
+  var a = String(aircraft || ''), al = String(airline || '');
+  if (/\b(?:air force|airforce|navy|army|military|air national guard|marine corps|marines|royal air force|raaf|usaf|jasdf|air self defence|air self-defense|government|presidential|ministry of defen[cs]e)\b/i.test(al)) return true;
+  return /\b(?:J-?\d{1,2}|F-\d{1,2}|FA-\d|Mirage|Rafale|Typhoon|Tornado|Gripen|Harrier|A-10|B-52|B-1|B-2|H-6|TU-(?:95|160|22)|SU-\d+|MIG-\d+|MQ-\d+|RQ-\d+|WZ-\d+|AH-64|UH-60|CH-47)\b/i.test(a);
+}
 function derive(p) {
   var cam = (p.camera || '').split('|');
   var o = Object.assign({}, p);
   o.maker = maker(p.aircraft);
   var at = aircraftType(p.aircraft);
   o.fam = at.fam; o.family = at.type; o.cargo = at.cargo;
-  if (p.aircraft === 'Airport') { o.maker = '机场场景'; o.fam = '机场场景'; o.family = '机场场景'; o.cargo = false; }
+  o.military = isMilitary(p.aircraft, p.airline, p.reg);
+  if (o.military) o.cargo = false;
+  if (p.aircraft === 'Airport') { o.maker = '机场场景'; o.fam = '机场场景'; o.family = '机场场景'; o.cargo = false; o.military = false; }
   o.apKey = p.airportCode || p.airport || '';
   o.year = (p.date || p.uploaded || '').slice(0, 4);
   o.camBody = cleanCam(cam[0]);
@@ -1783,6 +1918,7 @@ function rebuild() {
     return o;
   });
   BY_ID = {}; PHOTOS.forEach(function (p) { BY_ID[p.id] = p; });
+  computeBadgeFlags();
   var hasDetail = detailCount > 0;
   G = {
     photos: PHOTOS.length,
@@ -1889,6 +2025,8 @@ function renderHero() {
   if (awTotal) meta += '<span class="aw" title="编辑推荐 / 每周精选 / 筛选之选 / 大众之选">🏆 EP ' + aw.ep + ' · PW ' + aw.pw + ' · SC ' + aw.sc + ' · PC ' + aw.pc + '</span>';
   meta += '<a href="https://www.jetphotos.com/photographer/' + esc(ID) + '" target="_blank" rel="noopener">JetPhotos 主页 ↗</a>';
   $('heroMeta').innerHTML = meta;
+  renderHeroBadges();
+  fillBadgeSelect();
 
   var last30 = PHOTOS.filter(function (p) {
     return p.uploaded && (Date.now() - new Date(p.uploaded).getTime()) < 30 * 864e5;
@@ -1943,8 +2081,328 @@ function renderHero() {
   $('footMeta').textContent = 'LOCAL SNAPSHOT ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' · ' + G.photos + ' PHOTOS · ' + fmt(G.views) + ' VIEWS · 详情 ' + detailCount + '/' + G.photos + (cacheOk ? '' : ' · 缓存不可用');
 }
 
+function badgeMeta(slug) {
+  for (var i = 0; i < BADGE_META.length; i++) if (BADGE_META[i].slug === slug) return BADGE_META[i];
+  return null;
+}
+function badgeName(slug) {
+  var bs = PHOTOGRAPHER.badges || [];
+  for (var i = 0; i < bs.length; i++) if (bs[i].slug === slug) return bs[i].name || slug;
+  var m = badgeMeta(slug);
+  return m ? m.name : slug;
+}
+function badgeDesc(slug) {
+  var bs = PHOTOGRAPHER.badges || [];
+  for (var i = 0; i < bs.length; i++) if (bs[i].slug === slug && bs[i].desc) return bs[i].desc;
+  var m = badgeMeta(slug);
+  return m ? m.desc : '';
+}
+function uniqueBadges() {
+  var seen = {}, list = [];
+  (PHOTOGRAPHER.badges || []).forEach(function (b) {
+    if (!b || !b.slug || seen[b.slug]) return;
+    seen[b.slug] = 1; list.push(b);
+  });
+  return list;
+}
+function renderHeroBadges() {
+  var host = $('heroBadges');
+  if (!host) return;
+  var list = uniqueBadges();
+  if (!list.length) { host.hidden = true; host.innerHTML = ''; return; }
+  host.hidden = false;
+  host.innerHTML = '<span class="hb-label">BADGES</span>' + list.map(function (b) {
+    var n = b.name || badgeName(b.slug), d = b.desc || badgeDesc(b.slug);
+    var on = state.badge === b.slug;
+    return '<button type="button" class="hero-badge' + (on ? ' on' : '') + '" data-slug="' + esc(b.slug) + '" title="' + esc(n + (d ? ' — ' + d : '')) + '" aria-label="' + esc(tt('按徽章筛选：', 'Filter by badge: ') + n) + '" aria-pressed="' + (on ? 'true' : 'false') + '"><img src="' + esc(BADGE_BASE + b.slug + '.svg') + '" alt="' + esc(n) + '" loading="lazy"></button>';
+  }).join('');
+}
+function fillBadgeSelect() {
+  var sel = $('fBadge');
+  if (!sel) return;
+  var list = uniqueBadges(), seen = {}, opts = ['<option value="">' + tt('全部徽章', 'All badges') + '</option>'];
+  list.forEach(function (b) { if (seen[b.slug]) return; seen[b.slug] = 1; opts.push('<option value="' + esc(b.slug) + '">' + esc(b.name || badgeName(b.slug)) + '</option>'); });
+  if (!list.length) {
+    sel.hidden = true;
+    sel.innerHTML = '<option value="">' + tt('全部徽章', 'All badges') + '</option>';
+    if (state.badge) state.badge = '';
+    return;
+  }
+  if (state.badge && !seen[state.badge]) state.badge = '';
+  sel.hidden = false;
+  sel.innerHTML = opts.join('');
+  sel.value = state.badge || '';
+  scheduleFilterLayout();
+}
+function computeBadgeFlags() {
+  var sorted = PHOTOS.slice().sort(function (a, b) { return (a.uploaded || a.date || '').localeCompare(b.uploaded || b.date || ''); });
+  var reg = {}, airline = {}, airport = {};
+  sorted.forEach(function (p) {
+    p._badgeKeys = {};
+    if (p.reg && !reg[p.reg]) {
+      reg[p.reg] = 1;
+      p._badgeKeys['badge-first-photo-taken'] = 1;
+      p._badgeKeys['badge-50-registrations'] = 1;
+      p._badgeKeys['badge-500-registrations'] = 1;
+      p._badgeKeys['badge-2500-registrations'] = 1;
+    }
+    if (p.airline && !airline[p.airline]) {
+      airline[p.airline] = 1;
+      p._badgeKeys['badge-50-airlines'] = 1;
+      p._badgeKeys['badge-100-airlines'] = 1;
+      p._badgeKeys['badge-500-airlines'] = 1;
+    }
+    if (p.apKey && !airport[p.apKey]) {
+      airport[p.apKey] = 1;
+      p._badgeKeys['badge-bronze-globetrotter'] = 1;
+      p._badgeKeys['badge-silver-globetrotter'] = 1;
+      p._badgeKeys['badge-gold-globetrotter'] = 1;
+    }
+  });
+}
+function isBusinessJet(p) {
+  return /Citation|Challenger|Global\\s|Gulfstream|Falcon|Learjet|Hawker|King Air|Phenom|Legacy|Praetor|Sovereign|TBM|PC-12|Vision Jet|Hondajet/i.test(p.aircraft || '');
+}
+function isSpecialLivery(p) {
+  return /special|livery|scheme|anniversary|retro/i.test((p.remarks || '') + ' ' + (p.aircraft || '') + ' ' + (p.airline || ''));
+}
+var UNIQUE_BADGE_RULES = {
+  'badge-air-force-one': /VC-25|Air Force One/i,
+  'badge-boeing-dreamlifter': /Dreamlifter|747-4J6\\(LCF\\)/i,
+  'badge-airbus-beluga': /Beluga|A300-600ST/i,
+  'badge-anton-an-225': /An-225/i,
+  'badge-anton-an-22': /An-22/i,
+  'badge-ilyushin-IL-96-300PU': /IL-96-300PU/i,
+  'badge-japan-air-self-defenser-force': /Japan.*Self|JASDF/i,
+  'badge-burkina-faso-government-jet': /Burkina/i
+};
+function badgeMatches(p, slug) {
+  var cids = PHOTOGRAPHER.badgeIds && PHOTOGRAPHER.badgeIds[slug];
+  if (cids) return cids.indexOf(p.id) >= 0;
+  if (p.badges && p.badges.indexOf(slug) >= 0) return true;
+  if (slug === 'badge-screeners-choice') return !!p.sc;
+  if (slug === 'badge-photo-of-the-week') return !!p.pw;
+  if (slug === 'badge-editors-choice') return !!p.ep;
+  if (slug === 'badge-peoples-choice') return !!p.pc;
+  if (slug === 'badge-first-photo-taken') return !!(p._badgeKeys && p._badgeKeys[slug]);
+  if (/^badge-(bronze|silver|gold)-globetrotter$/.test(slug)) return !!(p._badgeKeys && p._badgeKeys[slug]);
+  if (/^badge-(50|100|500)-airlines$/.test(slug)) return !!(p._badgeKeys && p._badgeKeys[slug]);
+  if (/^badge-(50|500|2500)-registrations$/.test(slug)) return !!(p._badgeKeys && p._badgeKeys[slug]);
+  if (/^badge-(100|1000|5000)-accepted$/.test(slug)) return true;
+  if (slug.indexOf('badge-business-') === 0) return isBusinessJet(p);
+  if (slug.indexOf('badge-special-scheme-') === 0) return isSpecialLivery(p);
+  var rule = UNIQUE_BADGE_RULES[slug];
+  if (rule) return rule.test((p.aircraft || '') + ' ' + (p.reg || '') + ' ' + (p.airline || ''));
+  return false;
+}
+function parseCategoryIds(html) {
+  var ids = [], seen = {};
+  try {
+    var d = new DOMParser().parseFromString(html, 'text/html');
+    d.querySelectorAll('a[href*="/photo/"]').forEach(function (a) {
+      var m = (a.getAttribute('href') || '').match(/\/photo\/(\d+)/);
+      if (m && !seen[m[1]]) { seen[m[1]] = 1; ids.push(m[1]); }
+    });
+  } catch (e) {}
+  return ids;
+}
+function categoryPageUrls(html) {
+  var out = [], seen = {};
+  try {
+    var d = new DOMParser().parseFromString(html, 'text/html');
+    d.querySelectorAll('a[href*="page="]').forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      var m = href.match(/[?&]page=(\d+)/);
+      if (!m) return;
+      var n = parseInt(m[1], 10);
+      if (n < 2 || seen[n] || out.length >= 20) return;
+      seen[n] = 1; out.push({ n: n, href: href });
+    });
+  } catch (e) {}
+  out.sort(function (a, b) { return a.n - b.n; });
+  return out;
+}
+function loadCategoryIds(url) {
+  return loadDoc(url).then(function (html) {
+    var ids = parseCategoryIds(html), seen = {};
+    ids.forEach(function (id) { seen[id] = 1; });
+    var pages = categoryPageUrls(html);
+    return pages.reduce(function (chain, pg) {
+      return chain.then(function () { return loadDoc(pg.href); }).then(function (h) {
+        parseCategoryIds(h).forEach(function (id) {
+          if (!seen[id]) { seen[id] = 1; ids.push(id); }
+        });
+      });
+    }, Promise.resolve()).then(function () { return ids; });
+  });
+}
+function loadBadgeCategories() {
+  if (PHOTOGRAPHER.badgeIdsVersion !== BADGE_IDS_VERSION) {
+    PHOTOGRAPHER.badgeIds = {};
+    PHOTOGRAPHER.badgeIdsVersion = BADGE_IDS_VERSION;
+    saveCache();
+  }
+  var list = uniqueBadges().filter(function (b) {
+    return BADGE_CATEGORIES[b.slug] && !(PHOTOGRAPHER.badgeIds && Object.prototype.hasOwnProperty.call(PHOTOGRAPHER.badgeIds, b.slug));
+  });
+  var i = 0;
+  function next() {
+    if (i >= list.length) return;
+    var b = list[i++], cid = BADGE_CATEGORIES[b.slug];
+    if (PHOTOGRAPHER.categoryIds && Object.prototype.hasOwnProperty.call(PHOTOGRAPHER.categoryIds, cid)) {
+      PHOTOGRAPHER.badgeIds = PHOTOGRAPHER.badgeIds || {};
+      PHOTOGRAPHER.badgeIds[b.slug] = PHOTOGRAPHER.categoryIds[cid];
+      saveCache();
+      next();
+      return;
+    }
+    loadCategoryIds('/photographer/' + encodeURIComponent(ID) + '/photos/category/' + cid).then(function (ids) {
+      if (ids.length) {
+        PHOTOGRAPHER.badgeIds = PHOTOGRAPHER.badgeIds || {};
+        PHOTOGRAPHER.badgeIds[b.slug] = ids;
+        saveCache();
+        if (state.badge === b.slug) apply();
+      }
+    }).catch(function () {}).then(next);
+  }
+  next();
+}
+function photoCategoryName(v) {
+  for (var i = 0; i < PHOTO_CATEGORIES.length; i++) if (PHOTO_CATEGORIES[i].v === String(v)) return PHOTO_CATEGORIES[i].name;
+  return String(v || '');
+}
+function fillCategorySelect() {
+  var sel = $('fCategory');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">' + tt('全部类别', 'All categories') + '</option>' + PHOTO_CATEGORIES.map(function (c) {
+    return '<option value="' + c.v + '">' + esc(c.name) + '</option>';
+  }).join('');
+  sel.value = state.category || '';
+}
+function loadPhotoCategory(v) {
+  v = String(v || '');
+  if (!v) return Promise.resolve([]);
+  if (PHOTOGRAPHER.categoryIds && Object.prototype.hasOwnProperty.call(PHOTOGRAPHER.categoryIds, v)) {
+    return Promise.resolve(PHOTOGRAPHER.categoryIds[v]);
+  }
+  return loadCategoryIds('/photographer/' + encodeURIComponent(ID) + '/photos/category/' + v).then(function (ids) {
+    PHOTOGRAPHER.categoryIds = PHOTOGRAPHER.categoryIds || {};
+    PHOTOGRAPHER.categoryIds[v] = ids;
+    saveCache();
+    if (state.category === v) apply();
+    if (v === '128' || v === '64') renderCategoryStats();
+    return ids;
+  }).catch(function () { return null; });
+}
+function clearFiltersForStats() {
+  state.q = ''; if ($('q')) $('q').value = '';
+  Object.keys(FILTER_KEYS).forEach(function (k) {
+    state[k] = '';
+    var el = $(FILTER_KEYS[k]);
+    if (el) el.value = '';
+  });
+  state.month = ''; state.monthField = '';
+  if ($('fMonthUpload')) $('fMonthUpload').value = '';
+  if ($('fMonthDate')) $('fMonthDate').value = '';
+}
+function setCategoryFilter(v, scroll) {
+  if (!v) { state.category = ''; if ($('fCategory')) $('fCategory').value = ''; apply(); return; }
+  toast(tt('正在读取照片类别…', 'Loading photo category…'));
+  loadPhotoCategory(v).then(function (ids) {
+    if (!ids) { toast(tt('类别读取失败，请重试', 'Could not load category')); return; }
+    clearFiltersForStats();
+    state.category = v; if ($('fCategory')) $('fCategory').value = v;
+    apply();
+    if (scroll) scrollToGallery();
+  });
+}
+function setCargoFilter(v, scroll) {
+  clearFiltersForStats();
+  state.cargo = v || '';
+  if ($('fCargo')) $('fCargo').value = state.cargo;
+  apply();
+  if (scroll) scrollToGallery();
+}
+function catDonut(boxId, legendId, segs, centerN, centerT, onPick) {
+  var box = $(boxId), legend = $(legendId);
+  if (!box || !legend) return;
+  var total = segs.reduce(function (s, x) { return s + x.count; }, 0);
+  if (!total) {
+    box.innerHTML = '<div class="donut-center"><div class="n">—</div><div class="t">' + esc(centerT) + '</div></div>';
+    legend.innerHTML = '';
+    return;
+  }
+  var R = 66, C = 2 * Math.PI * R, off = 0, circles = '';
+  segs.forEach(function (s, i) {
+    var len = C * s.count / total;
+    circles += '<circle class="seg" data-i="' + i + '" cx="80" cy="80" r="' + R + '" stroke="' + s.color + '" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) + '"/>';
+    off += len;
+  });
+  box.innerHTML = '<svg viewBox="0 0 160 160" role="img">' + circles + '</svg><div class="donut-center"><div class="n">' + esc(centerN) + '</div><div class="t">' + esc(centerT) + '</div></div>';
+  legend.innerHTML = segs.map(function (s, i) {
+    var pct = (100 * s.count / total).toFixed(1);
+    return '<div class="lg-row" data-i="' + i + '"><span class="lg-dot" style="background:' + s.color + '"></span><span class="lg-name">' + esc(s.name) + '</span><span class="lg-val">' + fmt(s.count) + '</span><span class="lg-pct">' + pct + '%</span></div>';
+  }).join('');
+  function pick(i) {
+    var s = segs[i];
+    if (s && onPick) onPick(s.value);
+  }
+  box.querySelectorAll('circle.seg').forEach(function (c) {
+    c.addEventListener('click', function () { pick(+c.getAttribute('data-i')); });
+    c.addEventListener('mouseenter', function () { box.classList.add('dim'); });
+    c.addEventListener('mouseleave', function () { box.classList.remove('dim'); });
+  });
+  legend.querySelectorAll('.lg-row').forEach(function (r) {
+    r.addEventListener('click', function () { pick(+r.getAttribute('data-i')); });
+  });
+}
+function renderCategoryStats() {
+  if (!$('catTypeDonut')) return;
+  var total = PHOTOS.length, pax = 0, cargo = 0, mil = 0;
+  PHOTOS.forEach(function (p) {
+    if (/^Airport$/i.test(p.aircraft || '')) return;
+    if (p.military) mil++; else if (p.cargo) cargo++; else pax++;
+  });
+  var aircraft = pax + cargo + mil;
+  catDonut('catTypeDonut', 'catTypeLegend', [
+    { name: tt('客机（民机）', 'Passenger (civil)'), count: pax, color: themeAccent(), value: '0' },
+    { name: tt('货机（民机）', 'Cargo (civil)'), count: cargo, color: '#86b4ff', value: '1' },
+    { name: tt('军机', 'Military'), count: mil, color: '#ff8a9b', value: 'military' }
+  ], fmt(aircraft), tt('飞机照片', 'AIRCRAFT'), function (v) { setCargoFilter(v, true); });
+
+  function categoryDonut(idsKey, boxId, legendId, color, label) {
+    var ids = PHOTOGRAPHER.categoryIds && PHOTOGRAPHER.categoryIds[idsKey];
+    var count = null;
+    if (ids) {
+      var set = {}; ids.forEach(function (id) { set[id] = 1; });
+      count = PHOTOS.filter(function (p) { return set[p.id]; }).length;
+    }
+    var pct = count == null ? null : (100 * count / Math.max(1, total)).toFixed(1) + '%';
+    catDonut(boxId, legendId,
+      count == null ? [] : [
+        { name: label, count: count, color: color, value: idsKey },
+        { name: tt('其他照片', 'Other photos'), count: Math.max(0, total - count), color: '#3a4148', value: '' }
+      ],
+      pct == null ? '—' : pct, label,
+      function (v) { if (v) setCategoryFilter(v, true); });
+    if (count == null) {
+      $(legendId).innerHTML = '<div class="lg-row" style="cursor:default"><span class="lg-name">' + tt('正在读取类别…', 'Loading category…') + '</span></div>';
+    }
+  }
+  categoryDonut('128', 'catSpecialDonut', 'catSpecialLegend', '#d36bff', tt('特殊涂装', 'Special livery'));
+  categoryDonut('64', 'catNightDonut', 'catNightLegend', '#8f9dff', tt('夜拍 / 黄昏', 'Night / dusk'));
+}
+function syncBadgeState() {
+  var bs = document.querySelectorAll('#heroBadges .hero-badge');
+  [].forEach.call(bs, function (b) {
+    var on = b.getAttribute('data-slug') === state.badge;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+}
+
 /* ---------- charts ---------- */
-var state = { q: '', airport: '', airline: '', family: '', fam: '', maker: '', country: '', year: '', camera: '', lens: '', month: '', monthField: '', sort: 'views_desc', shown: 60, filtered: [] };
+var state = { q: '', airport: '', airline: '', family: '', fam: '', maker: '', country: '', year: '', camera: '', lens: '', month: '', monthField: '', badge: '', category: '', sort: 'views_desc', shown: 60, filtered: [] };
 var chartExpand = { airline: false, airport: false, family: false, maker: false, at: false };
 var familyCapH = 0, airportCapH = 0, alCapH = 0;
 var TYPE_KEY = 'jpstats.typemode';
@@ -1953,8 +2411,31 @@ try { if (localStorage.getItem(TYPE_KEY) === 'type') typeMode = 'type'; } catch 
 var CAM_KEY = 'jpstats.cammode';
 var camMode = 'body';
 try { if (localStorage.getItem(CAM_KEY) === 'lens') camMode = 'lens'; } catch (e) {}
-var FILTER_KEYS = { airport: 'fAirport', airline: 'fAirline', family: 'fFamily', fam: 'fFam', maker: 'fMaker', country: 'fCountry', year: 'fYear', camera: 'fCamera', lens: 'fLens', cargo: 'fCargo', award: 'fAward' };
-var FILTER_LABEL = { airport: '机场', airline: '航司', family: '机型', fam: '系列', maker: '制造商', country: '国家', year: '年份', camera: '相机', lens: '镜头', cargo: '类型', award: '获奖' };
+var FILTER_KEYS = { airport: 'fAirport', airline: 'fAirline', family: 'fFamily', fam: 'fFam', maker: 'fMaker', country: 'fCountry', year: 'fYear', camera: 'fCamera', lens: 'fLens', cargo: 'fCargo', award: 'fAward', badge: 'fBadge', category: 'fCategory' };
+var FILTER_LABEL = { airport: '机场', airline: '航司', family: '机型', fam: '系列', maker: '制造商', country: '国家', year: '年份', camera: '相机', lens: '镜头', cargo: '类型', award: '获奖', badge: '徽章', category: '类别' };
+var BADGE_BASE = location.protocol === 'file:' ? 'badges/' : 'https://www.jetphotos.com/assets/img/badges/';
+var BADGE_META = [{"slug":"badge-screeners-choice","name":"Screeners' choice","desc":"A selection of our photo screeners' favorite shots!","section":"Photographer achievements"},{"slug":"badge-photo-of-the-week","name":"Photo of the week","desc":"Award for an outstanding photo as decided by site administrators","section":"Photographer achievements"},{"slug":"badge-first-photo-taken","name":"First registration","desc":"First uploaded photo of this registration","section":"Photographer achievements"},{"slug":"badge-bronze-globetrotter","name":"Bronze globetrotter","desc":"Photographer has taken photos in at least 5 locations","section":"Photographer achievements"},{"slug":"badge-silver-globetrotter","name":"Silver globetrotter","desc":"Photographer has taken photos in at least 50 locations","section":"Photographer achievements"},{"slug":"badge-gold-globetrotter","name":"Gold globetrotter","desc":"Photographer has taken photos in at least 250 locations","section":"Photographer achievements"},{"slug":"badge-50-airlines","name":"50 airlines","desc":"Photographer has taken photos of at least 50 airlines","section":"Photographer achievements"},{"slug":"badge-100-airlines","name":"100 airlines","desc":"Photographer has taken photos of at least 100 airlines","section":"Photographer achievements"},{"slug":"badge-500-airlines","name":"500 airlines","desc":"Photographer has taken photos of at least 500 airlines","section":"Photographer achievements"},{"slug":"badge-50-registrations","name":"50 registrations","desc":"Photographer has taken photos of at least 50 different aircraft","section":"Photographer achievements"},{"slug":"badge-500-registrations","name":"500 registrations","desc":"Photographer has taken photos of at least 500 different aircraft","section":"Photographer achievements"},{"slug":"badge-2500-registrations","name":"2,500 registrations","desc":"Photographer has taken photos of at least 2,500 different aircraft","section":"Photographer achievements"},{"slug":"badge-100-accepted","name":"100 accepted photos","desc":"Photographer has 100 or more photos accepted in the database","section":"Photographer achievements"},{"slug":"badge-1000-accepted","name":"1,000 accepted photos","desc":"Photographer has 1,000 or more photos accepted in the database","section":"Photographer achievements"},{"slug":"badge-5000-accepted","name":"5,000 accepted photos","desc":"Photographer has 5,000 or more photos accepted in the database","section":"Photographer achievements"},{"slug":"badge-business-50","name":"50 accepted business jets photos","desc":"Photographer has taken photos of at least 50 business jets","section":"Photographer achievements"},{"slug":"badge-business-250","name":"250 accepted business jets photos","desc":"Photographer has taken photos of at least 250 business jets","section":"Photographer achievements"},{"slug":"badge-business-500","name":"500 accepted business jets photos","desc":"Photographer has taken photos of at least 500 business jets","section":"Photographer achievements"},{"slug":"badge-special-scheme-50","name":"50 accepted special livery photos","desc":"Photographer has taken photos of at least 50 special liveries","section":"Photographer achievements"},{"slug":"badge-special-scheme-250","name":"250 accepted special livery photos","desc":"Photographer has taken photos of at least 250 special liveries","section":"Photographer achievements"},{"slug":"badge-special-scheme-500","name":"500 accepted special livery photos","desc":"Photographer has taken photos of at least 500 special liveries","section":"Photographer achievements"},{"slug":"badge-air-force-one","name":"Air Force One","desc":"Photographer has taken a photo of Air Force One","section":"Unique aircraft"},{"slug":"badge-boeing-dreamlifter","name":"Boeing Dreamlifter","desc":"Photographer has taken a photo of a Dreamlifter","section":"Unique aircraft"},{"slug":"badge-airbus-beluga","name":"Airbus Beluga","desc":"Photographer has taken a photo of a Beluga","section":"Unique aircraft"},{"slug":"badge-anton-an-225","name":"Antonov AN-225","desc":"Photographer has taken a photo of the AN-225","section":"Unique aircraft"},{"slug":"badge-anton-an-22","name":"Antonov AN-22","desc":"Photographer has taken a photo of a AN-22","section":"Unique aircraft"},{"slug":"badge-ilyushin-IL-96-300PU","name":"Ilyushin IL-96-300PU","desc":"Photographer has taken a photo of the Russian President's plane","section":"Unique aircraft"},{"slug":"badge-japan-air-self-defenser-force","name":"Japan - Air Self Defence Force (JASDF)","desc":"Photographer has taken a photo of the Japanese Air Force One","section":"Unique aircraft"},{"slug":"badge-burkina-faso-government-jet","name":"Burkina Faso - Government boeing 727","desc":"Photographer has taken a photo of Burkina Faso’s Government jet","section":"Unique aircraft"},{"slug":"badge-editors-choice","name":"Editor's pick","desc":"A selection of our photo editor's favorite shots!","section":"Retired badges"},{"slug":"badge-peoples-choice","name":"People's choice","desc":"As voted by our members","section":"Retired badges"}];
+var BADGE_IDS_VERSION = 2;
+var BADGE_CATEGORIES = {
+  'badge-first-photo-taken': '134217728',
+  'badge-screeners-choice': '2',
+  'badge-photo-of-the-week': '4',
+  'badge-editors-choice': '1',
+  'badge-business-50': '8192',
+  'badge-business-250': '8192',
+  'badge-business-500': '8192',
+  'badge-special-scheme-50': '128',
+  'badge-special-scheme-250': '128',
+  'badge-special-scheme-500': '128'
+};
+var PHOTO_CATEGORIES = [
+ {v:'1',name:"Editor's Pics"}, {v:'2',name:"Screener's Choice"}, {v:'4',name:'Photos of the Week'},
+ {v:'8',name:'Accident Photos'}, {v:'65536',name:'Air-to-Air Photos'}, {v:'16',name:'Airport (Terminal) Photos'},
+ {v:'256',name:'Artistic (Effects) Photos'}, {v:'8192',name:'Business Jet Photos'}, {v:'2048',name:'Cabin (Interior) Photos'},
+ {v:'1024',name:'Cargo Aircraft Photos'}, {v:'32',name:'Flight Deck (Cockpit) Photos'}, {v:'512',name:'Helicopter Photos'},
+ {v:'4096',name:'Lighter-than-Air Photos'}, {v:'64',name:'Night/Sunrise/Sunset Photos'}, {v:'16384',name:'Small Prop (Cessna, etc.)'},
+ {v:'128',name:'Special Paint Schemes'}, {v:'32768',name:'Wing View (Out the Window)'}, {v:'131072',name:'Warbird/Vintage'}
+];
 
 function naturalHeight(el) {
   var cs = getComputedStyle(el);
@@ -2023,20 +2504,73 @@ function renderStack(el, rank, filterKey, total) {
     });
   });
 }
+function updateWideFoot(kind, expanded, restN, topN, unit, onToggle) {
+  var foot = $(kind === 'type' ? 'typeFoot' : 'makerFoot');
+  var btn = $(kind === 'type' ? 'typeFootBtn' : 'makerFootBtn');
+  if (!foot || !btn) return;
+  foot.hidden = restN <= 0;
+  if (restN <= 0) return;
+  btn.textContent = expanded
+    ? tt('▲ 收起列表，只看前 ' + topN + ' ' + unit, '▲ Collapse to top ' + topN)
+    : tt('▼ 展开完整列表（其余 ' + restN + ' ' + unit + '）', '▼ Show all (' + restN + ' more)');
+  btn.onclick = onToggle;
+}
+var piePick = { type: '', maker: '' };
+function markPieSelection(kind) {
+  var picked = piePick[kind] || '';
+  var pie = $(kind === 'type' ? 'typePie' : 'makerPie');
+  if (pie) pie.querySelectorAll('circle.seg').forEach(function (c) {
+    c.classList.toggle('active', !!picked && c.getAttribute('data-name') === picked);
+  });
+  var box = $(kind === 'type' ? 'familyBars' : 'makerLegend');
+  if (box) box.querySelectorAll('.bar-row,.lg-row').forEach(function (row) {
+    var n = row.getAttribute('data-v') || row.getAttribute('data-name') || '';
+    row.classList.toggle('pie-picked', !!picked && n === picked);
+  });
+}
+function pickPie(kind, name) {
+  piePick[kind] = piePick[kind] === name ? '' : name;
+  markPieSelection(kind);
+}
+function renderPie(el, segs, total, filterKey, onRest, onPick, activeName) {
+  if (!el) return;
+  if (!segs.length) { el.innerHTML = ''; return; }
+  var sum = segs.reduce(function (a, s) { return a + s.count; }, 0) || 1;
+  var R = 66, C = 2 * Math.PI * R, off = 0, circles = '';
+  segs.forEach(function (s, i) {
+    var len = C * s.count / sum;
+    var active = activeName === s.name ? ' active' : '';
+    circles += '<circle class="seg' + active + '" data-name="' + esc(s.name) + '" data-i="' + i + '" cx="80" cy="80" r="' + R + '" stroke="' + s.color + '" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) + '"><title>' + esc(s.name) + ' · ' + s.count + ' ' + tt('张', 'photos') + '</title></circle>';
+    off += len;
+  });
+  el.innerHTML = '<svg viewBox="0 0 160 160" role="img"><g>' + circles + '</g></svg>' +
+    '<div class="donut-center"><div class="n">' + fmt(total) + '</div><div class="t">' + tt('照片', 'PHOTOS') + '</div></div>';
+  el.querySelectorAll('circle.seg').forEach(function (c) {
+    c.addEventListener('click', function () {
+      var s = segs[+c.getAttribute('data-i')];
+      if (!s) return;
+      if (s.isRest) { if (onRest) onRest(); return; }
+      if (onPick) onPick(s.name);
+      else setFilter(filterKey, state[filterKey] === s.name ? '' : s.name);
+    });
+  });
+}
 function renderBars(el, data, total, color, filterKey, labelFn, more) {
   var max = data[0] ? data[0].count : 1;
   var html = data.map(function (d, i) {
     var pct = (100 * d.count / total).toFixed(1);
     var active = state[filterKey] === d.name ? ' active' : '';
     return '<div class="bar-row' + active + '" data-v="' + esc(d.name) + '" role="button" tabindex="0" title="' + esc(d.name) + ' · ' + d.count + ' 张">' +
-      '<div class="bl">' + (labelFn ? labelFn(d) : '<b>' + esc(d.name) + '</b>') + '</div>' +
+      '<div class="bl">' + (labelFn ? labelFn(d, i) : '<b>' + esc(d.name) + '</b>') + '</div>' +
       '<div class="bar-track"><div class="bar-fill" style="--bc:' + (typeof color === 'function' ? color(i) : color) + '" data-w="' + (100 * d.count / max) + '"></div></div>' +
       '<div class="bv">' + d.count + '<small>' + pct + '%</small></div></div>';
   }).join('');
   if (more) {
     if (more.expanded) {
-      var collapse = '<div class="bar-row bar-collapse" role="button" tabindex="0"><div class="bl"><b>▲ 收起列表</b><small>只看前 ' + more.top + ' 项</small></div><div class="bar-track bar-track--ghost"></div><div class="bv"></div></div>';
-      html = collapse + html + collapse;
+      if (!more.hideCollapse) {
+        var collapse = '<div class="bar-row bar-collapse" role="button" tabindex="0"><div class="bl"><b>▲ 收起列表</b><small>只看前 ' + more.top + ' 项</small></div><div class="bar-track bar-track--ghost"></div><div class="bv"></div></div>';
+        html = collapse + html + collapse;
+      }
     } else if (more.restN > 0) {
       html += '<div class="bar-row bar-more" role="button" tabindex="0" title="点击展开其余 ' + more.restN + ' ' + more.unit + '">' +
         '<div class="bl"><b>其他 ' + more.restN + ' ' + more.unit + '</b><small>点击展开完整列表 ⌄</small></div>' +
@@ -2391,59 +2925,49 @@ window.addEventListener('scroll', function (e) {
 function renderMakers() {
   var top = makerRank.slice(0, 8);
   var rest = makerRank.slice(8);
-  var restSum = rest.reduce(function (s, d) { return s + d.count; }, 0);
-  var segs = top.map(function (d, i) { return { name: d.name, count: d.count, color: PALETTE[i] }; });
+  var restSum = rest.reduce(function (sum, d) { return sum + d.count; }, 0);
+  var segs = top.map(function (d, i) { return { name: d.name, count: d.count, color: PALETTE[i % PALETTE.length] }; });
   if (restSum > 0) segs.push({ name: '其他', count: restSum, color: '#4a525a', isRest: true });
-  $('makerStack').innerHTML = segs.map(function (s, i) {
-    return '<div data-i="' + i + '" class="' + (state.maker === s.name ? 'active' : '') + '" style="width:' + (100 * s.count / G.photos) + '%;background:' + s.color + '" title="' + esc(s.name) + ' · ' + s.count + ' 张"></div>';
-  }).join('');
-  var legend = $('makerLegend');
+  var list = $('makerLegend');
   var expanded = chartExpand.maker && rest.length > 0;
-  legend.classList.toggle('expand', expanded);
-  if (!expanded) { legend.style.maxHeight = ''; legend.style.overflowY = ''; }
-  if (expanded) {
-    var mcol = '<div class="lg-row lg-collapse" role="button" tabindex="0" style="grid-column:1/-1"><span class="lg-name">▲ 收起，只看前 8 家</span></div>';
-    legend.innerHTML = mcol + makerRank.map(function (d, i) {
-      return '<div class="lg-row' + (state.maker === d.name ? ' active' : '') + '" data-v="' + esc(d.name) + '" role="button" tabindex="0" title="' + esc(d.name) + ' · ' + d.count + ' 张">' +
-        '<span class="lg-dot" style="background:' + PALETTE[i % PALETTE.length] + '"></span><span class="lg-name">' + esc(d.name) + '</span>' +
-        '<span class="lg-val">' + d.count + '</span><span class="lg-pct">' + (100 * d.count / G.photos).toFixed(1) + '%</span></div>';
-    }).join('') + mcol;
-  } else {
-    legend.innerHTML = segs.map(function (s, i) {
-      return '<div class="lg-row' + (state.maker === s.name ? ' active' : '') + '" data-i="' + i + '" role="button" tabindex="0"' + (s.isRest ? ' title="点击展开其余 ' + rest.length + ' 家制造商"' : '') + '>' +
-        '<span class="lg-dot" style="background:' + s.color + '"></span><span class="lg-name">' + esc(s.name) + (s.isRest ? ' ⌄' : '') + '</span>' +
-        '<span class="lg-val">' + s.count + '</span><span class="lg-pct">' + (100 * s.count / G.photos).toFixed(1) + '%</span></div>';
-    }).join('');
+  var data = expanded ? makerRank : top;
+  var max = makerRank.length ? makerRank[0].count : 1;
+  var html = data.map(function (d, i) {
+    var pct = (100 * d.count / G.photos).toFixed(1);
+    return '<div class="bar-row' + (state.maker === d.name ? ' active' : '') + '" data-v="' + esc(d.name) + '" data-name="' + esc(d.name) + '" role="button" tabindex="0" title="' + esc(d.name) + ' · ' + d.count + ' 张">' +
+      '<div class="bl"><span class="pie-key-dot" style="background:' + PALETTE[i % PALETTE.length] + '"></span><b>' + esc(d.name) + '</b></div>' +
+      '<div class="bar-track"><div class="bar-fill" style="--bc:' + PALETTE[i % PALETTE.length] + ';width:' + (100 * d.count / max).toFixed(2) + '%"></div></div>' +
+      '<div class="bv">' + d.count + '<small>' + pct + '%</small></div></div>';
+  }).join('');
+  if (!expanded && rest.length) {
+    html += '<div class="bar-row bar-more" role="button" tabindex="0" title="点击展开其余 ' + rest.length + ' 家制造商">' +
+      '<div class="bl"><span class="pie-key-dot" style="background:#4a525a"></span><b>其他 ' + rest.length + ' 家制造商</b><small>点击展开完整列表 ⌄</small></div>' +
+      '<div class="bar-track"><div class="bar-fill" style="--bc:#4a525a;width:' + (100 * restSum / max).toFixed(2) + '%"></div></div>' +
+      '<div class="bv">' + restSum + '<small>' + (100 * restSum / G.photos).toFixed(1) + '%</small></div></div>';
   }
-  if (expanded) fitExpand(legend, $('familyBars') ? $('familyBars').closest('.card') : null);
-  function click(i, keep) {
-    var s = segs[i];
-    if (s.isRest) { chartExpand.maker = true; renderMakers(); alignCard(legend); return; }
-    hideMakerPop();
-    setFilter('maker', state.maker === s.name ? '' : s.name);
-    if (!keep) scrollToGallery();
-  }
-  $('makerStack').querySelectorAll('div').forEach(function (d) { d.addEventListener('click', function () { click(+d.dataset.i, true); }); });
-  legend.querySelectorAll('.lg-row').forEach(function (r) {
-    var mkName = r.dataset.v != null ? r.dataset.v : (segs[+r.dataset.i] && !segs[+r.dataset.i].isRest ? segs[+r.dataset.i].name : '');
-    if (mkName && !r.classList.contains('lg-collapse')) {
-      r.addEventListener('mouseenter', function () { showMakerPop(mkName, r); });
-      r.addEventListener('mouseleave', scheduleHideMakerPop);
-    }
-    if (r.classList.contains('lg-collapse')) {
-      function collapse() { chartExpand.maker = false; renderMakers(); alignCard(legend); }
-      r.addEventListener('click', collapse);
-      r.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); collapse(); } });
+  list.innerHTML = html;
+  list.classList.toggle('expand', expanded);
+  list.style.maxHeight = '';
+  list.style.overflowY = '';
+  list.querySelectorAll('.bar-row').forEach(function (row) {
+    if (row.classList.contains('bar-more')) {
+      function expandMore() { chartExpand.maker = true; renderMakers(); }
+      row.addEventListener('click', expandMore);
+      row.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); expandMore(); } });
       return;
     }
-    if (r.dataset.v != null) {
-      function go() { hideMakerPop(); setFilter('maker', state.maker === r.dataset.v ? '' : r.dataset.v); scrollToGallery(); }
-      r.addEventListener('click', go);
-      r.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
-      return;
-    }
-    r.addEventListener('click', function () { click(+r.dataset.i); });
-    r.addEventListener('keydown', function (e) { if (e.key === 'Enter') click(+r.dataset.i); });
+    var mk = row.getAttribute('data-v');
+    function go() { hideMakerPop(); setFilter('maker', state.maker === mk ? '' : mk); scrollToGallery(); }
+    row.addEventListener('click', go);
+    row.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    row.addEventListener('mouseenter', function () { showMakerPop(mk, row); });
+    row.addEventListener('mouseleave', scheduleHideMakerPop);
+  });
+  renderPie($('makerPie'), segs, G.photos, 'maker', function () { chartExpand.maker = true; renderMakers(); }, function (name) { pickPie('maker', name); }, piePick.maker);
+  markPieSelection('maker');
+  updateWideFoot('maker', expanded, rest.length, 8, '家制造商', function () {
+    chartExpand.maker = !chartExpand.maker;
+    renderMakers();
   });
 }
 
@@ -2770,8 +3294,9 @@ function renderFamilyCard() {
   var tRank = typeFam ? famRank : familyRank;
   $('familyTotal').textContent = typeFam ? (famRank.length + ' 个系列') : (familyRank.length + ' 种机型');
   var famRest = tRank.slice(10);
-  renderBars($('familyBars'), chartExpand.family ? tRank : tRank.slice(0, 10), G.photos, function (i) { return PALETTE[i % PALETTE.length]; }, typeFam ? 'fam' : 'family', typeFam ? null : typeLabel, {
+  renderBars($('familyBars'), chartExpand.family ? tRank : tRank.slice(0, 10), G.photos, function (i) { return PALETTE[i % PALETTE.length]; }, typeFam ? 'fam' : 'family', function (d, i) { return '<span class="pie-key-dot" style="background:' + PALETTE[i % PALETTE.length] + '"></span>' + (typeFam ? '<b>' + esc(d.name) + '</b>' : typeLabel(d)); }, {
     height: familyCapH,
+    hideCollapse: true,
     expanded: chartExpand.family,
     top: 10,
     restN: famRest.length,
@@ -2780,7 +3305,16 @@ function renderFamilyCard() {
     onExpand: function () { var fb = $('familyBars'); familyCapH = fb && fb.closest('.card') ? fb.closest('.card').offsetHeight : 0; chartExpand.family = true; renderFamilyCard(); alignCard($('familyBars')); },
     onCollapse: function () { chartExpand.family = false; renderFamilyCard(); alignCard($('familyBars')); }
   });
-  renderStack($('typeStack'), tRank, typeFam ? 'fam' : 'family', G.photos);
+  var pieTop = tRank.slice(0, 10), pieRest = tRank.slice(10);
+  var pieSegs = pieTop.map(function (d, i) { return { name: d.name, count: d.count, color: PALETTE[i % PALETTE.length] }; });
+  var pieRestSum = pieRest.reduce(function (a, d) { return a + d.count; }, 0);
+  if (pieRestSum) pieSegs.push({ name: '其他', count: pieRestSum, color: '#4a525a', isRest: true });
+  renderPie($('typePie'), pieSegs, G.photos, typeFam ? 'fam' : 'family', function () { chartExpand.family = true; renderFamilyCard(); }, function (name) { pickPie('type', name); }, piePick.type);
+  markPieSelection('type');
+  updateWideFoot('type', !!(chartExpand.family && pieRest.length), pieRest.length, 10, typeFam ? '个系列' : '个机型', function () {
+    chartExpand.family = !chartExpand.family;
+    renderFamilyCard();
+  });
 }
 function renderCameraCard() {
   var list = camMode === 'lens' ? lensRank : cameraRank;
@@ -2810,6 +3344,7 @@ function renderAllCharts() {
   renderFamilyCard();
   renderMakers();
   renderAirlineTypes();
+  renderCategoryStats();
   renderTimeline();
   renderBars($('countryBars'), countryRank.slice(0, 8), Math.max(1, detailCount), '#86b4ff', 'country');
   renderCameraCard();
@@ -2853,6 +3388,9 @@ function fillSelects() {
   fillSelect($('fLens'), lensRank, '全部镜头');
   fillSelect($('fMonthUpload'), monthRank('uploaded'), '全部上传月份');
   fillSelect($('fMonthDate'), monthRank('date'), '全部拍摄月份');
+  fillBadgeSelect();
+  fillCategorySelect();
+scheduleFilterLayout();
 }
 function refreshGallery() {
   state.filtered = computeFiltered();
@@ -2895,10 +3433,22 @@ function computeFiltered() {
     if (state.camera && p.camBody !== state.camera) return false;
     if (state.lens && p.lens !== state.lens) return false;
     if (state.month && String(p[state.monthField || 'uploaded'] || '').slice(0, 7) !== state.month) return false;
-    if (state.cargo && String(p.cargo ? '1' : '0') !== state.cargo) return false;
+    if (state.cargo) {
+      if (/^Airport$/i.test(p.aircraft || '')) return false;
+      if (state.cargo === 'military') { if (!p.military) return false; }
+      else {
+        if (p.military) return false;
+        if (String(p.cargo ? '1' : '0') !== state.cargo) return false;
+      }
+    }
     if (state.award) {
       if (state.award === 'any') { if (!(p.ep || p.pw || p.sc || p.pc)) return false; }
       else if (!p[state.award]) return false;
+    }
+    if (state.badge && !badgeMatches(p, state.badge)) return false;
+    if (state.category) {
+      var cids = PHOTOGRAPHER.categoryIds && PHOTOGRAPHER.categoryIds[state.category];
+      if (cids && cids.indexOf(p.id) < 0) return false;
     }
     for (var i = 0; i < terms.length; i++) if (p.blob.indexOf(terms[i]) === -1) return false;
     return true;
@@ -2941,8 +3491,10 @@ function renderChips() {
     if (state[k]) {
       var v = state[k];
       if (k === 'airport' && airportNames[v] && airportNames[v] !== v) v = v + ' ' + airportNames[v];
-      if (k === 'cargo') v = v === '1' ? '货机' : '客机';
+      if (k === 'cargo') v = v === '1' ? '货机（民机）' : v === '0' ? '客机（民机）' : '军机';
       if (k === 'award') v = v === 'any' ? '任意获奖' : v.toUpperCase();
+      if (k === 'badge') v = badgeName(v);
+      if (k === 'category') v = photoCategoryName(v);
       h += '<span class="chip">' + FILTER_LABEL[k] + ': ' + esc(v) + '<button data-k="' + k + '" aria-label="清除筛选">✕</button></span>';
     }
   });
@@ -2974,6 +3526,7 @@ function syncSelectStyles() {
   Object.keys(FILTER_KEYS).forEach(function (k) {
     $(FILTER_KEYS[k]).classList.toggle('on', !!state[k]);
   });
+  syncBadgeState();
   $('fMonthUpload').value = (state.month && state.monthField === 'uploaded') ? state.month : '';
   $('fMonthDate').value = (state.month && state.monthField === 'date') ? state.month : '';
 }
@@ -2996,6 +3549,7 @@ $('q').addEventListener('input', function () {
   qTimer = setTimeout(function () { state.q = $('q').value; apply(); }, 180);
 });
 Object.keys(FILTER_KEYS).forEach(function (k) {
+  if (k === 'category') return;
   $(FILTER_KEYS[k]).addEventListener('change', function () {
     var v = this.value;
     if (k === 'family') { state.fam = ''; $('fFam').value = ''; }
@@ -3004,6 +3558,15 @@ Object.keys(FILTER_KEYS).forEach(function (k) {
     if (k === 'lens') { state.camera = ''; $('fCamera').value = ''; }
     state[k] = v;
     apply();
+  });
+});
+if ($('fCategory')) $('fCategory').addEventListener('change', function () {
+  var v = this.value;
+  if (!v) { state.category = ''; apply(); return; }
+  toast(tt('正在读取照片类别…', 'Loading photo category…'));
+  loadPhotoCategory(v).then(function (ids) {
+    if (ids) { state.category = v; $('fCategory').value = v; apply(); }
+    else { $('fCategory').value = state.category || ''; toast(tt('类别读取失败，请重试', 'Could not load category')); }
   });
 });
 $('fMonthUpload').addEventListener('change', function () {
@@ -3023,6 +3586,85 @@ function resetAll() {
   apply();
 }
 $('resetBtn').addEventListener('click', resetAll);
+if ($('heroBadges')) $('heroBadges').addEventListener('click', function (e) {
+  var b = e.target.closest('.hero-badge');
+  if (!b) return;
+  setFilter('badge', b.getAttribute('data-slug'));
+  scrollToGallery();
+});
+
+/* ---------- filter bar collapse (>3 rows) ---------- */
+var filterToolbar = $('filterToolbar'), filterToggle = $('filterToggle');
+var filterCollapsed = false, filterLayoutTimer = null;
+function filterRowCount() {
+  if (!filterToolbar) return 0;
+  var tops = [];
+  [].forEach.call(filterToolbar.children, function (el) {
+    if (el === filterToggle || el.hidden) return;
+    var t = el.offsetTop, seen = false;
+    for (var i = 0; i < tops.length; i++) if (Math.abs(tops[i] - t) < 2) { seen = true; break; }
+    if (!seen) tops.push(t);
+  });
+  return tops.length;
+}
+function filterFirstRowHeight() {
+  if (!filterToolbar) return 0;
+  var tr = filterToolbar.getBoundingClientRect(), top = null, bottom = 0;
+  [].forEach.call(filterToolbar.children, function (el) {
+    if (el.hidden) return;
+    var r = el.getBoundingClientRect();
+    if (top === null) top = r.top;
+    if (Math.abs(r.top - top) < 2) bottom = Math.max(bottom, r.bottom);
+  });
+  if (!bottom) return 0;
+  return bottom - tr.top + 4;
+}
+function setFilterToggleLabel() {
+  if (!filterToggle) return;
+  var label = filterCollapsed ? tt('展开筛选', 'Expand') : tt('收起筛选', 'Collapse');
+  var txt = filterToggle.querySelector('.ft-txt');
+  if (txt) txt.textContent = label;
+  filterToggle.setAttribute('aria-label', label);
+  filterToggle.setAttribute('aria-expanded', filterCollapsed ? 'false' : 'true');
+}
+function layoutFilters() {
+  if (!filterToolbar || !filterToggle) return;
+  var wasCollapsed = filterCollapsed;
+  filterToggle.hidden = true;
+  filterToolbar.classList.remove('collapsed');
+  filterToolbar.style.maxHeight = '';
+  var need = filterRowCount() > 3;
+  filterToggle.hidden = !need;
+  if (!need) {
+    filterCollapsed = false;
+    setFilterToggleLabel();
+    return;
+  }
+  filterCollapsed = wasCollapsed;
+  setFilterToggleLabel();
+  if (filterCollapsed) {
+    filterToolbar.style.maxHeight = filterFirstRowHeight() + 'px';
+    filterToolbar.classList.add('collapsed');
+  }
+}
+function scheduleFilterLayout() {
+  clearTimeout(filterLayoutTimer);
+  filterLayoutTimer = setTimeout(layoutFilters, 60);
+}
+if (filterToggle) filterToggle.addEventListener('click', function () {
+  if (filterCollapsed) {
+    filterCollapsed = false;
+    filterToolbar.classList.remove('collapsed');
+    filterToolbar.style.maxHeight = '';
+  } else {
+    filterCollapsed = true;
+    filterToolbar.style.maxHeight = filterFirstRowHeight() + 'px';
+    filterToolbar.classList.add('collapsed');
+  }
+  setFilterToggleLabel();
+});
+window.addEventListener('resize', scheduleFilterLayout);
+window.addEventListener('load', scheduleFilterLayout);
 $('emptyReset').addEventListener('click', resetAll);
 $('moreBtn').addEventListener('click', function () { state.shown += 60; renderGrid(); });
 $('grid').addEventListener('click', function (e) {
@@ -3474,6 +4116,8 @@ function loadPhotographerInfo(attempt) {
     if (ph.cover && ph.cover !== PHOTOGRAPHER.cover) { PHOTOGRAPHER.cover = ph.cover; PHOTOGRAPHER.coverKind = 'cover'; changed = true; }
     if (ph.firstUpload && ph.firstUpload !== PHOTOGRAPHER.firstUpload) { PHOTOGRAPHER.firstUpload = ph.firstUpload; changed = true; }
     if (ph.acceptRatio && ph.acceptRatio !== PHOTOGRAPHER.acceptRatio) { PHOTOGRAPHER.acceptRatio = ph.acceptRatio; changed = true; }
+    if (ph.badges && ph.badges.length && JSON.stringify(ph.badges) !== JSON.stringify(PHOTOGRAPHER.badges)) { PHOTOGRAPHER.badges = ph.badges; computeBadgeFlags(); changed = true; }
+    if (ph.badges && ph.badges.length) loadBadgeCategories();
     if (changed) { saveCache(); renderHero(); }
   }).catch(function () {
     // 被限流/拦截时稍后重试，避免一直停留在「摄影师 ID」
@@ -3501,6 +4145,9 @@ async function init() {
     state.sort = detailCount ? 'uploaded_desc' : 'views_desc';
     $('fSort').value = state.sort;
     renderHero(); fillSelects(); apply();
+    loadBadgeCategories();
+    loadPhotoCategory('128');
+    loadPhotoCategory('64');
     firstRender = false;
     document.body.classList.add('settled');
     $('boot').classList.add('hidden');
@@ -3772,7 +4419,7 @@ var Globe = (function () {
     W = stage.clientWidth; H = stage.clientHeight;
     if (!W || !H) return;
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-    baseR = Math.max(70, Math.min(W, H) * 0.44 - 6);
+    baseR = Math.max(70, Math.min(W, H) * (window.innerWidth <= 760 ? 0.48 : 0.44) - 6);
     R = baseR * zoom;
     cx = W / 2; cy = H / 2;
     draw(performance.now());
@@ -4305,7 +4952,26 @@ var I18N_DICT = {
  "点赞量 Likes": "Likes",
  "点击某个月份筛选图库": "Click a month to filter the gallery",
  "退出统计台": "Exit dashboard",
- "清理缓存": "Clear cache"
+ "清理缓存": "Clear cache",
+ "收起筛选": "Collapse",
+ "展开筛选": "Expand",
+ "全部徽章": "All badges",
+ "徽章": "Badge",
+ "按徽章筛选": "Filter by badge",
+ "全部类别": "All categories",
+ "类别": "Category",
+ "客机（民机）": "Passenger (civil)",
+ "货机（民机）": "Cargo (civil)",
+ "军机": "Military",
+ "分类统计": "Category stats",
+ "特殊涂装": "Special livery",
+ "夜拍 / 黄昏": "Night / dusk",
+ "客机 / 货机 / 军机": "Passenger / cargo / military",
+ "飞机照片": "AIRCRAFT",
+ "其他照片": "Other photos",
+ "正在读取照片类别…": "Loading photo category…",
+ "类别读取失败，请重试": "Could not load category",
+ "点击图表筛选图库": "Click a chart to filter the gallery"
 };
 var I18N_RULES = [
     [/^其他 (\d+) 个机场$/, "Other $1 airports"],
@@ -4423,6 +5089,7 @@ function applyLang() {
     btn.setAttribute('title', LANG === 'en' ? 'Switch to Chinese' : 'Switch to English');
   }
   if (typeof updateStrip === 'function') updateStrip();
+  if (typeof scheduleFilterLayout === 'function') scheduleFilterLayout();
 }
 if ($('langBtn')) $('langBtn').addEventListener('click', function () {
   LANG = LANG === 'en' ? 'zh' : 'en';
@@ -4430,6 +5097,7 @@ if ($('langBtn')) $('langBtn').addEventListener('click', function () {
   applyLang();
 });
 applyLang();
+setTimeout(layoutFilters, 120);
 var langTimer = null;
 new MutationObserver(function () {
   if (LANG !== 'en') return;

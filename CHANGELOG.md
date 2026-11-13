@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.5.5 — 2026-11-13
+
+- Mobile layout: KPI cards fit narrow screens; filter bar collapses to one row when it exceeds three rows; taller mobile globe stage.
+- Badges: parse earned profile badges, show them under the hero meta, and add badge filtering with exact category-page photo IDs; packaged 31 unique high-resolution SVG badge assets and catalog.
+- Photo categories: add the full official JetPhotos Category filter, including Special Paint Schemes and Night/Sunrise/Sunset.
+- Type filter: strictly separate civil passenger, civil cargo, and military aircraft; airport scenes are excluded.
+- Category stats: add three donut charts for type, special livery, and night/dusk above the timeline.
+- Type/manufacturer cards: use full-width cards with larger clickable pie charts, fixed height, internal scrolling, and local-only pie highlighting that does not refresh the dashboard or gallery.
+- Fixes: exact special-livery category results use only the authoritative category pages; badges, categories, and items stay in sync with all pages of each category.
+
 ## 2.4.4 — 2026-11-13
 
 - Globe: clicking an airport light point now rotates the globe smoothly until that point is centered.
