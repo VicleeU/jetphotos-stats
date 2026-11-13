@@ -58,8 +58,8 @@ var css = '' +
 '.jpst-panel .jpst-x{position:absolute;top:10px;right:12px;background:none;border:none;color:#6d746f;font-size:15px;cursor:pointer;padding:4px}' +
 '.jpst-panel .jpst-x:hover{color:#f2f3ef}' +
 '.jpst-pill.jpst-green,.jpst-panel.jpst-green{--jpa:#d3f36b;--jpa-rgb:211,243,107}' +
-'.jpst-fr24.jpst-pill{background:#fff;border-color:#e6c200;color:#1b1f23;box-shadow:0 10px 26px #0007,0 0 0 1px rgba(245,197,24,.25)}' +
-'.jpst-fr24.jpst-pill:hover{box-shadow:0 14px 30px #0008,0 0 0 1px rgba(245,197,24,.5)}' +
+'.jpst-fr24.jpst-pill{background:#24282c;border-color:#f5c518;color:#f5c518;box-shadow:0 10px 26px #0007,0 0 0 1px rgba(245,197,24,.25)}' +
+'.jpst-fr24.jpst-pill:hover{background:#2c3136;box-shadow:0 14px 30px #0008,0 0 0 1px rgba(245,197,24,.55)}' +
 '.jpst-fr24.jpst-pill .jpst-dot{background:#f5c518;box-shadow:0 0 0 3px rgba(245,197,24,.22)}' +
 '.jpst-fr24.jpst-panel{background:#fff;border-color:#d7dbe0;color:#1b1f23;padding:0 18px 18px}' +
 '.jpst-fr24.jpst-panel h3{margin:0 -18px 12px;padding:14px 42px 14px 18px;background:#24282c;color:#f5c518;border-radius:15px 15px 0 0;font-size:15px}' +

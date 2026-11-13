@@ -4,7 +4,7 @@
 
 Unofficial, client-side JetPhotos photographer statistics dashboard. The public repository contains the engine, install page, build scripts and fonts. Personal photographer data and caches belong outside this repository and must never be committed.
 
-- Current version: **2.6.1**
+- Current version: **2.6.2**
 - Repository: https://github.com/VicleeU/jetphotos-stats
 - Install page: https://vicleeu.github.io/jetphotos-stats/
 - Greasy Fork: https://greasyfork.org/zh-CN/scripts/605109

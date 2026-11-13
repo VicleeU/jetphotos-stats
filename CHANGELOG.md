@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.2 — 2026-11-13
+
+- FR24 theme: the floating "statistics for this photographer" trigger now uses a dark-gray background with a yellow border and yellow text, matching the rest of the FR24 controls.
+
 ## 2.6.1 — 2026-11-13
 
 - Cache menu: the trash button now offers clearing the current photographer's cache or all photographers' caches; theme and language settings are preserved.
