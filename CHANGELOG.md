@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.6.1 — 2026-11-13
+
+- Cache menu: the trash button now offers clearing the current photographer's cache or all photographers' caches; theme and language settings are preserved.
+- FR24 theme: popup headers use the dark header/yellow title treatment, the family/subtype tabs follow FR24 pill controls, and collapse rows are transparent with gold text.
+- FR24 theme: the gallery filter toggle is black with a yellow border and yellow text in both expanded and collapsed states.
+- Mobile gallery: registration and like badges are smaller and sit closer to the top-left corner; the gallery filter bar starts collapsed and auto-collapses when scrolling down through the gallery.
+- Gallery cards: the registration badge text and border now follow the active theme color instead of blue.
+- Fixes: mobile filter layout, fixed-height type/manufacturer cards, and exact special-livery category results.
+
 ## 2.5.5 — 2026-11-13
 
 - Mobile layout: KPI cards fit narrow screens; filter bar collapses to one row when it exceeds three rows; taller mobile globe stage.

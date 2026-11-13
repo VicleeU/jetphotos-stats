@@ -8,7 +8,7 @@ DIST = ROOT / 'dist'
 SITE = ROOT / 'site'
 DIST.mkdir(exist_ok=True)
 
-VERSION = '2.5.5'
+VERSION = '2.6.1'
 ENGINE_URL = sys.argv[1] if len(sys.argv) > 1 else ''
 
 

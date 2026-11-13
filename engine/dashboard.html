@@ -302,8 +302,8 @@ html.theme-fr24 .cat-item{background:#fff;border-color:var(--line);border-radius
 .filter-toggle svg{width:13px;height:13px;flex:none;transition:transform .2s}
 .toolbar.collapsed{overflow:hidden}
 .toolbar.collapsed .filter-toggle svg{transform:rotate(180deg)}
-html.theme-fr24 .filter-toggle{background:#fff;border-color:var(--line);color:var(--ink2)}
-html.theme-fr24 .filter-toggle:hover{background:#f5f7f8;color:var(--ink)}
+html.theme-fr24 .filter-toggle{background:#111;border-color:#f5c518;color:#f5c518}
+html.theme-fr24 .filter-toggle:hover{background:#000;border-color:#f5c518;color:#f5c518}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
 .chip{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-family:var(--mono);background:rgba(var(--accent-rgb),0.07);border:1px solid rgba(var(--accent-rgb),0.25);color:var(--cyan);padding:4px 6px 4px 11px;border-radius:16px}
 .chip button{background:none;border:none;color:var(--cyan);font-size:13px;line-height:1;padding:2px 5px;border-radius:50%;opacity:.7}
@@ -319,7 +319,7 @@ html.theme-fr24 .filter-toggle:hover{background:#f5f7f8;color:var(--ink)}
 .pcard img.loaded{opacity:1}
 .pcard:hover img{transform:scale(1.06)}
 .pcard .shade{position:absolute;inset:0;background:linear-gradient(180deg,#08090a66 0%,transparent 32%,transparent 52%,#08090ae0 100%)}
-.reg-badge{position:absolute;top:9px;left:9px;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.05em;color:#dff1ff;background:#15181bd9;border:1px solid #9fd6ff55;padding:3px 8px;border-radius:6px;backdrop-filter:blur(4px)}
+.reg-badge{position:absolute;top:9px;left:9px;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.05em;color:var(--cyan);background:#15181bd9;border:1px solid rgba(var(--accent-rgb),0.42);padding:3px 8px;border-radius:6px;backdrop-filter:blur(4px)}
 .pcard .badges{position:absolute;top:9px;left:9px;display:flex;align-items:center;gap:6px;z-index:2}
 .pcard .badges .reg-badge,.pcard .badges .like-badge{position:static;top:auto;left:auto}
 .pcard .badges .like-badge{padding:3px 7px}
@@ -509,7 +509,7 @@ main{max-width:1360px;padding:calc(var(--nav-h) + 30px) 24px 48px}
 .chip button:hover{background:rgba(var(--accent-rgb),0.13)}
 .pcard{border-radius:14px;background:#141619}
 .pcard:hover{border-color:rgba(var(--accent-rgb),0.4);box-shadow:0 20px 44px #000000b3}
-.reg-badge{color:#dff1ff;border-color:#9fd6ff55}
+.reg-badge{color:var(--cyan);border-color:rgba(var(--accent-rgb),0.42)}
 .like-badge{color:#ffb0cf;border-color:#ff7ab655}
 .modal{background:#141619}
 .modal-img{background:#0b0c0d}
@@ -697,6 +697,18 @@ html.theme-fr24 .bar-row.active{background:#fffbea;border-color:#f0d35c}
 html.theme-fr24 .pcard{background:#fff;border-color:var(--line);border-radius:6px}
 html.theme-fr24 .pcard:hover{border-color:#c6ccd2;box-shadow:0 6px 18px #14202e17}
 html.theme-fr24 .maker-pop{background:#fff;border-color:var(--line);border-radius:8px;box-shadow:0 20px 50px #14202e24}
+html.theme-fr24 .maker-pop .mp-h{margin:-13px -15px 10px;padding:10px 15px;background:#2f3439;border-radius:7px 7px 0 0;color:#f5c518}
+html.theme-fr24 .maker-pop .mp-h b{color:#f5c518}
+html.theme-fr24 .maker-pop .mp-h .n{color:#c7ced5}
+html.theme-fr24 .maker-pop .mp-tabs{background:#eceff2;border:1px solid #cfd5da;border-radius:999px;padding:2px;gap:0}
+html.theme-fr24 .maker-pop .mp-tabs button{background:transparent;border-color:transparent;color:#59616a;border-radius:999px;padding:3px 9px}
+html.theme-fr24 .maker-pop .mp-tabs button.on{background:#f5c518;border-color:#f5c518;color:#1b1f23}
+html.theme-fr24 .lg-row.lg-collapse,
+html.theme-fr24 .bar-row.bar-collapse{background:transparent;color:#b58b00;border-top:1px dashed #d8dde2}
+html.theme-fr24 .lg-row.lg-collapse:hover,
+html.theme-fr24 .bar-row.bar-collapse:hover{background:#fffbea;color:#8f6f00}
+html.theme-fr24 .lg-row.lg-collapse .lg-name,
+html.theme-fr24 .bar-row.bar-collapse .bl b{color:inherit}
 html.theme-fr24 .mp-track{background:#eef0f2}
 html.theme-fr24 .mp-row:hover{background:#f6f8f9}
 html.theme-fr24 .globe-stage{background:#f4f6f7;border-color:var(--line);border-radius:8px}
@@ -718,6 +730,18 @@ html.theme-fr24 .tl-toggle button{color:var(--ink3)}
 html.theme-fr24 ::-webkit-scrollbar-thumb{background:#c4cad1;border-color:var(--bg2)}
 .theme-wrap{position:relative;display:flex;align-items:center}
 .theme-menu{position:absolute;top:40px;right:0;min-width:136px;background:#141619;border:1px solid var(--line2);border-radius:10px;padding:6px;box-shadow:0 16px 36px #0009;z-index:300;display:flex;flex-direction:column;gap:2px}
+.cache-wrap{position:relative;display:flex;align-items:center}
+.cache-menu{position:absolute;top:40px;right:0;min-width:196px;background:#141619;border:1px solid var(--line2);border-radius:10px;padding:6px;box-shadow:0 16px 36px #0009;z-index:300;display:flex;flex-direction:column;gap:2px}
+.cache-menu[hidden]{display:none}
+.cache-menu button{background:none;border:0;color:var(--ink2);font-size:12px;padding:8px 10px;border-radius:7px;text-align:left;white-space:nowrap;cursor:pointer}
+.cache-menu button:hover{background:#ffffff10;color:var(--ink)}
+.cache-menu button[data-scope="all"]{color:#ffb0b8}
+.cache-menu button[data-scope="all"]:hover{background:#ff7b8a18;color:#ffd2d7}
+html.theme-fr24 .cache-menu{background:#fff;border-color:var(--line);box-shadow:0 16px 36px #14202e26}
+html.theme-fr24 .cache-menu button{color:var(--ink2)}
+html.theme-fr24 .cache-menu button:hover{background:#f5f7f8;color:var(--ink)}
+html.theme-fr24 .cache-menu button[data-scope="all"]{color:#b22f45}
+html.theme-fr24 .cache-menu button[data-scope="all"]:hover{background:#fff0f2;color:#951f34}
 .theme-menu[hidden]{display:none}
 .theme-menu button{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--ink2);font-size:12px;padding:7px 9px;border-radius:7px;text-align:left}
 .theme-menu button:hover{background:#ffffff10;color:var(--ink)}
@@ -795,6 +819,9 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   #cardGlobe{padding:16px 14px}
   .globe-stage{flex:none;height:clamp(400px,118vw,480px);min-height:0}
+  .pcard .badges{top:5px;left:5px;gap:4px}
+  .pcard .badges .reg-badge{font-size:9px;padding:2px 5px;border-radius:5px;letter-spacing:.03em}
+  .pcard .badges .like-badge{font-size:8.5px;padding:2px 5px;border-radius:5px}
 }
 </style>
 </head>
@@ -833,7 +860,13 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
   </div>
     <button class="icon-btn lang-btn" id="langBtn" title="Switch to English" aria-label="Switch to English">EN</button>
     <button class="icon-btn" id="switchBtn" title="换个摄影师 ID" aria-label="换个摄影师 ID">⇄</button>
-    <button class="icon-btn" id="cacheBtn" title="清理缓存" aria-label="清理缓存"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M6.5 7l.8 12.1A2 2 0 0 0 9.3 21h5.4a2 2 0 0 0 2-1.9L17.5 7"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
+    <div class="cache-wrap">
+      <button class="icon-btn" id="cacheBtn" title="清理缓存" aria-label="清理缓存" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M6.5 7l.8 12.1A2 2 0 0 0 9.3 21h5.4a2 2 0 0 0 2-1.9L17.5 7"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
+      <div class="cache-menu" id="cacheMenu" role="menu" hidden>
+        <button type="button" data-scope="current" role="menuitem">清理当前摄影师缓存</button>
+        <button type="button" data-scope="all" role="menuitem">清理所有摄影师缓存</button>
+      </div>
+    </div>
     <button class="icon-btn" id="jpClose" title="退出统计台" aria-label="退出统计台">✕</button>
   </div>
 </header>
@@ -1159,29 +1192,64 @@ function guardedExit(fn, label) {
   }
   fn();
 }
-function clearLocalCaches() {
+function clearLocalCaches(scope) {
   var n = 0;
   try {
     var keys = [];
-    for (var i = 0; i < localStorage.length; i++) {
-      var k = localStorage.key(i);
-      if (k && k.indexOf('jpstats.v1.') === 0) keys.push(k);
+    if (scope === 'current') {
+      if (localStorage.getItem(LS_KEY) !== null) keys.push(LS_KEY);
+    } else {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf('jpstats.v1.') === 0) keys.push(k);
+      }
     }
     keys.forEach(function (k) { localStorage.removeItem(k); n++; });
   } catch (e) {}
   return n;
 }
-$('cacheBtn').addEventListener('click', function () {
+var cacheMenu = $('cacheMenu');
+function closeCacheMenu() {
+  if (!cacheMenu) return;
+  cacheMenu.hidden = true;
+  $('cacheBtn').setAttribute('aria-expanded', 'false');
+}
+function openCacheMenu() {
+  if (!cacheMenu) return;
+  cacheMenu.hidden = false;
+  $('cacheBtn').setAttribute('aria-expanded', 'true');
+}
+$('cacheBtn').addEventListener('click', function (e) {
+  e.stopPropagation();
+  if (!cacheMenu || !cacheMenu.hidden) { closeCacheMenu(); return; }
   if (deep.status === 'running') {
     pauseDeep();
-    toast(tt('已暂停深度抓取 · 再点一次清理缓存', 'Paused — click again to clear the cache'));
-    return;
+    toast(tt('已暂停深度抓取 · 请选择清理范围', 'Paused — choose what to clear'));
   }
-  var msg = tt('清理本地缓存？\n将删除所有摄影师的照片详情缓存，下次打开需要重新抓取。\n主题和语言设置会保留。', 'Clear local cache?\nThis deletes cached photo details for all photographers; reopening requires re-fetching.\nTheme and language settings are kept.');
-  if (!confirm(msg)) return;
-  var n = clearLocalCaches();
-  toast(n ? tt('已清理 ' + n + ' 个摄影师的本地缓存', 'Cleared local cache for ' + n + ' photographer(s)') : tt('没有可清理的本地缓存', 'No local cache to clear'));
+  openCacheMenu();
 });
+if (cacheMenu) cacheMenu.addEventListener('click', function (e) {
+  var b = e.target.closest('button[data-scope]');
+  if (!b) return;
+  var scope = b.getAttribute('data-scope');
+  closeCacheMenu();
+  var msg = scope === 'current'
+    ? tt('清理当前摄影师的本地缓存？\n将删除当前摄影师的照片详情缓存，下次打开需要重新抓取。\n主题和语言设置会保留。', "Clear this photographer's cache?\nThis deletes cached photo details for this photographer; reopening requires re-fetching.\nTheme and language settings are kept.")
+    : tt('清理所有摄影师的本地缓存？\n将删除所有摄影师的照片详情缓存，下次打开需要重新抓取。\n主题和语言设置会保留。', "Clear all photographers' caches?\nThis deletes cached photo details for all photographers; reopening requires re-fetching.\nTheme and language settings are kept.");
+  if (!confirm(msg)) return;
+  var n = clearLocalCaches(scope);
+  toast(n
+    ? (scope === 'current' ? tt('已清理当前摄影师的本地缓存', "Cleared this photographer's cache") : tt('已清理 ' + n + ' 个摄影师的本地缓存', 'Cleared caches for ' + n + ' photographer(s)'))
+    : (scope === 'current' ? tt('当前摄影师没有可清理的本地缓存', 'No cache to clear for this photographer') : tt('没有可清理的本地缓存', 'No local cache to clear')));
+});
+document.addEventListener('click', function (e) {
+  if (cacheMenu && !cacheMenu.hidden && !e.target.closest('.cache-wrap')) closeCacheMenu();
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && cacheMenu && !cacheMenu.hidden) {
+    e.preventDefault(); e.stopPropagation(); closeCacheMenu();
+  }
+}, true);
 $('jpClose').addEventListener('click', function () {
   if (deep.status === 'running') {
     pauseDeep();
@@ -3595,7 +3663,7 @@ if ($('heroBadges')) $('heroBadges').addEventListener('click', function (e) {
 
 /* ---------- filter bar collapse (>3 rows) ---------- */
 var filterToolbar = $('filterToolbar'), filterToggle = $('filterToggle');
-var filterCollapsed = false, filterLayoutTimer = null;
+var filterCollapsed = true, filterLayoutTimer = null;
 function filterRowCount() {
   if (!filterToolbar) return 0;
   var tops = [];
@@ -3656,6 +3724,7 @@ if (filterToggle) filterToggle.addEventListener('click', function () {
     filterCollapsed = false;
     filterToolbar.classList.remove('collapsed');
     filterToolbar.style.maxHeight = '';
+    filterScrollRef = window.scrollY;
   } else {
     filterCollapsed = true;
     filterToolbar.style.maxHeight = filterFirstRowHeight() + 'px';
@@ -3663,6 +3732,17 @@ if (filterToggle) filterToggle.addEventListener('click', function () {
   }
   setFilterToggleLabel();
 });
+var filterScrollRef = window.scrollY;
+window.addEventListener('scroll', function () {
+  var y = window.scrollY;
+  if (y < filterScrollRef - 8) filterScrollRef = y;
+  if (window.innerWidth > 760 || filterCollapsed || !filterToolbar || !filterToggle || filterToggle.hidden) return;
+  if (y < filterScrollRef + 24 || filterToolbar.getBoundingClientRect().top > 60) return;
+  filterCollapsed = true;
+  filterToolbar.style.maxHeight = filterFirstRowHeight() + 'px';
+  filterToolbar.classList.add('collapsed');
+  setFilterToggleLabel();
+}, { passive: true });
 window.addEventListener('resize', scheduleFilterLayout);
 window.addEventListener('load', scheduleFilterLayout);
 $('emptyReset').addEventListener('click', resetAll);
@@ -4971,7 +5051,12 @@ var I18N_DICT = {
  "其他照片": "Other photos",
  "正在读取照片类别…": "Loading photo category…",
  "类别读取失败，请重试": "Could not load category",
- "点击图表筛选图库": "Click a chart to filter the gallery"
+ "点击图表筛选图库": "Click a chart to filter the gallery",
+ "清理当前摄影师缓存": "Clear this photographer's cache",
+ "清理所有摄影师缓存": "Clear all photographers' caches",
+ "已暂停深度抓取 · 请选择清理范围": "Paused — choose what to clear",
+ "已清理当前摄影师的本地缓存": "Cleared this photographer's cache",
+ "当前摄影师没有可清理的本地缓存": "No cache to clear for this photographer"
 };
 var I18N_RULES = [
     [/^其他 (\d+) 个机场$/, "Other $1 airports"],
