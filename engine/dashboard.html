@@ -1562,8 +1562,9 @@ function parsePhotographer(html) {
 /* ---------- state ---------- */
 var BASE = [];
 var DETAIL = {};
-var PHOTOGRAPHER = { id: ID, name: '', firstUpload: '', acceptRatio: '', cover: '', coverKind: '', badges: [], badgeIds: {}, badgeIdsVersion: 0, categoryIds: {} };
+var PHOTOGRAPHER = { id: ID, name: '', firstUpload: '', acceptRatio: '', cover: '', coverKind: '', badges: [], badgeIds: {}, badgeIdsVersion: 0, categoryIds: {}, militaryIds: null, militaryBase: 0, cargoIds: null, cargoBase: 0 };
 var PHOTOS = [], BY_ID = {};
+var MIL_SET = null, CARGO_SET = null, classLoading = false;
 var detailCount = 0, cacheTime = '', cacheOk = true;
 var G = {}, airportRank = [], airlineRank = [], familyRank = [], famRank = [], makerRank = [], countryRank = [], cameraRank = [], lensRank = [];
 var airportNames = {};
@@ -1899,19 +1900,26 @@ function cleanCam(s) {
   return s;
 }
 function camKey(s) { return cleanCam(s).toLowerCase().replace(CAM_BRAND, '').replace(/\s+/g, ' ').trim(); }
-function isMilitary(aircraft, airline, reg) {
+function isMilitaryGuess(aircraft, airline, reg) {
   var a = String(aircraft || ''), al = String(airline || '');
   if (/\b(?:air force|airforce|navy|army|military|air national guard|marine corps|marines|royal air force|raaf|usaf|jasdf|air self defence|air self-defense|government|presidential|ministry of defen[cs]e)\b/i.test(al)) return true;
   return /\b(?:J-?\d{1,2}|F-\d{1,2}|FA-\d|Mirage|Rafale|Typhoon|Tornado|Gripen|Harrier|A-10|B-52|B-1|B-2|H-6|TU-(?:95|160|22)|SU-\d+|MIG-\d+|MQ-\d+|RQ-\d+|WZ-\d+|AH-64|UH-60|CH-47)\b/i.test(a);
+}
+var COMMON_CARGO_RE = /\b(?:cargo|freighter|freight)\b|\b(?:P2F|BCF|BDSF|PCF|SCD|ERF)\b|\bBoeing\s+(?:727|737|747|757|767|777)\S*F\b|\bBoeing\s+777-F\w*\b|\bAirbus\s+A3\d{2}\S*F\b|\b(?:MD|DC)-\d+\S*F\b|\bATR\s+\d+\S*F\b|\bTupolev\s+TU-204\S*C\b|\bIlyushin\s+IL-76|\bIlyushin\s+IL-96T|\bAntonov\s+AN-(?:12|22|26|32|70|124|225)\b|\bLockheed\s+(?:C-130|L-100|L-382)|\bCRJ-?\d{3}\w*SF\b|\bBAe\s+146\w*QT\b|\bCargomaster\b/i;
+function isCommonCargo(aircraft) {
+  var a = String(aircraft || '').replace(/\s+/g, ' ').trim();
+  return !!a && COMMON_CARGO_RE.test(a);
 }
 function derive(p) {
   var cam = (p.camera || '').split('|');
   var o = Object.assign({}, p);
   o.maker = maker(p.aircraft);
   var at = aircraftType(p.aircraft);
-  o.fam = at.fam; o.family = at.type; o.cargo = at.cargo;
-  o.military = isMilitary(p.aircraft, p.airline, p.reg);
+  o.fam = at.fam; o.family = at.type;
+  o.military = MIL_SET ? !!MIL_SET[p.id] : isMilitaryGuess(p.aircraft, p.airline, p.reg);
+  var cargoGuess = at.cargo || isCommonCargo(p.aircraft);
   if (o.military) o.cargo = false;
+  else o.cargo = CARGO_SET ? (!!CARGO_SET[p.id] || isCommonCargo(p.aircraft)) : cargoGuess;
   if (p.aircraft === 'Airport') { o.maker = '机场场景'; o.fam = '机场场景'; o.family = '机场场景'; o.cargo = false; o.military = false; }
   o.apKey = p.airportCode || p.airport || '';
   o.year = (p.date || p.uploaded || '').slice(0, 4);
@@ -1920,6 +1928,87 @@ function derive(p) {
   o.url = 'https://www.jetphotos.com/photo/' + p.id;
   o.blob = [p.reg, p.airline, p.aircraft, p.airport, p.airportCode, p.country, p.msn, p.camera, p.remarks, p.id, o.family, o.maker].join(' ').toLowerCase();
   return o;
+}
+function idMap(list) {
+  var m = {};
+  (list || []).forEach(function (id) { m[id] = 1; });
+  return m;
+}
+function syncClassificationCache() {
+  var n = BASE.length;
+  MIL_SET = (PHOTOGRAPHER.militaryBase === n && PHOTOGRAPHER.militaryIds) ? idMap(PHOTOGRAPHER.militaryIds) : null;
+  CARGO_SET = (PHOTOGRAPHER.cargoBase === n && PHOTOGRAPHER.cargoIds) ? idMap(PHOTOGRAPHER.cargoIds) : null;
+}
+function loadOfficialIdList(url) {
+  var ids = [], seen = {}, seenPages = {}, pages = 0;
+  function collect(html) {
+    parseCategoryIds(html).forEach(function (id) {
+      if (!seen[id]) { seen[id] = 1; ids.push(id); }
+    });
+  }
+  function pageKey(u) {
+    try { var a = new URL(u, location.origin + '/'); return a.pathname + a.search; } catch (e) { return u; }
+  }
+  return loadDoc(url).then(function (firstHtml) {
+    collect(firstHtml);
+    seenPages[pageKey(url)] = 1;
+    var queue = categoryPageUrls(firstHtml).map(function (p) { return p.href; });
+    function step() {
+      if (!queue.length || pages >= 60) return ids;
+      var u = queue.shift(), k = pageKey(u);
+      if (seenPages[k]) return step();
+      seenPages[k] = 1; pages++;
+      return loadDoc(u).then(function (html) {
+        collect(html);
+        categoryPageUrls(html).forEach(function (p) {
+          if (!seenPages[pageKey(p.href)]) queue.push(p.href);
+        });
+        return step();
+      });
+    }
+    return step();
+  }).then(function (all) {
+    var known = idMap(BASE.map(function (p) { return p.id; }));
+    var out = [], used = {};
+    all.forEach(function (id) {
+      if (!known[id] || used[id]) return;
+      used[id] = 1; out.push(id);
+    });
+    if (all.length && !out.length) throw new Error('classification-parse');
+    return out;
+  });
+}
+function loadOfficialClassification() {
+  if (classLoading) return;
+  var n = BASE.length, jobs = [], changed = false;
+  var needMil = !(PHOTOGRAPHER.militaryBase === n && PHOTOGRAPHER.militaryIds);
+  var needCargo = !(PHOTOGRAPHER.cargoBase === n && PHOTOGRAPHER.cargoIds);
+  if (!needMil && !needCargo) return;
+  classLoading = true;
+  if (needMil) {
+    jobs.push(loadOfficialIdList('/showphotos.php?photographer-group=' + encodeURIComponent('photographer;' + ID) + '&sort-order=0&search-type=Advanced&genre=2').then(function (ids) {
+      PHOTOGRAPHER.militaryIds = ids;
+      PHOTOGRAPHER.militaryBase = n;
+      changed = true;
+    }));
+  }
+  if (needCargo) {
+    jobs.push(loadOfficialIdList('/photographer/' + encodeURIComponent(ID) + '/photos/category/1024').then(function (ids) {
+      PHOTOGRAPHER.cargoIds = ids;
+      PHOTOGRAPHER.cargoBase = n;
+      PHOTOGRAPHER.categoryIds = PHOTOGRAPHER.categoryIds || {};
+      PHOTOGRAPHER.categoryIds['1024'] = ids;
+      changed = true;
+    }));
+  }
+  Promise.all(jobs.map(function (job) { return job.catch(function () {}); })).then(function () {
+    classLoading = false;
+    if (!changed) return;
+    syncClassificationCache();
+    saveCache();
+    rebuild();
+    apply();
+  });
 }
 function countBy(list, key) {
   var m = {};
@@ -4120,6 +4209,7 @@ async function refreshBase(manual) {
   var list = ps.rows;
   if (!list.length) throw new Error('empty-list');
   BASE = list;
+  syncClassificationCache();
   rebuild(); renderHero(); fillSelects();
   if (firstRender) {
     state.sort = detailCount ? 'uploaded_desc' : 'views_desc';
@@ -4127,6 +4217,7 @@ async function refreshBase(manual) {
   }
   apply();
   updateStrip();
+  loadOfficialClassification();
   if (manual) {
     var missing = missingIds().length;
     toast(missing ? '发现 ' + missing + ' 张新照片，可开始深度抓取' : '列表已是最新');
@@ -4221,6 +4312,7 @@ async function init() {
     if (psName) PHOTOGRAPHER.name = psName;
     else if (/^摄影师 /.test(PHOTOGRAPHER.name || '')) PHOTOGRAPHER.name = '';
     saveCache();
+    syncClassificationCache();
     rebuild();
     state.sort = detailCount ? 'uploaded_desc' : 'views_desc';
     $('fSort').value = state.sort;
@@ -4228,6 +4320,7 @@ async function init() {
     loadBadgeCategories();
     loadPhotoCategory('128');
     loadPhotoCategory('64');
+    loadOfficialClassification();
     firstRender = false;
     document.body.classList.add('settled');
     $('boot').classList.add('hidden');

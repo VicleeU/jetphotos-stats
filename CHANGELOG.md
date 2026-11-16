@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.6.3 — 2026-11-13
+
+- Classification: military/civilian now follows JetPhotos' official genre filter (`genre=2` on the photographer's photo results) instead of the model/airline heuristic.
+- Cargo: within civilian photos, cargo uses the official "Cargo Aircraft Photos" category first, then a built-in common-freighter database pass (freighter conversions and known cargo models such as the 777F, IL-76 and An-124) catches cargo aircraft missing from the official category. Military classification takes precedence, so military cargo is counted as military.
+- The previous heuristic remains as a local fallback when the official endpoints are unavailable, and official ID sets are cached per photographer.
+
 ## 2.6.2 — 2026-11-13
 
 - FR24 theme: the floating "statistics for this photographer" trigger now uses a dark-gray background with a yellow border and yellow text, matching the rest of the FR24 controls.
