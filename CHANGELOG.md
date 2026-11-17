@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.7.0 — 2026-11-13
+
+- Added a random spotlight above the distribution section: a random photo from the gallery is paired with a FR24 live/status lookup.
+- The userscript now also matches flightradar24.com and runs a companion mode. It opens a small FR24 popup, queries the public FR24 web APIs in-page, and returns live position, current flight, or the last flight/airport via postMessage.
+- The companion attempts to move its window offscreen; if it is closed or blocked, the spotlight shows reconnect guidance.
+- Civil passenger/cargo/military classification remains official-genre based with the common-freighter backstop added in 2.6.3.
+- If FR24 has no live position, the last operated flight's destination airport is used. If there is no flight record, the spotlight automatically tries another photo (up to four attempts).
+- Manual “next photo” is limited to two changes per rolling minute; automatic fallback attempts do not consume that quota.
+- Bookmarklet-only installs show the random photo plus a direct FR24 aircraft link; automatic FR24 lookup is available only with the userscript companion.
+- Limitation: positions come from the FR24 search API (about 11 km precision); exact LiveFeed decoding is not included in this version. No FR24 paid API is used.
+
 ## 2.6.3 — 2026-11-13
 
 - Classification: military/civilian now follows JetPhotos' official genre filter (`genre=2` on the photographer's photo results) instead of the model/airline heuristic.

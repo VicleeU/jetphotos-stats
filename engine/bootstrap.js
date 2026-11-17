@@ -1,5 +1,7 @@
 (function () {
 'use strict';
+if (window.__JP_STATS_MODE__ !== 'bookmarklet') window.__JP_STATS_MODE__ = 'userscript';
+if (/(^|\.)flightradar24\.com$/i.test(location.hostname)) { initFR24Companion(); return; }
 if (window.__JP_STATS__) { if (window.__JP_OPEN_PANEL) window.__JP_OPEN_PANEL(); return; }
 window.__JP_STATS__ = true;
 
@@ -229,4 +231,199 @@ try {
     if (!e.key || e.key === 'jpstats.theme') applyTheme();
   });
 } catch (e) {}
+
+/* ---------- FR24 companion (runs only on flightradar24.com) ---------- */
+function jpfr24Norm(s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+function jpfr24RegOf(r) {
+  var d = r.detail || {};
+  if (d.reg) return jpfr24Norm(d.reg);
+  var m = String(r.label || '').match(/^([A-Za-z0-9-]+)\s/);
+  return m ? jpfr24Norm(m[1]) : '';
+}
+function jpfr24Api(path) {
+  return fetch(path, { credentials: 'include', headers: { Accept: 'application/json' } }).then(function (r) {
+    return r.text().then(function (text) {
+      if (!r.ok) {
+        var e = new Error('HTTP ' + r.status);
+        e.status = r.status; e.challenge = r.status === 403 || r.status === 503;
+        throw e;
+      }
+      if (/Just a moment|cf-challenge|请稍候|Enable JavaScript/i.test(text.slice(0, 4000))) {
+        var c = new Error('challenge'); c.challenge = true; throw c;
+      }
+      try { return JSON.parse(text); } catch (x) { throw new Error('non-json'); }
+    });
+  });
+}
+function jpfr24Airport(id) {
+  if (!id) return Promise.resolve(null);
+  return jpfr24Api('/api/v2/airports/' + id).then(function (j) {
+    var i = (((j || {}).data || {}).info) || {};
+    return i.id ? {
+      id: i.id, iata: i.iata, icao: i.icao, name: i.name, city: i.city,
+      lat: i.latitude, lon: i.longitude, tz: i.timezone
+    } : null;
+  });
+}
+function jpfr24Cancelled(x) {
+  var st = x.status || {}, g = ((st.generic || {}).status) || {};
+  return /cancel/i.test(String(g.type || '')) || /cancel/i.test(String(st.text || ''));
+}
+function jpfr24Operated(x) {
+  var st = x.status || {}, g = ((st.generic || {}).status) || {};
+  var real = (x.time || {}).real || {};
+  return !!(real.departure || real.arrival) || String(g.type || '').toLowerCase() === 'arrival';
+}
+function jpfr24Brief(x) {
+  var idn = x.identification || {}, ap = x.airport || {}, tm = x.time || {}, st = x.status || {};
+  var g = ((st.generic || {}).status) || {}, o = ap.origin || {}, d = ap.destination || {}, rr = ap.real || {};
+  return {
+    number: ((idn.number || {}).default) || null,
+    callsign: idn.callsign || null,
+    origin_code: o.code || null,
+    destination_code: rr.code || d.code || null,
+    origin_id: o.id || null,
+    destination_id: rr.id || d.id || null,
+    scheduled_departure: ((tm.scheduled || {}).departure) || null,
+    real_departure: ((tm.real || {}).departure) || null,
+    real_arrival: ((tm.real || {}).arrival) || null,
+    status_text: st.text || null,
+    status_type: g.type || null,
+    cancelled: jpfr24Cancelled(x),
+    live: !!st.live,
+    aircraft_type: (((x.aircraft || {}).model) || {}).text || null,
+    airline: ((x.airline || {}).name) || null
+  };
+}
+function jpfr24Lookup(reg) {
+  var key = jpfr24Norm(reg);
+  var out = {
+    query: reg, found: false, aircraft: { reg: reg },
+    live: null, flight: null, last_flight: null, airport: null,
+    upcoming: null, notes: [], en_route: false,
+    fetched_at: new Date().toISOString()
+  };
+  return jpfr24Api('/v1/search/web/find?query=' + encodeURIComponent(reg) + '&limit=20').then(function (s) {
+    var results = (s || {}).results || [];
+    var exact = results.filter(function (r) { return jpfr24RegOf(r) === key; });
+    if (!exact.length) {
+      out.notes.push('FR24 没有该注册号的精确记录');
+      return out;
+    }
+    out.found = true;
+    var ac = exact.filter(function (r) { return r.type === 'aircraft'; })[0];
+    var live = exact.filter(function (r) { return r.type === 'live'; })[0];
+    if (ac) {
+      var ad = ac.detail || {};
+      out.aircraft.type = ad.equip || null;
+      out.aircraft.icao24 = ad.hex || null;
+      out.aircraft.airline = ad.owner || null;
+    }
+    if (!live) return jpfr24History(key, out);
+    var det = live.detail || {};
+    out.aircraft.reg = det.reg || reg;
+    out.aircraft.type = det.ac_type || out.aircraft.type;
+    out.aircraft.icao24 = det.hex || out.aircraft.icao24;
+    out.aircraft.route_text = det.route || null;
+    out.live = {
+      fr24_id: live.id || '', callsign: det.callsign || null,
+      lat: det.lat, lon: det.lon, alt: null, gs: null, track: null,
+      vs: null, ground: false, ts: null, age_s: null,
+      precision: '粗（FR24 搜索接口，约 11 km）'
+    };
+    var fid = live.id;
+    if (!fid) return out;
+    return jpfr24Api('/api/v2/flights/' + encodeURIComponent(fid)).then(function (j) {
+      var d = (j || {}).data || {}, f = d.flight || {}, sch = d.schedule || {}, fa = d.aircraft || {};
+      out.aircraft.model = fa.name || out.aircraft.model;
+      out.aircraft.type = fa.type || out.aircraft.type;
+      out.aircraft.airline = d.airline || out.aircraft.airline;
+      out.flight = {
+        number: f.number || null, callsign: f.callsign || out.live.callsign,
+        origin: null, destination: null,
+        std: sch.std || null, atd: sch.atd || null, sta: sch.sta || null, ata: sch.ata || null
+      };
+      return Promise.all([jpfr24Airport(d.originId), jpfr24Airport(d.destinationId)]).then(function (aps) {
+        out.flight.origin = aps[0]; out.flight.destination = aps[1];
+        return out;
+      });
+    }).catch(function () { return out; });
+  });
+}
+function jpfr24History(key, out) {
+  return jpfr24Api('/api/v2/flights?fetchBy=reg&query=' + encodeURIComponent(key) + '&limit=12').then(function (j) {
+    var items = ((((j || {}).result || {}).response || {}).data) || [];
+    if (!items.length) {
+      out.no_records = true;
+      out.notes.push('FR24 没有这架飞机的航班记录');
+      return out;
+    }
+    var liveItems = items.filter(function (x) { return !jpfr24Cancelled(x); });
+    var operated = liveItems.filter(jpfr24Operated);
+    var last = operated[0] || liveItems[0];
+    if (last) {
+      out.last_flight = jpfr24Brief(last);
+      out.en_route = !!(out.last_flight.real_departure && !out.last_flight.real_arrival);
+      if (!out.aircraft.model) out.aircraft.model = out.last_flight.aircraft_type;
+      if (!out.aircraft.airline) out.aircraft.airline = out.last_flight.airline;
+      return jpfr24Airport(out.last_flight.destination_id).then(function (ap) {
+        out.airport = ap;
+        out.last_flight.airport = ap;
+        var now = Date.now() / 1000;
+        var up = liveItems.filter(function (x) {
+          var sd = (((x.time || {}).scheduled || {}).departure) || 0;
+          return sd > now && !jpfr24Operated(x);
+        })[0];
+        if (up) out.upcoming = jpfr24Brief(up);
+        return out;
+      });
+    }
+    return out;
+  });
+}
+function initFR24Companion() {
+  var m = (location.hash || '').match(/jpfr24=([A-Za-z0-9_-]+)/);
+  if (!m || window.__JP_FR24_COMPANION__) return;
+  window.__JP_FR24_COMPANION__ = true;
+  var token = m[1], busy = false;
+  function send(payload) {
+    try {
+      if (window.opener && !window.opener.closed) {
+        var msg = payload || {};
+        msg.jpfr24 = token;
+        window.opener.postMessage(msg, '*');
+      }
+    } catch (e) {}
+  }
+  function ready() { send({ type: 'ready' }); }
+  function focusMe() {
+    try { window.moveTo(32, 32); window.resizeTo(560, 460); window.focus(); } catch (e) {}
+  }
+  window.addEventListener('message', function (ev) {
+    var d = ev.data || {};
+    if (!d || d.jpfr24 !== token) return;
+    if (window.opener && ev.source !== window.opener) return;
+    if (d.type === 'ping' || d.type === 'hello') { ready(); return; }
+    if (d.type === 'focus') { focusMe(); return; }
+    if (d.type !== 'lookup' || busy) return;
+    busy = true;
+    send({ type: 'status', id: d.id, text: 'querying' });
+    jpfr24Lookup(d.reg).then(function (rep) {
+      send({ type: 'result', id: d.id, report: rep });
+    }).catch(function (err) {
+      send({
+        type: 'error', id: d.id,
+        error: err && err.challenge ? 'challenge' : 'query',
+        message: String((err && err.message) || err)
+      });
+      if (err && err.challenge) focusMe();
+    }).then(function () { busy = false; });
+  });
+  setTimeout(function () {
+    try { window.resizeTo(420, 300); window.moveTo(-10000, -10000); window.blur(); } catch (e) {}
+    ready();
+  }, 700);
+  setTimeout(ready, 2200);
+  setInterval(ready, 6000);
+}
 })();

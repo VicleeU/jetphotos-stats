@@ -8,7 +8,7 @@ DIST = ROOT / 'dist'
 SITE = ROOT / 'site'
 DIST.mkdir(exist_ok=True)
 
-VERSION = '2.6.3'
+VERSION = '2.7.0'
 ENGINE_URL = sys.argv[1] if len(sys.argv) > 1 else ''
 
 
@@ -71,6 +71,8 @@ header = f"""// ==UserScript==
 // @author       JP Stats
 // @match        https://www.jetphotos.com/*
 // @match        https://jetphotos.com/*
+// @match        https://www.flightradar24.com/*
+// @match        https://flightradar24.com/*
 // @grant        none
 // @run-at       document-idle
 // @noframes
@@ -87,14 +89,14 @@ dash_gf_expr = ' +\n'.join(json.dumps(c, ensure_ascii=False).replace('</', '<\\/
 engine_gf = boot.replace('__DASH_HTML__', dash_gf_expr)
 (DIST / 'jp-stats.greasyfork.user.js').write_text(header + engine_gf, encoding='utf-8')
 
-bm_offline = 'javascript:' + urllib.parse.quote(engine_js + '\nvoid 0;', safe='')
+bm_offline = 'javascript:' + urllib.parse.quote("window.__JP_STATS_MODE__='bookmarklet';\n" + engine_js + '\nvoid 0;', safe='')
 (DIST / 'bookmarklet-offline.txt').write_text(bm_offline, encoding='utf-8')
 
 if ENGINE_URL:
     # 引擎地址可能已带查询串（例如托管平台的 sharecode），此时用 & 追加版本号
     sep = '&' if '?' in ENGINE_URL else '?'
     loader = (
-        "javascript:(function(){if(window.__JP_STATS__){window.__JP_OPEN_PANEL&&window.__JP_OPEN_PANEL();return;}"
+        "javascript:(function(){window.__JP_STATS_MODE__='bookmarklet';if(window.__JP_STATS__){window.__JP_OPEN_PANEL&&window.__JP_OPEN_PANEL();return;}"
         "var s=document.createElement('script');s.src='" + ENGINE_URL + sep + "v=" + VERSION + "';"
         "s.onerror=function(){alert('JP 统计引擎加载失败，请检查网络或使用离线版书签。')};"
         "document.body.appendChild(s);})();void 0;"
