@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.8.4 — 2026-11-13
+
+- Fixed the userscript losing the “connect FR24 / real-time information” button: the mode flag is now written to the page window through `unsafeWindow`, so the dashboard resolves to companion mode instead of bookmarklet/link mode. The FR24 companion also talks to its opener through the page window.
+- The spotlight footer (FR24 link/connect/retry row) is now pinned to the bottom of the information column with a fixed gap above the note bar; the card stretches the panel to the photo height.
+
 ## 2.8.3 — 2026-11-13
 
 - Fixed the airline name being replaced by FR24’s short ICAO code after several photo switches; the JetPhotos airline name is kept.

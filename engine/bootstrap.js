@@ -1,9 +1,11 @@
 (function () {
 'use strict';
-if (window.__JP_STATS_MODE__ !== 'bookmarklet') window.__JP_STATS_MODE__ = 'userscript';
+var JP_PAGE = (typeof unsafeWindow !== 'undefined' && unsafeWindow) ||
+              (typeof wrappedJSObject !== 'undefined' && wrappedJSObject) || window;
+if (JP_PAGE.__JP_STATS_MODE__ !== 'bookmarklet') JP_PAGE.__JP_STATS_MODE__ = 'userscript';
 if (/(^|\.)flightradar24\.com$/i.test(location.hostname)) { initFR24Companion(); return; }
 function statsPageAllowed() {
-  if (window.__JP_STATS_MODE__ === 'bookmarklet') return true;
+  if (JP_PAGE.__JP_STATS_MODE__ === 'bookmarklet') return true;
   var host = location.hostname.toLowerCase().replace(/^www\./, '');
   if (host !== 'jetphotos.com') return false;
   var p = location.pathname.replace(/\/+$/, '');
@@ -12,8 +14,8 @@ function statsPageAllowed() {
   return true;
 }
 if (!statsPageAllowed()) return;
-if (window.__JP_STATS__) { if (window.__JP_OPEN_PANEL) window.__JP_OPEN_PANEL(); return; }
-window.__JP_STATS__ = true;
+if (JP_PAGE.__JP_STATS__) { if (JP_PAGE.__JP_OPEN_PANEL) JP_PAGE.__JP_OPEN_PANEL(); return; }
+JP_PAGE.__JP_STATS__ = true;
 
 var DASH_HTML = __DASH_HTML__;
 var VERSION = '1.0.0';
@@ -230,8 +232,8 @@ function closeOverlay() {
   document.body.style.overflow = prevOverflow || '';
   pill.style.display = '';
 }
-window.__JP_CLOSE = closeOverlay;
-window.__JP_OPEN_PANEL = function () { closeOverlay(); openPanel(); };
+JP_PAGE.__JP_CLOSE = closeOverlay;
+JP_PAGE.__JP_OPEN_PANEL = function () { closeOverlay(); openPanel(); };
 pill.addEventListener('click', function () { if (panel) closePanel(); else openPanel(); });
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape' && ov && !panel) closeOverlay();
@@ -445,21 +447,22 @@ function initFR24Companion() {
   var token = m[1], busy = false;
   function send(payload) {
     try {
-      if (window.opener && !window.opener.closed) {
+      var opener = JP_PAGE.opener;
+      if (opener && !opener.closed) {
         var msg = payload || {};
         msg.jpfr24 = token;
-        window.opener.postMessage(msg, '*');
+        opener.postMessage(msg, '*');
       }
     } catch (e) {}
   }
   function ready() { send({ type: 'ready' }); }
   function focusMe() {
-    try { window.moveTo(32, 32); window.resizeTo(560, 460); window.focus(); } catch (e) {}
+    try { JP_PAGE.moveTo(32, 32); JP_PAGE.resizeTo(560, 460); JP_PAGE.focus(); } catch (e) {}
   }
   window.addEventListener('message', function (ev) {
     var d = ev.data || {};
     if (!d || d.jpfr24 !== token) return;
-    if (window.opener && ev.source !== window.opener) return;
+    if (JP_PAGE.opener && ev.source !== JP_PAGE.opener) return;
     if (d.type === 'ping' || d.type === 'hello') { ready(); return; }
     if (d.type === 'focus') { focusMe(); return; }
     if (d.type !== 'lookup' || busy) return;
@@ -477,7 +480,7 @@ function initFR24Companion() {
     }).then(function () { busy = false; });
   });
   setTimeout(function () {
-    try { window.resizeTo(420, 300); window.moveTo(-10000, -10000); window.blur(); } catch (e) {}
+    try { JP_PAGE.resizeTo(420, 300); JP_PAGE.moveTo(-10000, -10000); JP_PAGE.blur(); } catch (e) {}
     ready();
   }, 700);
   setTimeout(ready, 2200);

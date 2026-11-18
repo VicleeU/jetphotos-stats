@@ -8,7 +8,7 @@ DIST = ROOT / 'dist'
 SITE = ROOT / 'site'
 DIST.mkdir(exist_ok=True)
 
-VERSION = '2.8.3'
+VERSION = '2.8.4'
 ENGINE_URL = sys.argv[1] if len(sys.argv) > 1 else ''
 
 
@@ -74,6 +74,7 @@ header = f"""// ==UserScript==
 // @match        https://www.flightradar24.com/*
 // @match        https://flightradar24.com/*
 // @grant        GM_xmlhttpRequest
+// @grant        unsafeWindow
 // @connect      data-cloud.flightradar24.com
 // @run-at       document-idle
 // @noframes

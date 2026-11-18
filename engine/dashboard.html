@@ -852,7 +852,7 @@ html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,25
 .spot-next{margin-left:10px;flex:none;background:rgba(var(--accent-rgb),0.08);border:1px solid rgba(var(--accent-rgb),0.32);color:var(--cyan);border-radius:999px;padding:5px 12px;font-size:11.5px;font-family:var(--mono);cursor:pointer;transition:background .2s,border-color .2s}
 .spot-next:hover{background:rgba(var(--accent-rgb),0.16);border-color:rgba(var(--accent-rgb),0.55)}
 .spot-next:disabled{opacity:.45;cursor:not-allowed}
-.spotlight-body{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(310px,.88fr);gap:22px;align-items:start}
+.spotlight-body{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(310px,.88fr);gap:22px;align-items:stretch}
 .spot-photo{position:relative;display:block;min-height:0;border-radius:14px;overflow:hidden;background:#0b0c0d;border:1px solid var(--line)}
 .spot-photo img{display:block;width:100%;height:auto;min-height:0;max-height:none;object-fit:contain;transition:transform .55s cubic-bezier(.2,.8,.3,1)}
 .spot-photo:hover img{transform:scale(1.035)}
@@ -861,7 +861,7 @@ html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,25
 .spot-photo-reg{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.05em;color:var(--cyan);background:#15181bd9;border:1px solid rgba(var(--accent-rgb),0.42);border-radius:6px;padding:3px 8px;backdrop-filter:blur(4px)}
 .spot-photo-likes{font-family:var(--mono);font-size:10px;font-weight:600;color:#ffb0cf;background:#15181bd9;border:1px solid #ff7ab655;border-radius:6px;padding:3px 7px;backdrop-filter:blur(4px)}
 .spot-photo-open{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:#fff;background:#15181bcc;border:1px solid rgba(var(--accent-rgb),0.35);padding:4px 8px;border-radius:999px}
-.spot-panel{display:flex;flex-direction:column;min-width:0}
+.spot-panel{display:flex;flex-direction:column;min-width:0;height:100%}
 .spot-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
 .spot-head-text{min-width:0}
 .spot-airline-row{display:flex;align-items:baseline;gap:8px;min-width:0}
