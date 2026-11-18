@@ -4394,6 +4394,7 @@ try { if (window.parent !== window) SPOT_PARENT_MODE = window.parent.__JP_STATS_
 var SPOT_MODE = SPOT_PARENT_MODE === 'userscript' ? 'companion' : 'link';
 var SPOT_EXT_READY = false, SPOT_EXT_TOKEN = '', SPOT_EXT_SEEN = false;
 var spotCurrent = null, spotAutoLeft = 0, spotReqId = 0, spotBusy = false;
+var spotReadyRetries = 0, spotNoRecord = false, spotReadyTimer = null;
 var spotWin = null, spotToken = '', spotReady = false, spotPendingReg = '';
 var spotWaitTimer = null, spotQueryTimer = null, spotLastReport = null;
 var SPOT_POPUP_BASE = 'https://www.flightradar24.com/';
@@ -4547,6 +4548,9 @@ function spotSetStatus(main, sub, pill, live) {
 }
 function spotSetPhoto(p) {
   spotCurrent = p;
+  spotReadyRetries = 0;
+  spotNoRecord = false;
+  clearTimeout(spotReadyTimer);
   spotClearMap();
   var img = $('spotImg');
   var full = p.full || p.thumb || PLACEHOLDER;
@@ -4726,19 +4730,19 @@ function spotOpenPopup(focus) {
   $('spotConnect').hidden = true;
   $('spotFocus').hidden = false;
   spotSetStatus(tt('正在连接 FR24…', 'Connecting to FR24…'),
-    tt('正在打开 FR24 查询窗口，请保持该窗口开启。', 'Opening the FR24 query window; keep it open.'),
+    tt('首次连接可能需要几秒完成 FR24 验证，请保持窗口开启。', 'The first connection may need a few seconds for FR24 verification; keep the window open.'),
     tt('连接中', 'Connecting'));
   $('spotNote').textContent = tt('正在连接 FR24…', 'Connecting to FR24…');
   clearTimeout(spotWaitTimer);
   spotWaitTimer = setTimeout(function () {
     if (!spotReady) {
       spotSetStatus(tt('等待 FR24 窗口…', 'Waiting for FR24…'),
-        tt('未检测到 FR24 伴随脚本。请确认已安装最新油猴版，并允许弹窗。', 'FR24 companion script not detected. Install the latest userscript build and allow popups.'),
+        tt('FR24 仍在加载或等待验证。请确认窗口已开启，稍后会自动继续。', 'FR24 is still loading or waiting for verification; keep the window open and it will continue automatically.'),
         tt('等待中', 'Waiting'));
       $('spotConnect').hidden = false;
       $('spotRetry').hidden = false;
     }
-  }, 12000);
+  }, 20000);
   return true;
 }
 function spotQueryTimeout() {
@@ -4772,6 +4776,15 @@ function spotLookup(p) {
   spotQueryTimer = setTimeout(function () { if (spotBusy) spotQueryTimeout(); }, 30000);
   spotTick();
 }
+function spotScheduleLookup(delay) {
+  if (SPOT_MODE === 'extension' || !spotCurrent || spotBusy || spotLastReport || spotNoRecord || spotReadyRetries >= 3) return;
+  clearTimeout(spotReadyTimer);
+  spotReadyTimer = setTimeout(function () {
+    if (SPOT_MODE === 'extension' || !spotReady || !spotCurrent || spotBusy || spotLastReport || spotNoRecord) return;
+    spotReadyRetries++;
+    spotLookup(spotCurrent);
+  }, delay);
+}
 function spotSelect(p, auto, reason) {
   if (!p) {
     spotSetStatus(tt('没有可查询的照片', 'No queryable photo'),
@@ -4795,6 +4808,7 @@ function spotSelect(p, auto, reason) {
 }
 function spotAutoNext(reason) {
   if (spotAutoLeft <= 0) {
+    spotNoRecord = true;
     spotSetStatus(tt('没有可用的航班记录', 'No usable flight record'),
       tt('已自动尝试多张照片，请手动换一张或重试。', 'Tried several photos; change or retry.'), tt('无记录', 'No record'));
     $('spotRetry').hidden = false;
@@ -4847,6 +4861,8 @@ function spotRenderReport(r) {
     return;
   }
   spotLastReport = r;
+  spotNoRecord = false;
+  spotReadyRetries = 0;
   spotRenderLinkInfo(spotCurrent);
   if ($('spotLive')) $('spotLive').hidden = false;
   var ac = r.aircraft || {};
@@ -4980,10 +4996,10 @@ window.addEventListener('message', function (ev) {
     clearTimeout(spotWaitTimer);
     $('spotConnect').hidden = true;
     $('spotFocus').hidden = !(spotWin && !spotWin.closed);
-    if (first && spotPendingReg) {
-      spotPendingReg = '';
-      if (spotCurrent) spotLookup(spotCurrent);
-    }
+    // The popup can finish a Cloudflare challenge and reload after its first ready;
+    // allow a few ready-triggered requeries so the first photo is not left blank.
+    spotPendingReg = '';
+    spotScheduleLookup(first ? 800 : 1200);
     return;
   }
   if (d.type === 'status') return;
@@ -5005,11 +5021,15 @@ window.addEventListener('message', function (ev) {
         d.message || tt('请点击「重新查询」。', 'Click Retry.'), tt('失败', 'Failed'));
       $('spotRetry').hidden = false;
     }
+    spotScheduleLookup(2500);
     spotTick();
   }
 });
 if ($('spotNext')) $('spotNext').addEventListener('click', spotManualNext);
 if ($('spotConnect')) $('spotConnect').addEventListener('click', function () {
+  spotNoRecord = false;
+  spotReadyRetries = 0;
+  clearTimeout(spotReadyTimer);
   spotPendingReg = spotCurrent ? spotCurrent.reg : '';
   spotOpenPopup(false);
 });
@@ -5020,6 +5040,9 @@ if ($('spotFocus')) $('spotFocus').addEventListener('click', function () {
 });
 if ($('spotRetry')) $('spotRetry').addEventListener('click', function () {
   spotAutoLeft = 4;
+  spotNoRecord = false;
+  spotReadyRetries = 0;
+  clearTimeout(spotReadyTimer);
   if (!spotCurrent) return;
   if (SPOT_MODE === 'extension') spotExtLookup(spotCurrent);
   else spotLookup(spotCurrent);

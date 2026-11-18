@@ -252,7 +252,8 @@ function jpfr24RegOf(r) {
   var m = String(r.label || '').match(/^([A-Za-z0-9-]+)\s/);
   return m ? jpfr24Norm(m[1]) : '';
 }
-function jpfr24Api(path) {
+function jpfr24Api(path, attempt) {
+  attempt = attempt || 0;
   return fetch(path, { credentials: 'include', headers: { Accept: 'application/json' } }).then(function (r) {
     return r.text().then(function (text) {
       if (!r.ok) {
@@ -261,10 +262,16 @@ function jpfr24Api(path) {
         throw e;
       }
       if (/Just a moment|cf-challenge|请稍候|Enable JavaScript/i.test(text.slice(0, 4000))) {
-        var c = new Error('challenge'); c.challenge = true; throw c;
+        var c = new Error('challenge'); c.challenge = true; c.status = 403; throw c;
       }
       try { return JSON.parse(text); } catch (x) { throw new Error('non-json'); }
     });
+  }).catch(function (e) {
+    if (e && e.challenge && attempt < 2) {
+      return new Promise(function (r) { setTimeout(r, 1500 * (attempt + 1)); })
+        .then(function () { return jpfr24Api(path, attempt + 1); });
+    }
+    throw e;
   });
 }
 function jpfr24Airport(id) {
@@ -440,9 +447,20 @@ function jpfr24History(key, out) {
     return out;
   });
 }
+function jpfr24ChallengePage() {
+  try {
+    var t = document.title || '';
+    var b = (document.body && document.body.innerText ? document.body.innerText : '').slice(0, 400);
+    return /__cf_chl/i.test(location.href) || /Just a moment|请稍候|Enable JavaScript/i.test(t + ' ' + b);
+  } catch (e) { return false; }
+}
 function initFR24Companion() {
   var m = (location.hash || '').match(/jpfr24=([A-Za-z0-9_-]+)/);
   if (!m || window.__JP_FR24_COMPANION__) return;
+  if (jpfr24ChallengePage()) {
+    setTimeout(initFR24Companion, 1200);
+    return;
+  }
   window.__JP_FR24_COMPANION__ = true;
   var token = m[1], busy = false;
   function send(payload) {
