@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.8.2 — 2026-11-13
+
+- Random cards now show the like count next to the registration badge on the photo, and the registration in the info header next to the airline name.
+- Unconnected userscript spotlight uses the bookmarklet-style large photo info layout plus a “connect FR24” button; the photo-airport map remains.
+- Connected FR24 details use a compact live block: status pill instead of a full-width “in flight” row, plus current/last position, flight, route, altitude, ground speed and heading. Position accuracy is no longer displayed.
+- Removed the duplicate small aircraft type line beneath the airline name.
+
 ## 2.8.1 — 2026-11-13
 
 - Random spotlight map now uses keyless Esri Light/Dark Gray Canvas tiles with a separate reference-label layer: minimal gray base, place names retained, theme-aware (dark base for yellow/green, light base for FR24).
