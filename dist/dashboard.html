@@ -842,10 +842,10 @@ html.theme-fr24 .spot-map-tiles img.sm-ref{opacity:.66}
 html.theme-fr24 .spot-map-tiles img.sm-osm{opacity:.85;filter:grayscale(1) brightness(1.06) contrast(1.08)}
 .spot-map-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,22,25,.86) 0%,rgba(20,22,25,.62) 40%,rgba(20,22,25,.08) 100%),linear-gradient(180deg,rgba(20,22,25,.24),rgba(20,22,25,.1))}
 html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,255,.86) 0%,rgba(255,255,255,.62) 40%,rgba(255,255,255,.2) 100%),linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.1))}
-.spot-plane{position:absolute;left:70%;top:76%;width:30px;height:30px;z-index:2;color:var(--cyan);transform:translate(-50%,-50%) rotate(var(--rot,0deg));filter:drop-shadow(0 0 7px rgba(var(--accent-rgb),.7));transition:left .3s ease,top .3s ease,transform .3s ease}
+.spot-plane{position:absolute;left:74%;top:76%;width:30px;height:30px;z-index:2;color:var(--cyan);transform:translate(-50%,-50%) rotate(var(--rot,0deg));filter:drop-shadow(0 0 7px rgba(var(--accent-rgb),.7));transition:left .3s ease,top .3s ease,transform .3s ease}
 .spot-plane[hidden]{display:none}
 .spot-plane svg{display:block;width:100%;height:100%}
-.spot-pin{position:absolute;left:70%;top:76%;width:27px;height:27px;z-index:2;color:var(--cyan);transform:translate(-50%,-100%);filter:drop-shadow(0 0 7px rgba(var(--accent-rgb),.65))}
+.spot-pin{position:absolute;left:80%;top:76%;width:27px;height:27px;z-index:2;color:var(--cyan);transform:translate(-50%,-100%);filter:drop-shadow(0 0 7px rgba(var(--accent-rgb),.65))}
 .spot-pin[hidden]{display:none}
 .spot-pin svg{display:block;width:100%;height:100%}
 .spot-map-attr{position:absolute;right:10px;bottom:7px;z-index:2;font-family:var(--mono);font-size:8.5px;letter-spacing:.02em;color:var(--ink3);opacity:.7}
@@ -853,9 +853,9 @@ html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,25
 .spot-next{margin-left:10px;flex:none;background:rgba(var(--accent-rgb),0.08);border:1px solid rgba(var(--accent-rgb),0.32);color:var(--cyan);border-radius:999px;padding:5px 12px;font-size:11.5px;font-family:var(--mono);cursor:pointer;transition:background .2s,border-color .2s}
 .spot-next:hover{background:rgba(var(--accent-rgb),0.16);border-color:rgba(var(--accent-rgb),0.55)}
 .spot-next:disabled{opacity:.45;cursor:not-allowed}
-.spotlight-body{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(310px,.88fr);gap:22px;align-items:stretch}
-.spot-photo{position:relative;display:block;min-height:270px;border-radius:14px;overflow:hidden;background:#0b0c0d;border:1px solid var(--line)}
-.spot-photo img{display:block;width:100%;height:100%;min-height:270px;max-height:400px;object-fit:cover;transition:transform .55s cubic-bezier(.2,.8,.3,1)}
+.spotlight-body{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(310px,.88fr);gap:22px;align-items:start}
+.spot-photo{position:relative;display:block;min-height:0;border-radius:14px;overflow:hidden;background:#0b0c0d;border:1px solid var(--line)}
+.spot-photo img{display:block;width:100%;height:auto;min-height:0;max-height:none;object-fit:contain;transition:transform .55s cubic-bezier(.2,.8,.3,1)}
 .spot-photo:hover img{transform:scale(1.035)}
 .spot-photo-shade{position:absolute;inset:0;background:linear-gradient(180deg,#08090a22 0%,transparent 45%,#08090ad9 100%);pointer-events:none}
 .spot-photo-badges{position:absolute;left:14px;top:14px;display:flex;align-items:center;gap:6px;z-index:2}
@@ -903,9 +903,14 @@ html.theme-fr24 .spot-linkinfo b{color:#1b1f23}
 .spot-row b{display:block;font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.45;overflow-wrap:anywhere}
 .spot-live{margin-top:14px;padding-top:13px;border-top:1px solid var(--line)}
 .spot-live[hidden]{display:none}
-.spot-live-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:9px}
-.spot-live-title{font-family:var(--disp);font-size:22px;font-weight:700;line-height:1.1;color:var(--ink)}
-.spot-live-sub{font-family:var(--mono);font-size:10.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spot-live-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:9px}
+.spot-live-head-text{min-width:0}
+.spot-live-label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin-bottom:2px}
+.spot-live-title{font-family:var(--disp);font-size:25px;font-weight:700;line-height:1.08;color:var(--ink)}
+.spot-live-sub{font-family:var(--mono);font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spot-live .spot-row span{font-size:9.5px}
+.spot-live .spot-row b{font-size:15px;line-height:1.4}
+.spot-live .spot-grid{gap:10px 18px}
 html.theme-fr24 .spot-live{border-top-color:var(--line)}
 html.theme-fr24 .spot-live-title{color:#1b1f23}
 html.theme-fr24 .spot-live-sub{color:#59616a}
@@ -932,7 +937,8 @@ html.theme-fr24 .spot-next{background:#f5c518;border-color:#f5c518;color:#1b1f23
 html.theme-fr24 .spot-next:hover{background:#ffd83d;border-color:#ffd83d}
 @media (max-width:760px){
   .spotlight-body{grid-template-columns:1fr;gap:16px}
-  .spot-photo,.spot-photo img{min-height:210px;max-height:280px}
+  .spot-photo{min-height:0}
+  .spot-photo img{min-height:0;max-height:none}
   .spot-airline{font-size:22px}
   .spot-grid{grid-template-columns:1fr}
   .spot-next{margin-left:auto}
@@ -1046,7 +1052,7 @@ html.theme-fr24 .spot-next:hover{background:#ffd83d;border-color:#ffd83d}
           <div class="spot-meta" id="spotMeta"></div>
           <div class="spot-linkinfo" id="spotLinkInfo" hidden></div>
           <div class="spot-live" id="spotLive" hidden>
-            <div class="spot-live-head"><span class="spot-live-title" id="spotLiveTitle">—</span><span class="spot-live-sub" id="spotLiveSub"></span></div>
+            <div class="spot-live-head"><div class="spot-live-head-text"><span class="spot-live-label" id="spotLiveLabel">航班号</span><span class="spot-live-title" id="spotLiveTitle">—</span></div><span class="spot-live-sub" id="spotLiveSub"></span></div>
             <div class="spot-grid" id="spotGrid"></div>
           </div>
           <div class="spot-status" id="spotStatusBox" hidden>
@@ -4430,7 +4436,7 @@ function spotDrawMap(lat, lon, track, kind) {
   if (!map || !tiles || !plane || !pin) return;
   var z = 5, p = spotMapXY(+lat, +lon, z), cx = Math.floor(p.x), cy = Math.floor(p.y);
   var fx = (p.x - cx) * 256, fy = (p.y - cy) * 256;
-  var mx = window.innerWidth > 760 ? 70 : 50, my = window.innerWidth > 760 ? 76 : 72;
+  var mx = window.innerWidth > 760 ? (kind === 'photo' ? 80 : 74) : (kind === 'photo' ? 60 : 54), my = window.innerWidth > 760 ? 76 : 72;
   var light = THEME === 'fr24';
   var basePath, refPath;
   if (spotMapFallback) {
@@ -4814,7 +4820,6 @@ function spotRenderReport(r) {
   if ($('spotLive')) $('spotLive').hidden = false;
   var ac = r.aircraft || {};
   if (ac.model) $('spotAircraft').textContent = ac.model;
-  if (ac.airline) $('spotAirline').textContent = ac.airline;
   if (r.live) {
     var lv = r.live;
     var route = spotRoute((r.flight || {}).origin, (r.flight || {}).destination, ac.route_text);
@@ -4832,8 +4837,7 @@ function spotRenderReport(r) {
       spotRow(tt('航班', 'Flight'), flightNo),
       spotRow(tt('航线', 'Route'), route),
       spotRow(tt('高度', 'Altitude'), lv.alt != null ? fmt(lv.alt) + ' ft' : '—'),
-      spotRow(tt('地速', 'Ground speed'), lv.gs != null ? Math.round(lv.gs) + ' kt' : '—'),
-      spotRow(tt('航向', 'Heading'), lv.track != null ? Math.round(lv.track) + '°' : '—')
+      spotRow(tt('地速', 'Ground speed'), lv.gs != null ? Math.round(lv.gs) + ' kt' : '—')
     ];
     $('spotGrid').innerHTML = rows.join('');
     spotDrawMap(lv.lat, lv.lon, lv.track);
