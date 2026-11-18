@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.8.0 — 2026-11-13
+
+- Random photo now uses the full-resolution JetPhotos image, falling back to the thumbnail/placeholder on error.
+- The spotlight card uses a faded OpenStreetMap background centered on the aircraft position, with a theme-coloured aircraft marker and an OpenStreetMap attribution. Numeric latitude/longitude and airport-coordinate rows were removed.
+- The card now shows explicit photo location and photo date fields. Aircraft age is intentionally not displayed, since JetPhotos has no age field and Planespotters is not reliably accessible from the page. A free OSM background map replaces the numeric coordinates.
+- Live rows keep altitude, speed/track, flight and route; last-flight rows keep airport, flight status and next flight.
+- Userscript: the floating “统计此摄影师” pill remains available on JetPhotos content pages, including photo detail, `/photographer/<id>/photos` and `/members/photostats.php`. It is suppressed on upload-related pages (`/addphotos`, `/upload*`, `/submit`, etc.). The manual bookmarklet has no page restriction.
+- Bookmarklet/link mode now uses the same high-resolution photo, photo location/date and map background, with a theme-coloured location pin at the photo airport. Its right panel shows large photo date/location/aircraft values, hides the unavailable FR24 status link, removes the duplicate small aircraft line and enlarges the airline name, and has no manual photo-change limit (the 2/minute limit applies only to FR24-enabled userscript/extension mode).
+
 ## 2.7.1 — 2026-11-13
 
 - Added an optional unpacked Chrome/Edge companion in `extension/`. It creates an offscreen FR24 popup, queries the public FR24 web endpoints through a content script, and minimizes the window after a successful lookup.

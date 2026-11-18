@@ -2,6 +2,15 @@
 'use strict';
 if (window.__JP_STATS_MODE__ !== 'bookmarklet') window.__JP_STATS_MODE__ = 'userscript';
 if (/(^|\.)flightradar24\.com$/i.test(location.hostname)) { initFR24Companion(); return; }
+function statsPageAllowed() {
+  if (window.__JP_STATS_MODE__ === 'bookmarklet') return true;
+  var host = location.hostname.toLowerCase().replace(/^www\./, '');
+  if (host !== 'jetphotos.com') return false;
+  var p = location.pathname.replace(/\/+$/, '');
+  if (/(^|\/)(addphotos?|upload\w*|submit)(\/|$)/i.test(p)) return false;
+  return true;
+}
+if (!statsPageAllowed()) return;
 if (window.__JP_STATS__) { if (window.__JP_OPEN_PANEL) window.__JP_OPEN_PANEL(); return; }
 window.__JP_STATS__ = true;
 

@@ -827,6 +827,22 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
 /* ---------- random spotlight / FR24 companion ---------- */
 .spotlight-block{margin-top:26px}
 .spotlight-block[hidden]{display:none}
+.spotlight-card{position:relative;overflow:hidden}
+.spotlight-card > .card-h,.spotlight-card > .spotlight-body{position:relative;z-index:3}
+.spot-map{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.spot-map[hidden]{display:none}
+.spot-map-tiles{position:absolute;inset:0;overflow:hidden}
+.spot-map-tiles img{position:absolute;width:256px;height:256px;max-width:none;opacity:.74;filter:grayscale(.28) brightness(.78) contrast(.94);user-select:none}
+html.theme-fr24 .spot-map-tiles img{opacity:.8;filter:grayscale(.12) brightness(1.04) contrast(.96)}
+.spot-map-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,22,25,.93) 0%,rgba(20,22,25,.8) 40%,rgba(20,22,25,.36) 100%),linear-gradient(180deg,rgba(20,22,25,.32),rgba(20,22,25,.18))}
+html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,255,.94) 0%,rgba(255,255,255,.82) 40%,rgba(255,255,255,.6) 100%),linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,.18))}
+.spot-plane{position:absolute;left:70%;top:76%;width:30px;height:30px;z-index:2;color:var(--cyan);transform:translate(-50%,-50%) rotate(var(--rot,0deg));filter:drop-shadow(0 0 7px rgba(var(--accent-rgb),.7));transition:left .3s ease,top .3s ease,transform .3s ease}
+.spot-plane[hidden]{display:none}
+.spot-plane svg{display:block;width:100%;height:100%}
+.spot-pin{position:absolute;left:70%;top:76%;width:27px;height:27px;z-index:2;color:var(--cyan);transform:translate(-50%,-100%);filter:drop-shadow(0 0 7px rgba(var(--accent-rgb),.65))}
+.spot-pin[hidden]{display:none}
+.spot-pin svg{display:block;width:100%;height:100%}
+.spot-map-attr{position:absolute;right:10px;bottom:7px;z-index:2;font-family:var(--mono);font-size:8.5px;letter-spacing:.02em;color:var(--ink3);opacity:.7}
 .spotlight-card{padding:20px 22px}
 .spot-next{margin-left:10px;flex:none;background:rgba(var(--accent-rgb),0.08);border:1px solid rgba(var(--accent-rgb),0.32);color:var(--cyan);border-radius:999px;padding:5px 12px;font-size:11.5px;font-family:var(--mono);cursor:pointer;transition:background .2s,border-color .2s}
 .spot-next:hover{background:rgba(var(--accent-rgb),0.16);border-color:rgba(var(--accent-rgb),0.55)}
@@ -847,6 +863,21 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
 .spot-pill.on{color:var(--cyan);border-color:rgba(var(--accent-rgb),0.4);background:rgba(var(--accent-rgb),0.07)}
 .spot-pill.live{color:#0b1a2a;background:var(--cyan);border-color:var(--cyan)}
 .spot-meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-family:var(--mono);font-size:10.5px;color:var(--ink3);letter-spacing:.02em}
+.spot-meta span{display:inline-flex;align-items:baseline;gap:5px;min-width:0}
+.spot-meta i{font-style:normal;color:var(--ink3);opacity:.72}
+.spot-meta[hidden],.spot-status[hidden],.spot-pill[hidden],.spot-linkinfo[hidden],.act[hidden]{display:none}
+.spot-linkinfo{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);align-content:start}
+.spot-linkinfo > div{min-width:0}
+.spot-linkinfo .wide{grid-column:1/-1}
+.spot-linkinfo span{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:5px}
+.spot-linkinfo b{display:block;font-family:var(--disp);font-size:clamp(21px,2.45vw,32px);font-weight:600;line-height:1.08;color:var(--ink);letter-spacing:.01em;overflow-wrap:anywhere}
+html.theme-fr24 .spot-linkinfo{border-top-color:var(--line)}
+html.theme-fr24 .spot-linkinfo span{color:#7d858e}
+html.theme-fr24 .spot-linkinfo b{color:#1b1f23}
+.spotlight-card.spot-link-mode .spot-aircraft{display:none}
+.spotlight-card.spot-link-mode .spot-airline{font-size:clamp(30px,3.6vw,44px);line-height:1.04;white-space:normal;overflow:visible;text-overflow:clip}
+@media (max-width:760px){.spotlight-card.spot-link-mode .spot-airline{font-size:28px}}
+@media (max-width:760px){.spot-linkinfo{grid-template-columns:1fr;gap:12px}.spot-linkinfo b{font-size:24px}}
 .spot-status{background:#0f1114;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0 10px}
 .spot-status-main{font-size:15px;font-weight:600;color:var(--cyan);line-height:1.3}
 .spot-status-sub{font-size:11.5px;color:var(--ink2);margin-top:4px;line-height:1.55}
@@ -960,6 +991,13 @@ html.theme-fr24 .spot-next:hover{background:#f5f7f8;border-color:#b9c1c8}
 
   <section class="charts spotlight-block" id="spotlightBlock" hidden>
     <div class="card span12 spotlight-card" id="spotlightCard">
+      <div class="spot-map" id="spotMap" hidden>
+        <div class="spot-map-tiles" id="spotMapTiles"></div>
+        <div class="spot-map-shade"></div>
+        <div class="spot-plane" id="spotPlane" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2.5 1.5V22l4-1 4 1v-1.5L13 19v-5.5L21 16z"/></svg></div>
+        <div class="spot-pin" id="spotPin" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg></div>
+        <span class="spot-map-attr">© OpenStreetMap contributors</span>
+      </div>
       <div class="card-h">
         <h3>随机图片</h3><span class="en">RANDOM PHOTO</span>
         <span class="act" id="spotState">—</span>
@@ -981,7 +1019,8 @@ html.theme-fr24 .spot-next:hover{background:#f5f7f8;border-color:#b9c1c8}
             <span class="spot-pill" id="spotPill">—</span>
           </div>
           <div class="spot-meta" id="spotMeta"></div>
-          <div class="spot-status">
+          <div class="spot-linkinfo" id="spotLinkInfo" hidden></div>
+          <div class="spot-status" id="spotStatusBox">
             <div class="spot-status-main" id="spotStatusMain">—</div>
             <div class="spot-status-sub" id="spotStatusSub"></div>
           </div>
@@ -4302,6 +4341,75 @@ try { SPOT_POPUP_BASE = localStorage.getItem('jpstats.fr24popup') || SPOT_POPUP_
 var SPOT_ORIGIN = SPOT_POPUP_BASE;
 try { SPOT_ORIGIN = new URL(SPOT_POPUP_BASE).origin; } catch (e) {}
 var SPOT_MOVES_KEY = 'jpstats.spot.moves.' + ID;
+var spotMapPoint = null, spotMapResizeTimer = null;
+
+function spotMapXY(lat, lon, z) {
+  var n = Math.pow(2, z);
+  var x = (lon + 180) / 360 * n;
+  var rad = lat * Math.PI / 180;
+  var y = (1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2 * n;
+  return { x: x, y: Math.max(0, Math.min(n - 0.001, y)), n: n };
+}
+var spotAirportCoordCache = {};
+function spotAirportCoords(p) {
+  if (!p) return null;
+  var code = String(p.airportCode || '').toUpperCase();
+  if (!/^[A-Z0-9]{4}$/.test(code)) return null;
+  if (spotAirportCoordCache[code] !== undefined) return spotAirportCoordCache[code];
+  var pack = (window.JP_GEO && window.JP_GEO.airports) || '';
+  for (var i = 0; i + 8 < pack.length; i += 9) {
+    if (pack.substr(i, 4) !== code) continue;
+    var pv = parseInt(pack.substr(i + 4, 5), 36);
+    var out = [Math.floor(pv / 3601) / 1800 * 180 - 90, (pv % 3601) / 3600 * 360 - 180];
+    spotAirportCoordCache[code] = out;
+    return out;
+  }
+  spotAirportCoordCache[code] = null;
+  return null;
+}
+function spotClearMap() {
+  spotMapPoint = null;
+  if ($('spotMap')) $('spotMap').hidden = true;
+  if ($('spotMapTiles')) $('spotMapTiles').innerHTML = '';
+  if ($('spotPlane')) $('spotPlane').hidden = true;
+  if ($('spotPin')) $('spotPin').hidden = true;
+}
+function spotDrawMap(lat, lon, track, kind) {
+  if (lat == null || lon == null || !isFinite(+lat) || !isFinite(+lon)) {
+    spotClearMap();
+    return;
+  }
+  kind = kind === 'photo' ? 'photo' : 'plane';
+  spotMapPoint = { lat: +lat, lon: +lon, track: track == null ? null : +track, kind: kind };
+  var map = $('spotMap'), tiles = $('spotMapTiles'), plane = $('spotPlane'), pin = $('spotPin');
+  if (!map || !tiles || !plane || !pin) return;
+  var z = 5, p = spotMapXY(+lat, +lon, z), cx = Math.floor(p.x), cy = Math.floor(p.y);
+  var fx = (p.x - cx) * 256, fy = (p.y - cy) * 256;
+  var mx = window.innerWidth > 760 ? 70 : 50, my = window.innerWidth > 760 ? 76 : 72;
+  var html = '';
+  for (var dy = -2; dy <= 2; dy++) {
+    for (var dx = -3; dx <= 3; dx++) {
+      var tx = ((cx + dx) % p.n + p.n) % p.n, ty = cy + dy;
+      if (ty < 0 || ty >= p.n) continue;
+      var left = 'calc(' + mx + '% + ' + ((dx * 256) - fx) + 'px)';
+      var top = 'calc(' + my + '% + ' + ((dy * 256) - fy) + 'px)';
+      html += '<img src="https://' + (['a','b','c'][(dx + 3) % 3]) + '.tile.openstreetmap.fr/hot/' + z + '/' + tx + '/' + ty + '.png" alt="" draggable="false" style="left:' + left + ';top:' + top + '">';
+    }
+  }
+  tiles.innerHTML = html;
+  var marker = kind === 'photo' ? pin : plane;
+  marker.style.left = mx + '%';
+  marker.style.top = my + '%';
+  if (kind === 'photo') { pin.hidden = false; plane.hidden = true; }
+  else { plane.style.setProperty('--rot', (spotMapPoint.track == null ? 0 : spotMapPoint.track) + 'deg'); plane.hidden = false; pin.hidden = true; }
+  map.hidden = false;
+}
+window.addEventListener('resize', function () {
+  clearTimeout(spotMapResizeTimer);
+  spotMapResizeTimer = setTimeout(function () {
+    if (spotMapPoint) spotDrawMap(spotMapPoint.lat, spotMapPoint.lon, spotMapPoint.track, spotMapPoint.kind);
+  }, 160);
+});
 
 function spotMoveTimes() {
   try {
@@ -4335,28 +4443,70 @@ function spotSetStatus(main, sub, pill, live) {
 }
 function spotSetPhoto(p) {
   spotCurrent = p;
+  spotClearMap();
   var img = $('spotImg');
-  img.onerror = function () { this.onerror = null; this.src = PLACEHOLDER; };
-  img.src = p.thumb || p.full || PLACEHOLDER;
+  var full = p.full || p.thumb || PLACEHOLDER;
+  img.onerror = function () {
+    if (p.thumb && this.src !== p.thumb) { this.src = p.thumb; return; }
+    this.onerror = null;
+    this.src = PLACEHOLDER;
+  };
+  img.src = full;
   img.alt = [p.reg, p.aircraft, p.airline].filter(Boolean).join(' · ');
   $('spotPhoto').href = p.url || ('https://www.jetphotos.com/photo/' + p.id);
   $('spotPhotoReg').textContent = p.reg || '—';
   $('spotAirline').textContent = p.airline || '未知航司';
   $('spotAircraft').textContent = p.aircraft || '未知机型';
-  var meta = [];
-  if (p.airportCode || p.airport) meta.push((p.airportCode || '') + (p.airport ? ' ' + p.airport : ''));
-  if (p.date || p.uploaded) meta.push(p.date || p.uploaded);
-  if (p.views != null) meta.push('👁 ' + fmt(p.views));
-  $('spotMeta').textContent = meta.join('  ·  ');
+  var loc = [p.airportCode, p.airport].filter(Boolean).join(' · ') || '—';
+  var when = p.date || p.uploaded || '—';
+  $('spotMeta').innerHTML =
+    '<span><i>' + esc(tt('拍摄地点', 'Location')) + '</i>' + esc(loc) + '</span>' +
+    '<span><i>' + esc(tt('拍摄时间', 'Date')) + '</i>' + esc(when) + '</span>' +
+    (p.views != null ? '<span><i>' + esc(tt('浏览', 'Views')) + '</i>' + esc(fmt(p.views)) + '</span>' : '');
+}
+function spotUseLinkChrome() {
+  var card = $('spotlightCard');
+  if (card) card.classList.add('spot-link-mode');
+  if ($('spotStatusBox')) $('spotStatusBox').hidden = true;
+  if ($('spotMeta')) $('spotMeta').hidden = true;
+  if ($('spotPill')) $('spotPill').hidden = true;
+  if ($('spotState')) { $('spotState').hidden = false; $('spotState').textContent = ''; }
+  if ($('spotLinkInfo')) $('spotLinkInfo').hidden = false;
+}
+function spotUseLiveChrome() {
+  var card = $('spotlightCard');
+  if (card) card.classList.remove('spot-link-mode');
+  if ($('spotStatusBox')) $('spotStatusBox').hidden = false;
+  if ($('spotMeta')) $('spotMeta').hidden = false;
+  if ($('spotPill')) $('spotPill').hidden = false;
+  if ($('spotState')) $('spotState').hidden = false;
+  if ($('spotLinkInfo')) $('spotLinkInfo').hidden = true;
+}
+function spotRenderLinkInfo(p) {
+  if (!$('spotLinkInfo')) return;
+  var date = (p && (p.date || p.uploaded)) || '—';
+  var loc = p ? ([p.airportCode, p.airport].filter(Boolean).join(' · ') || '—') : '—';
+  var type = (p && p.aircraft) || '—';
+  $('spotLinkInfo').innerHTML =
+    '<div><span>' + esc(tt('拍摄日期', 'Date')) + '</span><b>' + esc(date) + '</b></div>' +
+    '<div><span>' + esc(tt('拍摄地点', 'Location')) + '</span><b>' + esc(loc) + '</b></div>' +
+    '<div class="wide"><span>' + esc(tt('机型', 'Aircraft')) + '</span><b>' + esc(type) + '</b></div>';
+}
+function spotShowPhotoMap() {
+  var c = spotAirportCoords(spotCurrent);
+  if (c) spotDrawMap(c[0], c[1], null, 'photo');
+  else spotClearMap();
 }
 function spotShowDisconnected() {
   spotLastReport = null;
+  spotClearMap();
   if (SPOT_MODE === 'link') {
+    spotUseLinkChrome();
+    spotRenderLinkInfo(spotCurrent);
     var reg = (spotCurrent && spotCurrent.reg) || '';
     spotSetStatus(tt('FR24 飞机档案', 'FR24 aircraft page'),
-      tt('书签版显示照片和 FR24 链接；安装 2.7.0 油猴版可查询实时位置。', 'Bookmarklet mode shows the photo and an FR24 link; install the 2.7.0 userscript for live lookup.'),
+      tt('书签版显示照片和 FR24 链接；安装最新油猴版可查询实时位置。', 'Bookmarklet mode shows the photo and an FR24 link; install the latest userscript for live lookup.'),
       tt('FR24 链接', 'FR24 link'));
-    $('spotState').textContent = tt('FR24 链接', 'FR24 link');
     $('spotGrid').innerHTML = '';
     $('spotFr24').href = 'https://www.flightradar24.com/data/aircraft/' + encodeURIComponent(reg);
     $('spotFr24').textContent = tt('在 FR24 查看 ↗', 'View on FR24 ↗');
@@ -4364,9 +4514,11 @@ function spotShowDisconnected() {
     $('spotConnect').hidden = true;
     $('spotFocus').hidden = true;
     $('spotRetry').hidden = true;
-    $('spotNote').textContent = tt('书签版不执行 FR24 查询。', 'Bookmarklet mode does not query FR24.');
+    $('spotNote').textContent = tt('书签版不执行 FR24 查询；地图显示照片拍摄机场。', 'Bookmarklet mode does not query FR24; the map shows the photo airport.');
+    spotShowPhotoMap();
     return;
   }
+  spotUseLiveChrome();
   spotSetStatus(tt('FR24 未连接', 'FR24 not connected'),
     tt('点击「连接 FR24」或「换一张」启用实时位置查询。', 'Click “Connect FR24” or “Next photo” to enable live lookup.'),
     tt('未连接', 'Offline'));
@@ -4377,6 +4529,7 @@ function spotShowDisconnected() {
   $('spotConnect').hidden = false;
   $('spotFocus').hidden = !(spotWin && !spotWin.closed);
   $('spotNote').textContent = tt('实时位置来自 FR24 网页接口；首次使用需打开一个 FR24 查询窗口。', 'Live position comes from FR24 web APIs; the first lookup opens a small FR24 window.');
+  spotShowPhotoMap();
 }
 function spotSend(payload) {
   if (!spotWin || spotWin.closed) return false;
@@ -4583,6 +4736,7 @@ function spotRow(label, value) {
 function spotRenderReport(r) {
   spotBusy = false;
   clearTimeout(spotQueryTimer);
+  spotUseLiveChrome();
   if (!r || !r.found) { spotAutoNext(tt('FR24 未找到该注册号', 'Registration not found on FR24')); return; }
   if (!r.live && !r.last_flight) {
     spotAutoNext(tt('没有航班记录', 'No flight record'));
@@ -4600,19 +4754,20 @@ function spotRenderReport(r) {
     spotSetStatus(main, [flightNo, route].filter(Boolean).join(' · '), main, true);
     $('spotState').textContent = tt('FR24 实时', 'FR24 live');
     var rows = [
-      spotRow(tt('位置', 'Position'), spotCoord(lv.lat, lv.lon)),
-      spotRow(tt('精度', 'Precision'), lv.precision || '—'),
+      spotRow(tt('位置精度', 'Position accuracy'), lv.precision || '—'),
       spotRow(tt('高度', 'Altitude'), lv.alt != null ? fmt(lv.alt) + ' ft' : '—'),
       spotRow(tt('地速 / 航向', 'Speed / track'), (lv.gs != null ? Math.round(lv.gs) + ' kt' : '—') + (lv.track != null ? ' · ' + Math.round(lv.track) + '°' : '')),
       spotRow(tt('航班', 'Flight'), flightNo),
       spotRow(tt('航线', 'Route'), route)
     ];
     $('spotGrid').innerHTML = rows.join('');
+    spotDrawMap(lv.lat, lv.lon, lv.track);
     var link = lv.fr24_id ? ('https://www.flightradar24.com/' + encodeURIComponent(lv.fr24_id)) : ('https://www.flightradar24.com/data/aircraft/' + encodeURIComponent(ac.reg || r.query));
     $('spotFr24').href = link;
     $('spotFr24').textContent = tt('在 FR24 查看 ↗', 'View on FR24 ↗');
     $('spotFr24').hidden = false;
-    $('spotNote').textContent = (r.notes || []).join(' · ') || tt('位置来自 FR24 搜索接口，约 11 km 精度。', 'Position comes from the FR24 search API, about 11 km precision.');
+    var liveNotes = (r.notes || []).slice();
+    $('spotNote').textContent = liveNotes.join(' · ') || tt('位置来自 FR24 搜索接口，约 11 km 精度。', 'Position comes from the FR24 search API, about 11 km precision.');
   } else {
     var lf = r.last_flight || {}, ap = r.airport || lf.airport || null;
     var route2 = (lf.origin_code || '?') + ' → ' + (lf.destination_code || '?');
@@ -4621,13 +4776,13 @@ function spotRenderReport(r) {
     $('spotState').textContent = tt('FR24 最近航班', 'FR24 last flight');
     var rows2 = [
       spotRow(tt('最后所在机场', 'Last known airport'), spotAirportText(ap)),
-      spotRow(tt('机场坐标', 'Airport coordinates'), spotCoord(ap && ap.lat, ap && ap.lon)),
       spotRow(tt('最近航班', 'Last flight'), route2),
       spotRow(tt('航班状态', 'Flight status'), spotStatusZh(lf.status_text)),
       spotRow(tt('落地 / 起飞', 'Arrival / departure'), spotTime(lf.real_arrival || lf.real_departure)),
       spotRow(tt('下一班', 'Next flight'), r.upcoming ? ((r.upcoming.number || '') + ' · ' + (r.upcoming.origin_code || '?') + ' → ' + (r.upcoming.destination_code || '?')) : '—')
     ];
     $('spotGrid').innerHTML = rows2.join('');
+    spotDrawMap(ap && ap.lat, ap && ap.lon, null);
     $('spotFr24').href = 'https://www.flightradar24.com/data/aircraft/' + encodeURIComponent(ac.reg || r.query);
     $('spotFr24').textContent = tt('在 FR24 查看 ↗', 'View on FR24 ↗');
     $('spotFr24').hidden = false;
@@ -4648,6 +4803,11 @@ function spotTick() {
     $('spotConnect').hidden = false;
     $('spotFocus').hidden = true;
   }
+  if (SPOT_MODE === 'link') {
+    btn.disabled = false;
+    btn.textContent = tt('换一张', 'Next photo');
+    return;
+  }
   if (spotBusy) {
     btn.disabled = true;
     btn.textContent = tt('查询中…', 'Querying…');
@@ -4666,6 +4826,12 @@ function spotTick() {
 }
 function spotManualNext() {
   if (spotBusy) return;
+  if (SPOT_MODE === 'link') {
+    spotAutoLeft = 4;
+    spotSelect(spotPick(spotCurrent && spotCurrent.id), false);
+    spotTick();
+    return;
+  }
   if (spotManualRemaining() <= 0) {
     toast(tt('一分钟内最多换两张，请稍后再试。', 'You can change twice per minute. Try again shortly.'));
     return;
