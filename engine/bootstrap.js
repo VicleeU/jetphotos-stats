@@ -305,7 +305,7 @@ function jpfr24Brief(x) {
     airline: ((x.airline || {}).name) || null
   };
 }
-function jpfr24Lookup(reg) {
+function jpfr24LookupCore(reg) {
   var key = jpfr24Norm(reg);
   var out = {
     query: reg, found: false, aircraft: { reg: reg },
@@ -357,6 +357,53 @@ function jpfr24Lookup(reg) {
         out.flight.origin = aps[0]; out.flight.destination = aps[1];
         return out;
       });
+    }).catch(function () { return out; });
+  });
+}
+function jpfr24HttpGet(url) {
+  return fetch(url, { credentials: 'include' }).then(function (r) { return r.json(); }).catch(function () {
+    return new Promise(function (resolve, reject) {
+      if (typeof GM_xmlhttpRequest !== 'function') return reject(new Error('no http bridge'));
+      GM_xmlhttpRequest({
+        method: 'GET', url: url, anonymous: false,
+        onload: function (r) { try { resolve(JSON.parse(r.responseText)); } catch (e) { reject(e); } },
+        onerror: reject
+      });
+    });
+  });
+}
+function jpfr24Feed(reg) {
+  var url = 'https://data-cloud.flightradar24.com/zones/fcgi/feed.js?reg=!' + encodeURIComponent(reg);
+  return jpfr24HttpGet(url).then(function (j) {
+    var arr = null;
+    Object.keys(j || {}).some(function (k) {
+      if (Array.isArray(j[k])) { arr = j[k]; return true; }
+      return false;
+    });
+    if (!arr || arr.length < 6) return null;
+    var alt = +arr[4], gs = +arr[5], track = +arr[3];
+    return {
+      lat: isFinite(+arr[1]) ? +arr[1] : null,
+      lon: isFinite(+arr[2]) ? +arr[2] : null,
+      alt: isFinite(alt) ? alt : null,
+      gs: isFinite(gs) ? gs : null,
+      track: isFinite(track) ? track : null,
+      ground: alt === 0
+    };
+  }).catch(function () { return null; });
+}
+function jpfr24Lookup(reg) {
+  return jpfr24LookupCore(reg).then(function (out) {
+    if (!out.live) return out;
+    return jpfr24Feed(out.aircraft.reg || reg).then(function (f) {
+      if (!f) return out;
+      if (f.lat != null) out.live.lat = f.lat;
+      if (f.lon != null) out.live.lon = f.lon;
+      if (f.alt != null) out.live.alt = f.alt;
+      if (f.gs != null) out.live.gs = f.gs;
+      if (f.track != null) out.live.track = f.track;
+      if (f.ground) out.live.ground = true;
+      return out;
     }).catch(function () { return out; });
   });
 }

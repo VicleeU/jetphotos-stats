@@ -149,6 +149,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     focusWindow().then(() => sendResponse({ ok: true }));
     return true;
   }
+  if (msg.type === 'jpfr24ext-feed') {
+    const reg = String(msg.reg || '');
+    const url = 'https://data-cloud.flightradar24.com/zones/fcgi/feed.js?reg=!' + encodeURIComponent(reg);
+    fetch(url, { credentials: 'include' }).then(r => r.json()).then(j => {
+      sendResponse({ ok: true, data: j });
+    }).catch(e => sendResponse({ ok: false, error: String(e && e.message || e) }));
+    return true;
+  }
 });
 
 chrome.windows.onRemoved.addListener(id => {

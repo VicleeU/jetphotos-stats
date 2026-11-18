@@ -98,7 +98,7 @@
     });
   }
 
-  function lookup(reg) {
+  function lookupCore(reg) {
     var key = norm(reg);
     var out = {
       query: reg, found: false, aircraft: { reg: reg },
@@ -150,6 +150,49 @@
           return out;
         });
       }).catch(function () { return out; });
+    });
+  }
+
+  function parseFeed(j) {
+    var arr = null;
+    Object.keys(j || {}).some(function (k) {
+      if (Array.isArray(j[k])) { arr = j[k]; return true; }
+      return false;
+    });
+    if (!arr || arr.length < 6) return null;
+    var alt = +arr[4], gs = +arr[5], track = +arr[3];
+    return {
+      lat: isFinite(+arr[1]) ? +arr[1] : null,
+      lon: isFinite(+arr[2]) ? +arr[2] : null,
+      alt: isFinite(alt) ? alt : null,
+      gs: isFinite(gs) ? gs : null,
+      track: isFinite(track) ? track : null,
+      ground: alt === 0
+    };
+  }
+  function feedFor(reg) {
+    var url = 'https://data-cloud.flightradar24.com/zones/fcgi/feed.js?reg=!' + encodeURIComponent(reg);
+    return fetch(url, { credentials: 'include' }).then(function (r) { return r.json(); }).catch(function () {
+      return new Promise(function (resolve) {
+        chrome.runtime.sendMessage({ type: 'jpfr24ext-feed', reg: reg }, function (r) {
+          resolve(r && r.ok ? r.data : null);
+        });
+      });
+    }).then(parseFeed).catch(function () { return null; });
+  }
+  function lookup(reg) {
+    return lookupCore(reg).then(function (out) {
+      if (!out.live) return out;
+      return feedFor(out.aircraft.reg || reg).then(function (f) {
+        if (!f) return out;
+        if (f.lat != null) out.live.lat = f.lat;
+        if (f.lon != null) out.live.lon = f.lon;
+        if (f.alt != null) out.live.alt = f.alt;
+        if (f.gs != null) out.live.gs = f.gs;
+        if (f.track != null) out.live.track = f.track;
+        if (f.ground) out.live.ground = true;
+        return out;
+      });
     });
   }
 

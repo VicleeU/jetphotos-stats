@@ -8,7 +8,7 @@ DIST = ROOT / 'dist'
 SITE = ROOT / 'site'
 DIST.mkdir(exist_ok=True)
 
-VERSION = '2.8.2'
+VERSION = '2.8.3'
 ENGINE_URL = sys.argv[1] if len(sys.argv) > 1 else ''
 
 
@@ -73,7 +73,8 @@ header = f"""// ==UserScript==
 // @match        https://jetphotos.com/*
 // @match        https://www.flightradar24.com/*
 // @match        https://flightradar24.com/*
-// @grant        none
+// @grant        GM_xmlhttpRequest
+// @connect      data-cloud.flightradar24.com
 // @run-at       document-idle
 // @noframes
 // @license      MIT

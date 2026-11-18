@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.3 — 2026-11-13
+
+- Fixed the airline name being replaced by FR24’s short ICAO code after several photo switches; the JetPhotos airline name is kept.
+- Enlarged the connected-session information text and removed the heading row (track) from the live grid.
+- FR24 search can omit altitude/ground speed for airborne flights; the companion now reads FR24’s data-cloud feed (`feed.js?reg=!REG`) for live altitude, ground speed and track, keeping FR24 as the sole live data source.
+
 ## 2.8.2 — 2026-11-13
 
 - Random cards now show the like count next to the registration badge on the photo, and the registration in the info header next to the airline name.
