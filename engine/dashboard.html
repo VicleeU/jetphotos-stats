@@ -4290,10 +4290,10 @@ $('failOv').addEventListener('click', function (e) { if (e.target === this) clos
 $('failRetry').addEventListener('click', function () { closeFail(); startDeep(true); });
 
 /* ---------- random spotlight / FR24 companion ---------- */
-var SPOT_MODE = 'link';
-try {
-  if (window.parent !== window && window.parent.__JP_STATS_MODE__ === 'userscript') SPOT_MODE = 'companion';
-} catch (e) {}
+var SPOT_PARENT_MODE = '';
+try { if (window.parent !== window) SPOT_PARENT_MODE = window.parent.__JP_STATS_MODE__ || ''; } catch (e) {}
+var SPOT_MODE = SPOT_PARENT_MODE === 'userscript' ? 'companion' : 'link';
+var SPOT_EXT_READY = false, SPOT_EXT_TOKEN = '', SPOT_EXT_SEEN = false;
 var spotCurrent = null, spotAutoLeft = 0, spotReqId = 0, spotBusy = false;
 var spotWin = null, spotToken = '', spotReady = false, spotPendingReg = '';
 var spotWaitTimer = null, spotQueryTimer = null, spotLastReport = null;
@@ -4384,6 +4384,71 @@ function spotSend(payload) {
   msg.jpfr24 = spotToken;
   try { spotWin.postMessage(msg, SPOT_ORIGIN); return true; } catch (e) { return false; }
 }
+function spotExtPost(payload) {
+  var msg = payload || {};
+  msg.__jpfr24ext = 1;
+  try { (window.top || window).postMessage(msg, '*'); } catch (e) {}
+}
+function spotExtLookup(p) {
+  if (!p) return;
+  if (!SPOT_EXT_READY) {
+    spotPendingReg = p.reg;
+    spotSetStatus(tt('正在连接 FR24 扩展…', 'Connecting to FR24 extension…'),
+      tt('正在打开隐藏的 FR24 查询窗口。', 'Opening the hidden FR24 lookup window.'), tt('连接中', 'Connecting'));
+    spotExtPost({ type: 'connect', token: SPOT_EXT_TOKEN, id: 0 });
+    return;
+  }
+  spotBusy = true;
+  spotReqId++;
+  var id = spotReqId;
+  spotSetStatus(tt('正在查询 FR24 扩展…', 'Looking up via FR24 extension…'),
+    p.reg + ' · ' + (p.airline || ''), tt('查询中', 'Querying'));
+  spotExtPost({ type: 'lookup', token: SPOT_EXT_TOKEN, reg: p.reg, id: id });
+  clearTimeout(spotQueryTimer);
+  spotQueryTimer = setTimeout(function () { if (spotBusy) spotQueryTimeout(); }, 60000);
+  spotTick();
+}
+function spotExtMessage(ev) {
+  var d = ev.data || {};
+  if (!d || d.__jpfr24ext !== 1 || d.token !== SPOT_EXT_TOKEN) return;
+  if (d.type === 'ext-ready') {
+    var first = !SPOT_EXT_READY;
+    SPOT_EXT_READY = true;
+    SPOT_MODE = 'extension';
+    $('spotConnect').hidden = true;
+    $('spotFocus').hidden = true;
+    if (first && spotCurrent) spotExtLookup(spotCurrent);
+    return;
+  }
+  if (d.type !== 'ext-result' || d.kind !== 'lookup' || d.id !== spotReqId) return;
+  spotBusy = false;
+  clearTimeout(spotQueryTimer);
+  var resp = d.resp || {};
+  if (resp.ok) {
+    spotRenderReport(resp.report || {});
+  } else if (resp.error === 'challenge') {
+    spotSetStatus(tt('FR24 扩展需要验证', 'FR24 extension needs verification'),
+      tt('请在 FR24 窗口中完成 Cloudflare 验证，然后重试。', 'Complete the Cloudflare check in the FR24 window, then retry.'),
+      tt('需要验证', 'Verify'));
+    $('spotFocus').hidden = false;
+    $('spotRetry').hidden = false;
+  } else {
+    spotSetStatus(tt('FR24 扩展查询失败', 'FR24 extension lookup failed'),
+      resp.message || tt('请点击「重新查询」。', 'Click Retry.'), tt('失败', 'Failed'));
+    $('spotRetry').hidden = false;
+  }
+  spotTick();
+}
+function spotExtDetect() {
+  if (SPOT_PARENT_MODE === 'bookmarklet' || SPOT_EXT_SEEN || SPOT_EXT_READY) return;
+  SPOT_EXT_SEEN = true;
+  SPOT_EXT_TOKEN = 'ext' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  window.addEventListener('message', spotExtMessage);
+  spotExtPost({ type: 'ping', token: SPOT_EXT_TOKEN });
+  setTimeout(function () {
+    if (!SPOT_EXT_READY) spotExtPost({ type: 'ping', token: SPOT_EXT_TOKEN });
+  }, 800);
+}
 function spotOpenPopup(focus) {
   if (spotWin && !spotWin.closed) {
     spotReady = false;
@@ -4431,6 +4496,7 @@ function spotQueryTimeout() {
 }
 function spotLookup(p) {
   if (!p) return;
+  if (SPOT_MODE === 'extension') { spotExtLookup(p); return; }
   if (!spotReady) {
     spotPendingReg = p.reg;
     if (!spotWin || spotWin.closed) spotOpenPopup(false);
@@ -4617,6 +4683,7 @@ function spotInit() {
   spotAutoLeft = 4;
   spotSetPhoto(p);
   spotShowDisconnected();
+  spotExtDetect();
   spotTick();
 }
 function spotRelang() {
@@ -4670,12 +4737,15 @@ if ($('spotConnect')) $('spotConnect').addEventListener('click', function () {
   spotOpenPopup(false);
 });
 if ($('spotFocus')) $('spotFocus').addEventListener('click', function () {
+  if (SPOT_MODE === 'extension') { spotExtPost({ type: 'focus', token: SPOT_EXT_TOKEN }); return; }
   spotSend({ type: 'focus' });
   try { if (spotWin && !spotWin.closed) spotWin.focus(); } catch (e) {}
 });
 if ($('spotRetry')) $('spotRetry').addEventListener('click', function () {
   spotAutoLeft = 4;
-  if (spotCurrent) spotLookup(spotCurrent);
+  if (!spotCurrent) return;
+  if (SPOT_MODE === 'extension') spotExtLookup(spotCurrent);
+  else spotLookup(spotCurrent);
 });
 window.addEventListener('pagehide', function () {
   try { if (spotWin && !spotWin.closed) spotWin.close(); } catch (e) {}

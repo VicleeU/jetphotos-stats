@@ -4,7 +4,7 @@
 
 Unofficial, client-side JetPhotos photographer statistics dashboard. The public repository contains the engine, install page, build scripts and fonts. Personal photographer data and caches belong outside this repository and must never be committed.
 
-- Current version: **2.7.0**
+- Current version: **2.7.1**
 - Repository: https://github.com/VicleeU/jetphotos-stats
 - Install page: https://vicleeu.github.io/jetphotos-stats/
 - Greasy Fork: https://greasyfork.org/zh-CN/scripts/605109
@@ -45,7 +45,7 @@ Follow `RELEASE.md`. Version numbers live in `tools/build-dist.py`. Publishing t
 
 - GitHub push may need a proxy and HTTP/1.1.
 - Greasy Fork has no public API. Use the browser and let the owner complete login/2FA. A Safari JXA helper is in `tools/publish/greasyfork-safari.js`.
-- The 2.7.0 random spotlight opens a small FR24 companion popup; it requires the userscript build, which now matches `www.flightradar24.com`. Bookmarklet-only installs cannot provide the FR24 side.
+- The 2.7.0 random spotlight has two browser-only FR24 options: an optional unpacked Chrome/Edge companion in `extension/` (offscreen popup, minimized after a successful lookup) and the userscript companion popup fallback. Bookmarklet-only installs intentionally show the photo + a direct FR24 link.
 - FR24 position from the companion is the search-API position (about 11 km precision), not a paid FR24 API feed.
 - Greasy Fork rejects code with any line longer than 5000 characters containing `function`; the `jp-stats.greasyfork.user.js` build splits the embedded dashboard string for this reason.
 

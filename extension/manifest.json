@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "JetPhotos Stats FR24 Companion",
+  "version": "2.7.1",
+  "description": "Local companion for JetPhotos Stats random spotlight: opens a hidden FR24 window and relays its public web data.",
+  "permissions": ["tabs", "storage"],
+  "host_permissions": [
+    "https://www.flightradar24.com/*",
+    "https://flightradar24.com/*",
+    "https://www.jetphotos.com/*",
+    "https://jetphotos.com/*",
+    "https://vicleeu.github.io/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.jetphotos.com/*",
+        "https://jetphotos.com/*",
+        "https://vicleeu.github.io/*"
+      ],
+      "js": ["jp-bridge.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.flightradar24.com/*",
+        "https://flightradar24.com/*"
+      ],
+      "js": ["fr24-bridge.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
