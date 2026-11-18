@@ -1432,32 +1432,43 @@ $('switchBtn').addEventListener('click', function () { guardedExit(switchPhotogr
 $('bootClose').addEventListener('click', closeOverlay);
 
 /* ---------- network layer: fetch with timeout, hidden-iframe document fallback ---------- */
+function looksChallenge(t) {
+  return !t || t.length < 3000 || /cf-challenge|Just a moment|请稍候|Enable JavaScript/i.test(t.slice(0, 3000));
+}
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 function iframeDoc(url) {
   return new Promise(function (resolve, reject) {
     var f = document.createElement('iframe');
-    f.setAttribute('sandbox', 'allow-same-origin');
-    f.style.cssText = 'position:absolute;left:-9999px;top:0;width:1px;height:1px;border:0;visibility:hidden';
-    var settled = false;
-    var timer = setTimeout(function () { if (!settled) { settled = true; f.remove(); reject({ retry: true, code: 'timeout' }); } }, 25000);
-    f.onload = function () {
+    // allow-scripts is required for the Cloudflare challenge page to run and auto-reload
+    f.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+    f.style.cssText = 'position:absolute;left:-10000px;top:0;width:1200px;height:800px;border:0;opacity:0;pointer-events:none';
+    var settled = false, deadline = Date.now() + 22000;
+    function finish(fn, val) {
       if (settled) return;
-      settled = true; clearTimeout(timer);
+      settled = true;
+      clearInterval(timer); clearTimeout(hard);
+      f.remove();
+      fn(val);
+    }
+    function check(force) {
+      if (settled) return;
       var html = '';
       try { html = f.contentDocument && f.contentDocument.documentElement ? f.contentDocument.documentElement.outerHTML : ''; } catch (e) {}
-      f.remove();
-      if (html.length > 3000 && !/cf-challenge|Just a moment/i.test(html.slice(0, 3000))) resolve(html);
-      else reject({ retry: true, code: 'cf-doc' });
-    };
+      if (html && !looksChallenge(html)) { finish(resolve, html); return; }
+      if (force || Date.now() > deadline) finish(reject, { retry: true, code: 'cf-doc' });
+    }
+    var timer = setInterval(function () { check(false); }, 700);
+    var hard = setTimeout(function () { check(true); }, 24000);
+    f.onload = function () { check(false); };
     f.src = url;
     document.body.appendChild(f);
   });
 }
-function loadDoc(url) {
+function fetchDoc(url) {
   return new Promise(function (resolve, reject) {
     var settled = false;
     var ctl = ('AbortController' in window) ? new AbortController() : null;
-    function viaIframe() { iframeDoc(url).then(resolve, reject); }
-    var timer = setTimeout(function () { if (!settled) { settled = true; if (ctl) ctl.abort(); viaIframe(); } }, 12000);
+    var timer = setTimeout(function () { if (!settled) { settled = true; if (ctl) ctl.abort(); reject({ retry: true, code: 'timeout' }); } }, 12000);
     fetch(url, { credentials: 'include', signal: ctl ? ctl.signal : undefined }).then(function (r) {
       if (settled) return;
       if (r.status === 429 || r.status === 503) { settled = true; clearTimeout(timer); reject({ retry: true, code: r.status }); return; }
@@ -1466,15 +1477,31 @@ function loadDoc(url) {
       r.text().then(function (t) {
         if (settled) return;
         settled = true; clearTimeout(timer);
-        if (t.length < 3000 || /cf-challenge|Just a moment/i.test(t.slice(0, 3000))) viaIframe();
+        if (looksChallenge(t)) reject({ retry: true, code: 'cf' });
         else resolve(t);
-      }, function () { if (!settled) { settled = true; clearTimeout(timer); viaIframe(); } });
-    }, function () {
-      if (settled) return;
-      settled = true; clearTimeout(timer);
-      viaIframe();
-    });
+      }, function () { if (!settled) { settled = true; clearTimeout(timer); reject({ retry: true, code: 'body' }); } });
+    }, function () { if (!settled) { settled = true; clearTimeout(timer); reject({ retry: true, code: 'network' }); } });
   });
+}
+var docPreferIframe = false;
+async function loadDoc(url) {
+  if (docPreferIframe) {
+    try { return await iframeDoc(url); } catch (e) { docPreferIframe = false; }
+  }
+  var err = null;
+  try { return await fetchDoc(url); }
+  catch (e) { err = e; if (e && e.retry === false) throw e; }
+  if (err && (err.code === 429 || err.code === 503)) throw err;
+  // A Cloudflare challenge often clears a moment after the page finishes loading.
+  if (err && (err.code === 403 || err.code === 'cf')) {
+    await sleep(1500);
+    try { return await fetchDoc(url); }
+    catch (e) { err = e; if (e && e.retry === false) throw e; }
+    if (err && (err.code === 429 || err.code === 503)) throw err;
+  }
+  // XHR/fetch is challenged while a document navigation is allowed: load it in an iframe.
+  try { var html = await iframeDoc(url); docPreferIframe = true; return html; }
+  catch (e) { if (err && err.code) e.code = err.code; throw e; }
 }
 
 /* ---------- parsing ---------- */

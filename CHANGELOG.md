@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.8.5 — 2026-11-18
+
+- Fixed “无法读取 JetPhotos 数据（403）” scan failures caused by Cloudflare challenging fetch/XHR requests: a 403 is now retried once, then the page is loaded through a hidden same-origin iframe that can complete the challenge (scripts enabled, challenge page polled until it resolves); subsequent pages reuse the iframe path when fetch stays blocked.
+
 ## 2.8.4 — 2026-11-13
 
 - Fixed the userscript losing the “connect FR24 / real-time information” button: the mode flag is now written to the page window through `unsafeWindow`, so the dashboard resolves to companion mode instead of bookmarklet/link mode. The FR24 companion also talks to its opener through the page window.
