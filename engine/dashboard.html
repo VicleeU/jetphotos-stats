@@ -4470,8 +4470,15 @@ function spotDrawMap(lat, lon, track, kind) {
     refPath = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_' + (light ? 'Light' : 'Dark') + '_Gray_Reference/MapServer/tile/' + z + '/';
   }
   var html = '';
-  for (var dy = -2; dy <= 2; dy++) {
-    for (var dx = -3; dx <= 3; dx++) {
+  var card = $('spotlightCard');
+  var W = Math.max(map.clientWidth || 0, card ? card.clientWidth : 0, window.innerWidth || 0);
+  var H = Math.max(map.clientHeight || 0, card ? card.clientHeight : 0, 600);
+  var mxPx = W * mx / 100, myPx = H * my / 100;
+  // Cover the whole card, not just a fixed box around the right-offset marker.
+  var dxStart = Math.floor((fx - mxPx) / 256) - 1, dxEnd = Math.ceil((fx - mxPx + W) / 256);
+  var dyStart = Math.floor((fy - myPx) / 256) - 1, dyEnd = Math.ceil((fy - myPx + H) / 256);
+  for (var dy = dyStart; dy <= dyEnd; dy++) {
+    for (var dx = dxStart; dx <= dxEnd; dx++) {
       var tx = ((cx + dx) % p.n + p.n) % p.n, ty = cy + dy;
       if (ty < 0 || ty >= p.n) continue;
       var left = 'calc(' + mx + '% + ' + ((dx * 256) - fx) + 'px)';

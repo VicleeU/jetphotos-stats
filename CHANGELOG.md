@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.8.6 — 2026-11-18
+
+- The spotlight background map now generates as many tiles as the card needs instead of a fixed 7×5 block around the right-offset marker, so the map fills the card all the way to the left edge on wide screens.
+
 ## 2.8.5 — 2026-11-18
 
 - Fixed “无法读取 JetPhotos 数据（403）” scan failures caused by Cloudflare challenging fetch/XHR requests: a 403 is now retried once, then the page is loaded through a hidden same-origin iframe that can complete the challenge (scripts enabled, challenge page polled until it resolves); subsequent pages reuse the iframe path when fetch stays blocked.
