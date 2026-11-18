@@ -1,12 +1,21 @@
 # Changelog
 
+## 2.8.1 — 2026-11-13
+
+- Random spotlight map now uses keyless Esri Light/Dark Gray Canvas tiles with a separate reference-label layer: minimal gray base, place names retained, theme-aware (dark base for yellow/green, light base for FR24).
+- Raised the map base contrast/brightness and lifted the gradient overlay so the background map is clearly visible; reference labels remain but are toned down so the large photo text stays readable.
+- Added Esri/HERE/Garmin/OSM attribution and an OSM HOT grayscale fallback if the Esri base tiles fail.
+- The FR24 theme’s spotlight “next photo” button now uses the same yellow fill/dark text as the other FR24 controls.
+- The map marker and gradient overlay remain theme-coloured; no paid map API or key is used.
+- Includes the 2.8.0–2.8.1 page gate: the userscript pill is available on content pages but suppressed on upload-related pages; manual bookmarklets are unrestricted.
+
 ## 2.8.0 — 2026-11-13
 
 - Random photo now uses the full-resolution JetPhotos image, falling back to the thumbnail/placeholder on error.
 - The spotlight card uses a faded OpenStreetMap background centered on the aircraft position, with a theme-coloured aircraft marker and an OpenStreetMap attribution. Numeric latitude/longitude and airport-coordinate rows were removed.
 - The card now shows explicit photo location and photo date fields. Aircraft age is intentionally not displayed, since JetPhotos has no age field and Planespotters is not reliably accessible from the page. A free OSM background map replaces the numeric coordinates.
 - Live rows keep altitude, speed/track, flight and route; last-flight rows keep airport, flight status and next flight.
-- Userscript: the floating “统计此摄影师” pill remains available on JetPhotos content pages, including photo detail, `/photographer/<id>/photos` and `/members/photostats.php`. It is suppressed on upload-related pages (`/addphotos`, `/upload*`, `/submit`, etc.). The manual bookmarklet has no page restriction.
+- Userscript: the floating “统计此摄影师” pill remains available on JetPhotos content pages, including photo detail, `/photographer/<id>/photos` and `/members/photostats.php`. It is suppressed on upload-related pages (`/addphotos`, `/upload*`, `/submit`, `/members/queue.php`, `/members/showphotoinfo.php`, etc.). The manual bookmarklet has no page restriction.
 - Bookmarklet/link mode now uses the same high-resolution photo, photo location/date and map background, with a theme-coloured location pin at the photo airport. Its right panel shows large photo date/location/aircraft values, hides the unavailable FR24 status link, removes the duplicate small aircraft line and enlarges the airline name, and has no manual photo-change limit (the 2/minute limit applies only to FR24-enabled userscript/extension mode).
 
 ## 2.7.1 — 2026-11-13

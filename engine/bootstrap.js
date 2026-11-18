@@ -8,6 +8,7 @@ function statsPageAllowed() {
   if (host !== 'jetphotos.com') return false;
   var p = location.pathname.replace(/\/+$/, '');
   if (/(^|\/)(addphotos?|upload\w*|submit)(\/|$)/i.test(p)) return false;
+  if (/^\/members\/(?:queue|showphotoinfo)(?:\.php)?/i.test(p)) return false;
   return true;
 }
 if (!statsPageAllowed()) return;

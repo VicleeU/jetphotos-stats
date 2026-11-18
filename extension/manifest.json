@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "JetPhotos Stats FR24 Companion",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "Local companion for JetPhotos Stats random spotlight: opens a hidden FR24 window and relays its public web data.",
   "permissions": ["tabs", "storage"],
   "host_permissions": [
