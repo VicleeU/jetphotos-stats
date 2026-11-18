@@ -833,10 +833,15 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
 .spot-map{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
 .spot-map[hidden]{display:none}
 .spot-map-tiles{position:absolute;inset:0;overflow:hidden}
-.spot-map-tiles img{position:absolute;width:256px;height:256px;max-width:none;opacity:.74;filter:grayscale(.28) brightness(.78) contrast(.94);user-select:none}
-html.theme-fr24 .spot-map-tiles img{opacity:.8;filter:grayscale(.12) brightness(1.04) contrast(.96)}
-.spot-map-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,22,25,.93) 0%,rgba(20,22,25,.8) 40%,rgba(20,22,25,.36) 100%),linear-gradient(180deg,rgba(20,22,25,.32),rgba(20,22,25,.18))}
-html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,255,.94) 0%,rgba(255,255,255,.82) 40%,rgba(255,255,255,.6) 100%),linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,.18))}
+.spot-map-tiles img{position:absolute;width:256px;height:256px;max-width:none;user-select:none}
+.spot-map-tiles img.sm-base{opacity:1;filter:contrast(1.14) brightness(1.16)}
+.spot-map-tiles img.sm-ref{opacity:.6;filter:contrast(1.03) brightness(1.03)}
+.spot-map-tiles img.sm-osm{opacity:.8;filter:grayscale(1) brightness(.9) contrast(1.15)}
+html.theme-fr24 .spot-map-tiles img.sm-base{opacity:1;filter:contrast(1.08) brightness(1.02)}
+html.theme-fr24 .spot-map-tiles img.sm-ref{opacity:.66}
+html.theme-fr24 .spot-map-tiles img.sm-osm{opacity:.85;filter:grayscale(1) brightness(1.06) contrast(1.08)}
+.spot-map-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,22,25,.86) 0%,rgba(20,22,25,.62) 40%,rgba(20,22,25,.08) 100%),linear-gradient(180deg,rgba(20,22,25,.24),rgba(20,22,25,.1))}
+html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,255,.86) 0%,rgba(255,255,255,.62) 40%,rgba(255,255,255,.2) 100%),linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.1))}
 .spot-plane{position:absolute;left:70%;top:76%;width:30px;height:30px;z-index:2;color:var(--cyan);transform:translate(-50%,-50%) rotate(var(--rot,0deg));filter:drop-shadow(0 0 7px rgba(var(--accent-rgb),.7));transition:left .3s ease,top .3s ease,transform .3s ease}
 .spot-plane[hidden]{display:none}
 .spot-plane svg{display:block;width:100%;height:100%}
@@ -904,8 +909,8 @@ html.theme-fr24 .spot-pill.live{color:#1b1f23;background:#f5c518;border-color:#f
 html.theme-fr24 .spot-action,html.theme-fr24 .spot-link{color:#8c6a00;background:#fff;border-color:#cfd5da}
 html.theme-fr24 .spot-action:hover,html.theme-fr24 .spot-link:hover{background:#fffbea;border-color:#e6c200}
 html.theme-fr24 .spot-note{color:#7d858e}
-html.theme-fr24 .spot-next{background:#fff;border-color:#cfd5da;color:#59616a}
-html.theme-fr24 .spot-next:hover{background:#f5f7f8;border-color:#b9c1c8}
+html.theme-fr24 .spot-next{background:#f5c518;border-color:#f5c518;color:#1b1f23}
+html.theme-fr24 .spot-next:hover{background:#ffd83d;border-color:#ffd83d}
 @media (max-width:760px){
   .spotlight-body{grid-template-columns:1fr;gap:16px}
   .spot-photo,.spot-photo img{min-height:210px;max-height:280px}
@@ -997,7 +1002,7 @@ html.theme-fr24 .spot-next:hover{background:#f5f7f8;border-color:#b9c1c8}
         <div class="spot-map-shade"></div>
         <div class="spot-plane" id="spotPlane" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2.5 1.5V22l4-1 4 1v-1.5L13 19v-5.5L21 16z"/></svg></div>
         <div class="spot-pin" id="spotPin" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg></div>
-        <span class="spot-map-attr">© OpenStreetMap contributors</span>
+        <span class="spot-map-attr">Esri, HERE, Garmin, © OpenStreetMap contributors</span>
       </div>
       <div class="card-h">
         <h3>随机图片</h3><span class="en">RANDOM PHOTO</span>
@@ -4344,7 +4349,7 @@ try { SPOT_POPUP_BASE = localStorage.getItem('jpstats.fr24popup') || SPOT_POPUP_
 var SPOT_ORIGIN = SPOT_POPUP_BASE;
 try { SPOT_ORIGIN = new URL(SPOT_POPUP_BASE).origin; } catch (e) {}
 var SPOT_MOVES_KEY = 'jpstats.spot.moves.' + ID;
-var spotMapPoint = null, spotMapResizeTimer = null;
+var spotMapPoint = null, spotMapResizeTimer = null, spotMapFallback = false;
 
 function spotMapXY(lat, lon, z) {
   var n = Math.pow(2, z);
@@ -4389,6 +4394,14 @@ function spotDrawMap(lat, lon, track, kind) {
   var z = 5, p = spotMapXY(+lat, +lon, z), cx = Math.floor(p.x), cy = Math.floor(p.y);
   var fx = (p.x - cx) * 256, fy = (p.y - cy) * 256;
   var mx = window.innerWidth > 760 ? 70 : 50, my = window.innerWidth > 760 ? 76 : 72;
+  var light = THEME === 'fr24';
+  var basePath, refPath;
+  if (spotMapFallback) {
+    basePath = null;
+  } else {
+    basePath = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_' + (light ? 'Light' : 'Dark') + '_Gray_Base/MapServer/tile/' + z + '/';
+    refPath = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_' + (light ? 'Light' : 'Dark') + '_Gray_Reference/MapServer/tile/' + z + '/';
+  }
   var html = '';
   for (var dy = -2; dy <= 2; dy++) {
     for (var dx = -3; dx <= 3; dx++) {
@@ -4396,10 +4409,24 @@ function spotDrawMap(lat, lon, track, kind) {
       if (ty < 0 || ty >= p.n) continue;
       var left = 'calc(' + mx + '% + ' + ((dx * 256) - fx) + 'px)';
       var top = 'calc(' + my + '% + ' + ((dy * 256) - fy) + 'px)';
-      html += '<img src="https://' + (['a','b','c'][(dx + 3) % 3]) + '.tile.openstreetmap.fr/hot/' + z + '/' + tx + '/' + ty + '.png" alt="" draggable="false" style="left:' + left + ';top:' + top + '">';
+      var style = 'left:' + left + ';top:' + top;
+      if (spotMapFallback) {
+        html += '<img class="sm-osm" src="https://' + (['a','b','c'][(dx + 3) % 3]) + '.tile.openstreetmap.fr/hot/' + z + '/' + tx + '/' + ty + '.png" alt="" draggable="false" style="' + style + '">';
+      } else {
+        html += '<img class="sm-base" src="' + basePath + ty + '/' + tx + '" alt="" draggable="false" style="' + style + '">';
+        html += '<img class="sm-ref" src="' + refPath + ty + '/' + tx + '" alt="" draggable="false" style="' + style + '">';
+      }
     }
   }
   tiles.innerHTML = html;
+  if (!spotMapFallback) {
+    var firstBase = tiles.querySelector('img.sm-base');
+    if (firstBase) firstBase.addEventListener('error', function () {
+      if (spotMapFallback) return;
+      spotMapFallback = true;
+      spotDrawMap(lat, lon, track, kind);
+    });
+  }
   var marker = kind === 'photo' ? pin : plane;
   marker.style.left = mx + '%';
   marker.style.top = my + '%';
@@ -5623,6 +5650,7 @@ function setTheme(t, rerender) {
     renderAllCharts();
     if (window.__globeRedraw) window.__globeRedraw();
   }
+  if (spotMapPoint) spotDrawMap(spotMapPoint.lat, spotMapPoint.lon, spotMapPoint.track, spotMapPoint.kind);
 }
 (function () {
   var btn = $('themeBtn'), menu = $('themeMenu');
