@@ -630,8 +630,8 @@ main{max-width:1360px;padding:calc(var(--nav-h) + 30px) 24px 48px}
 /* ---------- themes ---------- */
 html.theme-yellow{--cyan:#f5c518;--accent-rgb:245,197,24}
 html.theme-fr24{
-  --bg:#eef0f2;--bg2:#e5e8eb;--panel:#ffffff;--panel2:#f6f7f8;--panel3:#eceff2;
-  --line:#dde1e5;--line2:#c6ccd2;
+  --bg:#e7eaed;--bg2:#dde2e6;--panel:#ffffff;--panel2:#f6f7f8;--panel3:#eceff2;
+  --line:#d5dbe0;--line2:#bbc4cc;
   --ink:#1b1f23;--ink2:#4a525a;--ink3:#78818a;
   --cyan:#f5c518;--accent-rgb:245,197,24;
   --amber:#1a73e8;--green:#1f8f4e;--pink:#d6427a;--blue:#1a73e8;--violet:#6a54c8;--coral:#cc3344;
@@ -662,7 +662,7 @@ html.theme-fr24 .hero-eyebrow{color:var(--ink3)}
 html.theme-fr24 .hero.has-cover .hero-eyebrow,html.theme-fr24 .hero.has-cover .hero-meta{color:var(--ink2)}
 html.theme-fr24 .hero-meta,html.theme-fr24 .hero-meta .mono,html.theme-fr24 .hero-meta b{color:var(--ink2)}
 html.theme-fr24 .hero-meta .aw{color:var(--amber)}
-html.theme-fr24 .card{background:#fff;border-color:var(--line);border-radius:8px;box-shadow:0 1px 3px #14202e0f}
+html.theme-fr24 .card{background:#fff;border-color:var(--line);border-radius:8px;box-shadow:0 2px 8px #14202e1a}
 html.theme-fr24 .card-h{margin:-20px -22px 16px;padding:12px 22px;background:#24282c;border-bottom:1px solid #1a1d20;border-radius:7px 7px 0 0;align-items:center}
 html.theme-fr24 .card-h h3{color:#f5c518;font-weight:700}
 html.theme-fr24 .card-h .en{color:#e9edf0}
@@ -836,11 +836,11 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
 .spot-map-tiles img.sm-base{opacity:1;filter:contrast(1.14) brightness(1.16)}
 .spot-map-tiles img.sm-ref{opacity:.6;filter:contrast(1.03) brightness(1.03)}
 .spot-map-tiles img.sm-osm{opacity:.8;filter:grayscale(1) brightness(.9) contrast(1.15)}
-html.theme-fr24 .spot-map-tiles img.sm-base{opacity:1;filter:contrast(1.08) brightness(1.02)}
-html.theme-fr24 .spot-map-tiles img.sm-ref{opacity:.66}
-html.theme-fr24 .spot-map-tiles img.sm-osm{opacity:.85;filter:grayscale(1) brightness(1.06) contrast(1.08)}
+html.theme-fr24 .spot-map-tiles img.sm-base{opacity:1;filter:contrast(1.28) brightness(.97)}
+html.theme-fr24 .spot-map-tiles img.sm-ref{opacity:.9;filter:contrast(1.12)}
+html.theme-fr24 .spot-map-tiles img.sm-osm{opacity:.92;filter:grayscale(1) brightness(.98) contrast(1.24)}
 .spot-map-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,22,25,.86) 0%,rgba(20,22,25,.62) 40%,rgba(20,22,25,.08) 100%),linear-gradient(180deg,rgba(20,22,25,.24),rgba(20,22,25,.1))}
-html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,255,.86) 0%,rgba(255,255,255,.62) 40%,rgba(255,255,255,.2) 100%),linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.1))}
+html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.46) 40%,rgba(255,255,255,.08) 100%),linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.05))}
 .spot-plane{position:absolute;left:74%;top:76%;width:30px;height:30px;z-index:2;color:var(--cyan);transform:translate(-50%,-50%) rotate(var(--rot,0deg));filter:drop-shadow(0 0 7px rgba(var(--accent-rgb),.7));transition:left .3s ease,top .3s ease,transform .3s ease}
 .spot-plane[hidden]{display:none}
 .spot-plane svg{display:block;width:100%;height:100%}
@@ -913,7 +913,7 @@ html.theme-fr24 .spot-linkinfo b{color:#1b1f23}
 html.theme-fr24 .spot-live{border-top-color:var(--line)}
 html.theme-fr24 .spot-live-title{color:#1b1f23}
 html.theme-fr24 .spot-live-sub{color:#59616a}
-html.theme-fr24 .spot-reg-inline{border-color:#d7dbe0;color:#59616a}
+html.theme-fr24 .spot-reg-inline{border-color:rgba(245,197,24,.45);color:var(--cyan);text-shadow:0 1px 2px rgba(0,0,0,.16)}
 .spot-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:12px}
 .spot-action,.spot-link{font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;border-radius:999px;padding:6px 11px;cursor:pointer;text-decoration:none;color:var(--cyan);background:rgba(var(--accent-rgb),0.07);border:1px solid rgba(var(--accent-rgb),0.32);transition:background .2s,border-color .2s}
 .spot-action:hover,.spot-link:hover{background:rgba(var(--accent-rgb),0.15);border-color:rgba(var(--accent-rgb),0.55)}

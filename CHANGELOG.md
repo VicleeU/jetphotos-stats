@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.8.8 — 2026-11-19
+
+- FR24 theme: increased page/card background separation (darker gray canvas, stronger card shadow) and boosted the spotlight map tile/label contrast so the map reads clearly; the registration beside the airline in the spotlight info column is now theme yellow.
+
 ## 2.8.7 — 2026-11-18
 
 - Fixed the first photo staying blank after the first FR24 connection. The FR24 companion no longer reports ready from a Cloudflare challenge page, FR24 API calls retry with backoff on 403/challenge, and the dashboard automatically re-queries the current photo when the companion reconnects after the challenge (up to 3 attempts, without using the manual change quota).
