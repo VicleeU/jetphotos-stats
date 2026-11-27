@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.9.0 — 2026-11-27
+
+- The photo timeline now aggregates by year as well as by month: “by upload month / by shot month / by upload year / by shot year”. Year mode keeps empty years on the axis so the line stays continuous, and clicking a year filters the gallery to that whole year (clicking a month still filters that single month).
+- Fixed the mobile photo detail modal: the three stat cards no longer force the panel to 332px, so the card fits the screen without horizontal dragging (label wrapping, single-column body, capped image height); the 768–900px two-column layout no longer clips the info column either.
+
 ## 2.8.8 — 2026-11-19
 
 - FR24 theme: increased page/card background separation (darker gray canvas, stronger card shadow) and boosted the spotlight map tile/label contrast so the map reads clearly; the registration beside the airline in the spotlight info column is now theme yellow.

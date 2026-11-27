@@ -268,6 +268,8 @@ html.theme-fr24 .cat-item{background:#fff;border-color:var(--line);border-radius
 .tl-toggle{margin-left:auto;display:flex;gap:4px;border-radius:999px}
 .tl-toggle button{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;background:#16181b;border:1px solid var(--line);color:var(--ink3);padding:4px 12px;border-radius:999px}
 .tl-toggle button.on{color:var(--cyan);border-color:rgba(var(--accent-rgb),0.33);background:rgba(var(--accent-rgb),0.07)}
+#tlToggle{flex-wrap:wrap;justify-content:flex-end}
+#tlToggle button{padding:4px 10px}
 .tl-wrap{position:relative}
 .tl-wrap svg{display:block;width:100%}
 .tl-tip{position:absolute;pointer-events:auto;cursor:pointer;background:#16191df2;border:1px solid var(--line2);border-radius:8px;padding:7px 11px;font-family:var(--mono);font-size:11px;color:var(--ink);opacity:0;transition:opacity .15s;white-space:nowrap;z-index:5;box-shadow:0 6px 20px #0008}
@@ -353,22 +355,22 @@ html.theme-fr24 .filter-toggle:hover{background:#000;border-color:#f5c518;color:
 .modal-top .pos{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.1em}
 .modal-top .ttl{font-family:var(--mono);font-size:13px;color:var(--amber);font-weight:600}
 .modal-nav{margin-left:auto;display:flex;gap:7px}
-.modal-body{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);overflow:auto;min-height:0}
-.modal-img{position:relative;background:#0d0e10;display:flex;align-items:center;justify-content:center;min-height:320px}
+.modal-body{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);overflow-y:auto;overflow-x:hidden;min-height:0}
+.modal-img{position:relative;background:#0d0e10;display:flex;align-items:center;justify-content:center;min-height:320px;min-width:0}
 .modal-img img{width:100%;height:100%;max-height:calc(100vh - 200px);object-fit:contain;display:block}
 .modal-img .spin{position:absolute;width:34px;height:34px;border:3px solid #272c32;border-top-color:var(--cyan);border-radius:50%;animation:sp 1s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.modal-info{padding:18px 20px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.modal-info{padding:18px 20px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:14px;min-width:0}
 .mi-head .al{font-size:12px;color:var(--ink2)}
 .mi-head .ac{font-family:var(--disp);font-weight:700;font-size:26px;line-height:1.1;margin:2px 0}
 .mi-head .rg{font-family:var(--mono);font-size:14px;color:var(--amber);letter-spacing:.06em}
-.mi-stats{display:flex;gap:10px}
-.mi-stat{flex:1;background:#16181b;border:1px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center}
+.mi-stats{display:flex;gap:10px;min-width:0}
+.mi-stat{flex:1;min-width:0;background:#16181b;border:1px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center}
 .mi-stat .n{font-family:var(--disp);font-weight:700;font-size:22px;color:var(--cyan)}
 .mi-stat:nth-child(2) .n{color:var(--pink)}
 .mi-stat:nth-child(3) .n{color:var(--blue)}
-.mi-stat .l{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--ink3);white-space:nowrap}
-.mi-grid{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:12.5px}
+.mi-stat .l{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mi-grid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 14px;font-size:12.5px}
 .mi-grid dt{color:var(--ink3);white-space:nowrap}
 .mi-grid dd{color:var(--ink);word-break:break-word}
 .mi-grid dd.mono{font-family:var(--mono);font-size:12px}
@@ -441,6 +443,9 @@ body.settled .kpi,body.settled .hero-eyebrow,body.settled .hero h1,body.settled 
   .span4{grid-column:span 6}
   .hero-radar{opacity:.25}
 }
+@media (max-width:900px){
+  .mi-stat .l{white-space:normal;overflow:visible;text-overflow:clip;letter-spacing:.06em;line-height:1.3}
+}
 @media (max-width:760px){
   main{padding-left:14px;padding-right:14px}
   .nav{padding:0 14px;gap:10px}
@@ -451,15 +456,40 @@ body.settled .kpi,body.settled .hero-eyebrow,body.settled .hero h1,body.settled 
   .ticker-wrap{margin:0 -20px}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .span4{grid-column:span 12}
-  .modal-body{grid-template-columns:1fr}
-  .modal-info{border-left:none;border-top:1px solid var(--line)}
-  .modal-img img{max-height:44vh}
+  /* 手机端弹窗：整卡收进一屏，竖向滚动，不再左右拖动 */
+  .modal-ov{padding:8px;align-items:center}
+  .modal{width:100%;max-width:100%;max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);border-radius:12px}
+  .modal-top{padding:9px 12px;gap:8px}
+  .modal-top .pos{font-size:10px;flex:none}
+  .modal-top .ttl{font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .modal-nav{gap:6px;flex:none}
+  .modal-top .icon-btn{width:30px;height:30px;font-size:14px}
+  .modal-body{grid-template-columns:minmax(0,1fr);overflow-x:hidden;overflow-y:auto;width:100%}
+  .modal-info{border-left:none;border-top:1px solid var(--line);padding:14px 14px 16px;gap:12px}
+  .modal-img{min-height:0;min-width:0}
+  .modal-img img{width:100%;height:auto;max-width:100%;max-height:38vh;object-fit:contain}
+  .mi-head .al{font-size:11.5px}
+  .mi-head .ac{font-size:21px;overflow-wrap:anywhere}
+  .mi-head .rg{font-size:13px}
+  .mi-stats{gap:7px}
+  .mi-stat{padding:7px 5px}
+  .mi-stat .n{font-size:18px}
+  .mi-stat .l{font-size:8.5px;letter-spacing:.05em}
+  .mi-grid{grid-template-columns:auto minmax(0,1fr);gap:6px 10px;font-size:12px}
+  .mi-remarks{height:auto;max-height:96px}
   .bar-row{grid-template-columns:minmax(96px,130px) 1fr 56px;gap:8px}
   .toolbar select{max-width:130px;flex:1}
   .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
   .maker-legend{grid-template-columns:1fr}
   .ds-actions{width:100%}
   .ds-actions .btn{flex:1}
+}
+@media (max-width:420px){
+  .modal-ov{padding:6px}
+  .modal{max-height:calc(100vh - 12px);max-height:calc(100dvh - 12px)}
+  .modal-img img{max-height:34vh}
+  .mi-actions{gap:6px}
+  .mi-actions .btn{padding:8px 10px;font-size:12px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
@@ -1167,8 +1197,10 @@ html.theme-fr24 .spot-next:hover{background:#ffd83d;border-color:#ffd83d}
     <div class="card span12" id="cardTimeline">
       <div class="card-h"><h3>上传时间线</h3><span class="en">UPLOAD TIMELINE</span>
         <div class="tl-toggle" id="tlToggle">
-          <button data-mode="uploaded" class="on">按上传月</button>
-          <button data-mode="date">按拍摄月</button>
+          <button type="button" data-field="uploaded" data-grain="month" class="on">按上传月</button>
+          <button type="button" data-field="date" data-grain="month">按拍摄月</button>
+          <button type="button" data-field="uploaded" data-grain="year">按上传年</button>
+          <button type="button" data-field="date" data-grain="year">按拍摄年</button>
         </div>
       </div>
       <div class="tl-wrap" id="tlWrap"><div class="tl-tip" id="tlTip"></div></div>
@@ -3325,16 +3357,33 @@ function renderMakers() {
   });
 }
 
-var tlMode = 'uploaded';
-function monthKey(d) { return d ? d.slice(0, 7) : ''; }
-function buildSeries(mode) {
-  var keys = PHOTOS.map(function (p) { return monthKey(p[mode]); }).filter(Boolean).sort();
+var tlMode = 'uploaded', tlGrain = 'month';
+function tlField(mode) { return mode === 'date' ? 'date' : 'uploaded'; }
+function periodKey(d, grain) {
+  if (!d) return '';
+  var s = String(d);
+  if (!/^\d{4}/.test(s)) return '';
+  return grain === 'year' ? s.slice(0, 4) : (s.length >= 7 ? s.slice(0, 7) : '');
+}
+function buildSeries(field, grain) {
+  var counts = {}, keys = [];
+  PHOTOS.forEach(function (p) {
+    var k = periodKey(p[field], grain);
+    if (!k) return;
+    counts[k] = (counts[k] || 0) + 1;
+    keys.push(k);
+  });
   if (!keys.length) return [];
+  keys.sort();
+  var out = [];
+  if (grain === 'year') {
+    var y0 = +keys[0].slice(0, 4), y1 = +keys[keys.length - 1].slice(0, 4);
+    for (var yy = y0; yy <= y1; yy++) out.push({ k: String(yy), n: counts[yy] || 0 });
+    return out;
+  }
   var start = keys[0], end = keys[keys.length - 1];
-  var out = [], y = +start.slice(0, 4), m = +start.slice(5, 7);
+  var y = +start.slice(0, 4), m = +start.slice(5, 7);
   var ey = +end.slice(0, 4), em = +end.slice(5, 7);
-  var counts = {};
-  PHOTOS.forEach(function (p) { var k = monthKey(p[mode]); if (k) counts[k] = (counts[k] || 0) + 1; });
   while (y < ey || (y === ey && m <= em)) {
     var k = y + '-' + String(m).padStart(2, '0');
     out.push({ k: k, n: counts[k] || 0 });
@@ -3344,9 +3393,11 @@ function buildSeries(mode) {
 }
 function renderTimeline() {
   var wrap = $('tlWrap'), tip = $('tlTip');
-  var series = buildSeries(tlMode);
+  var field = tlField(tlMode);
+  var series = buildSeries(field, tlGrain);
   var old = wrap.querySelector('svg'); if (old) old.remove();
   if (!series.length) return;
+  var isYear = tlGrain === 'year';
   var W = Math.max(320, wrap.clientWidth), H = 210, padL = 40, padR = 14, padT = 16, padB = 26;
   var maxN = Math.max.apply(null, series.map(function (s) { return s.n; })) || 1;
   var iw = W - padL - padR, ih = H - padT - padB;
@@ -3365,24 +3416,28 @@ function renderTimeline() {
       '<text x="' + (padL - 7) + '" y="' + (yy + 3.5) + '" text-anchor="end" font-size="9.5" fill="' + (themeIsFr24() ? '#7d858e' : '#6d746f') + '" font-family="IBM Plex Mono,monospace">' + v + '</text>';
   }
   var xl = '';
+  var lblStep = 1;
+  if (isYear) lblStep = Math.max(1, Math.ceil(series.length / Math.max(2, Math.floor(iw / 30))));
   series.forEach(function (s, i) {
-    if (s.k.slice(5) === '01' || i === 0) {
-      xl += '<text x="' + X(i) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="9.5" fill="' + (themeIsFr24() ? '#7d858e' : '#6d746f') + '" font-family="IBM Plex Mono,monospace">' + s.k.slice(0, 4) + '</text>';
+    if (isYear ? (i % lblStep === 0 || i === series.length - 1) : (s.k.slice(5) === '01' || i === 0)) {
+      var atEdge = isYear && i === series.length - 1 && i > 0;
+      xl += '<text x="' + (atEdge ? W - padR : X(i)) + '" y="' + (H - 8) + '" text-anchor="' + (atEdge ? 'end' : 'middle') + '" font-size="9.5" fill="' + (themeIsFr24() ? '#7d858e' : '#6d746f') + '" font-family="IBM Plex Mono,monospace">' + (isYear ? s.k : s.k.slice(0, 4)) + '</text>';
       xl += '<line x1="' + X(i) + '" y1="' + padT + '" x2="' + X(i) + '" y2="' + (padT + ih) + '" stroke="' + (themeIsFr24() ? '#dfe3e7' : '#2a3036') + '" stroke-dasharray="3 4"/>';
     }
   });
   var dots = series.map(function (s, i) {
-    var on = state.month && s.k === state.month && state.monthField === tlMode;
+    var on = state.month && s.k === state.month && state.monthField === field;
     return '<circle cx="' + X(i) + '" cy="' + Y(s.n) + '" r="' + (on ? 3.6 : 2.4) + '" fill="' + (on ? themeAccent() : (themeIsFr24() ? '#ffffff' : '#141619')) + '" stroke="' + themeAccent() + '" stroke-width="1.4"/>';
   }).join('');
-  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="每月上传数量时间线">' +
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="' +
+    (isYear ? (field === 'date' ? '每年拍摄数量时间线' : '每年上传数量时间线') : (field === 'date' ? '每月拍摄数量时间线' : '每月上传数量时间线')) + '">' +
     '<defs><linearGradient id="tlg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + themeAccent() + '" stop-opacity=".34"/><stop offset="1" stop-color="' + themeAccent() + '" stop-opacity="0"/></linearGradient></defs>' +
     grid + xl +
     '<path d="' + area + '" fill="url(#tlg)"/>' +
     '<path d="' + line + '" fill="none" stroke="' + themeAccent() + '" stroke-width="2" stroke-linejoin="round"/>' + dots +
     '<line id="tlCross" x1="0" y1="' + padT + '" x2="0" y2="' + (padT + ih) + '" stroke="' + themeAccent() + '" stroke-width="1" stroke-dasharray="4 3" opacity="0"/>' +
     '<circle id="tlDot" r="4.5" fill="' + themeAccent() + '" stroke="' + (themeIsFr24() ? '#ffffff' : '#0b0c0d') + '" stroke-width="1.5" opacity="0"/>' +
-    '<rect id="tlHit" x="' + padL + '" y="' + padT + '" width="' + iw + '" height="' + ih + '" fill="transparent" style="cursor:pointer"><title>点击某个月份筛选图库</title></rect>' +
+    '<rect id="tlHit" x="' + padL + '" y="' + padT + '" width="' + iw + '" height="' + ih + '" fill="transparent" style="cursor:pointer"><title>' + (isYear ? '点击某个年份筛选图库' : '点击某个月份筛选图库') + '</title></rect>' +
     '</svg>';
   wrap.insertAdjacentHTML('afterbegin', svg);
   var hit = $('tlHit'), cross = $('tlCross'), dot = $('tlDot');
@@ -3396,7 +3451,7 @@ function renderTimeline() {
     hoverIdx = i;
     cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.setAttribute('opacity', '1');
     dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('opacity', '1');
-    tip.innerHTML = '<b>' + s.k + '</b> · ' + s.n + ' 张' + (tlMode === 'date' ? ' 拍摄' : ' 上传');
+    tip.innerHTML = '<b>' + s.k + (isYear ? ' 年' : '') + '</b> · ' + s.n + ' 张' + (field === 'date' ? ' 拍摄' : ' 上传');
     tip.style.opacity = '1';
     var tw = tip.offsetWidth;
     var px = x / sx;
@@ -3418,12 +3473,12 @@ function renderTimeline() {
   hit.addEventListener('click', function (e) {
     var s = series[nearestIndex(e.clientX)];
     if (!s || !s.n) return;
-    setMonthFilter(s.k, tlMode);
+    setMonthFilter(s.k, field);
   });
   tip.addEventListener('click', function () {
     var s = hoverIdx >= 0 ? series[hoverIdx] : null;
     if (!s || !s.n) return;
-    setMonthFilter(s.k, tlMode);
+    setMonthFilter(s.k, field);
   });
   tip.addEventListener('mouseleave', function () {
     cross.setAttribute('opacity', '0'); dot.setAttribute('opacity', '0'); tip.style.opacity = '0';
@@ -3431,7 +3486,8 @@ function renderTimeline() {
 }
 $('tlToggle').querySelectorAll('button').forEach(function (b) {
   b.addEventListener('click', function () {
-    tlMode = b.dataset.mode;
+    tlMode = b.getAttribute('data-field') === 'date' ? 'date' : 'uploaded';
+    tlGrain = b.getAttribute('data-grain') === 'year' ? 'year' : 'month';
     $('tlToggle').querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
     renderTimeline();
   });
@@ -3786,7 +3842,7 @@ function computeFiltered() {
     if (state.year && p.year !== state.year) return false;
     if (state.camera && p.camBody !== state.camera) return false;
     if (state.lens && p.lens !== state.lens) return false;
-    if (state.month && String(p[state.monthField || 'uploaded'] || '').slice(0, 7) !== state.month) return false;
+    if (state.month && String(p[state.monthField || 'uploaded'] || '').slice(0, state.month.length) !== state.month) return false;
     if (state.cargo) {
       if (/^Airport$/i.test(p.aircraft || '')) return false;
       if (state.cargo === 'military') { if (!p.military) return false; }
@@ -3840,7 +3896,7 @@ function renderGrid() {
 function renderChips() {
   var h = '';
   if (state.q.trim()) h += '<span class="chip">搜索: ' + esc(state.q.trim()) + '<button data-k="q" aria-label="清除搜索">✕</button></span>';
-  if (state.month) h += '<span class="chip">' + (state.monthField === 'date' ? '拍摄' : '上传') + ': ' + esc(state.month) + '<button data-k="month" aria-label="清除筛选">✕</button></span>';
+  if (state.month) h += '<span class="chip">' + (state.monthField === 'date' ? '拍摄' : '上传') + (state.month.length === 4 ? '年' : '月') + ': ' + esc(state.month) + '<button data-k="month" aria-label="清除筛选">✕</button></span>';
   Object.keys(FILTER_KEYS).forEach(function (k) {
     if (state[k]) {
       var v = state[k];
@@ -5847,8 +5903,10 @@ var I18N_DICT = {
  "相机": "Camera",
  "镜头": "Lens",
  "无设备信息": "No gear information",
- "按上传月": "By upload",
- "按拍摄月": "By shot",
+ "按上传月": "By upload month",
+ "按拍摄月": "By shot month",
+ "按上传年": "By upload year",
+ "按拍摄年": "By shot year",
  "最高浏览": "Most viewed",
  "最多点赞": "Most liked",
  "默认（最多照片）": "Default (most photos)",
@@ -5984,9 +6042,13 @@ var I18N_DICT = {
  "排序方式": "Sort by",
  "搜索照片": "Search photos",
  "每月上传数量时间线": "Monthly upload timeline",
+ "每月拍摄数量时间线": "Monthly shot timeline",
+ "每年上传数量时间线": "Yearly upload timeline",
+ "每年拍摄数量时间线": "Yearly shot timeline",
  "可拖动旋转的世界机场地球仪": "Draggable world airports globe",
  "点赞量 Likes": "Likes",
  "点击某个月份筛选图库": "Click a month to filter the gallery",
+ "点击某个年份筛选图库": "Click a year to filter the gallery",
  "退出统计台": "Exit dashboard",
  "清理缓存": "Clear cache",
  "收起筛选": "Collapse",
@@ -6066,6 +6128,7 @@ var I18N_RULES = [
     [/^张照片 · ([\d.]+)%$/, "photos · $1%"],
     [/^· (\d+) 张 上传$/, "· $1 photos uploaded"],
     [/^· (\d+) 张 拍摄$/, "· $1 photos shot"],
+    [/^(\d{4}) 年$/, "$1"],
     [/^· (\d+) 张$/, "· $1 photos"],
     [/^(\d+) 张照片$/, "$1 photos"],
     [/^(\d+) 张详情$/, "$1 details"],
@@ -6095,7 +6158,7 @@ var I18N_RULES = [
     [/^读取照片列表 第 (\d+) 页 · 已获取 ([\d,]+) 张…$/, "Photo list page $1 · $2 fetched…"],
     [/^深度抓取 (\d+) \/ (\d+)$/, "Deep fetch $1 / $2"],
 ];
-var I18N_PREFIX = [['搜索','Search'],['机场','Airport'],['航司','Airline'],['机型','Type'],['系列','Family'],['制造商','Maker'],['国家','Country'],['年份','Year'],['相机','Camera'],['镜头','Lens'],['类型','Category'],['获奖','Award'],['上传','Uploaded'],['拍摄','Shot']];
+var I18N_PREFIX = [['搜索','Search'],['机场','Airport'],['航司','Airline'],['机型','Type'],['系列','Family'],['制造商','Maker'],['国家','Country'],['年份','Year'],['相机','Camera'],['镜头','Lens'],['类型','Category'],['获奖','Award'],['上传年','Upload year'],['拍摄年','Shot year'],['上传','Uploaded'],['拍摄','Shot']];
 function i18nText(s) {
   var t = String(s).trim();
   if (!t) return s;
