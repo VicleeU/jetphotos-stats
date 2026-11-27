@@ -269,6 +269,8 @@ html.theme-fr24 .cat-item{background:#fff;border-color:var(--line);border-radius
 .tl-toggle{margin-left:auto;display:flex;gap:4px;border-radius:999px}
 .tl-toggle button{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;background:#16181b;border:1px solid var(--line);color:var(--ink3);padding:4px 12px;border-radius:999px}
 .tl-toggle button.on{color:var(--cyan);border-color:rgba(var(--accent-rgb),0.33);background:rgba(var(--accent-rgb),0.07)}
+#tlToggle{flex-wrap:wrap;justify-content:flex-end}
+#tlToggle button{padding:4px 10px}
 .tl-wrap{position:relative}
 .tl-wrap svg{display:block;width:100%}
 .tl-tip{position:absolute;pointer-events:auto;cursor:pointer;background:#16191df2;border:1px solid var(--line2);border-radius:8px;padding:7px 11px;font-family:var(--mono);font-size:11px;color:var(--ink);opacity:0;transition:opacity .15s;white-space:nowrap;z-index:5;box-shadow:0 6px 20px #0008}
@@ -354,22 +356,22 @@ html.theme-fr24 .filter-toggle:hover{background:#000;border-color:#f5c518;color:
 .modal-top .pos{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.1em}
 .modal-top .ttl{font-family:var(--mono);font-size:13px;color:var(--amber);font-weight:600}
 .modal-nav{margin-left:auto;display:flex;gap:7px}
-.modal-body{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);overflow:auto;min-height:0}
-.modal-img{position:relative;background:#0d0e10;display:flex;align-items:center;justify-content:center;min-height:320px}
+.modal-body{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);overflow-y:auto;overflow-x:hidden;min-height:0}
+.modal-img{position:relative;background:#0d0e10;display:flex;align-items:center;justify-content:center;min-height:320px;min-width:0}
 .modal-img img{width:100%;height:100%;max-height:calc(100vh - 200px);object-fit:contain;display:block}
 .modal-img .spin{position:absolute;width:34px;height:34px;border:3px solid #272c32;border-top-color:var(--cyan);border-radius:50%;animation:sp 1s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.modal-info{padding:18px 20px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.modal-info{padding:18px 20px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:14px;min-width:0}
 .mi-head .al{font-size:12px;color:var(--ink2)}
 .mi-head .ac{font-family:var(--disp);font-weight:700;font-size:26px;line-height:1.1;margin:2px 0}
 .mi-head .rg{font-family:var(--mono);font-size:14px;color:var(--amber);letter-spacing:.06em}
-.mi-stats{display:flex;gap:10px}
-.mi-stat{flex:1;background:#16181b;border:1px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center}
+.mi-stats{display:flex;gap:10px;min-width:0}
+.mi-stat{flex:1;min-width:0;background:#16181b;border:1px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center}
 .mi-stat .n{font-family:var(--disp);font-weight:700;font-size:22px;color:var(--cyan)}
 .mi-stat:nth-child(2) .n{color:var(--pink)}
 .mi-stat:nth-child(3) .n{color:var(--blue)}
-.mi-stat .l{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--ink3);white-space:nowrap}
-.mi-grid{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:12.5px}
+.mi-stat .l{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mi-grid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 14px;font-size:12.5px}
 .mi-grid dt{color:var(--ink3);white-space:nowrap}
 .mi-grid dd{color:var(--ink);word-break:break-word}
 .mi-grid dd.mono{font-family:var(--mono);font-size:12px}
@@ -442,6 +444,9 @@ body.settled .kpi,body.settled .hero-eyebrow,body.settled .hero h1,body.settled 
   .span4{grid-column:span 6}
   .hero-radar{opacity:.25}
 }
+@media (max-width:900px){
+  .mi-stat .l{white-space:normal;overflow:visible;text-overflow:clip;letter-spacing:.06em;line-height:1.3}
+}
 @media (max-width:760px){
   main{padding-left:14px;padding-right:14px}
   .nav{padding:0 14px;gap:10px}
@@ -452,15 +457,40 @@ body.settled .kpi,body.settled .hero-eyebrow,body.settled .hero h1,body.settled 
   .ticker-wrap{margin:0 -20px}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .span4{grid-column:span 12}
-  .modal-body{grid-template-columns:1fr}
-  .modal-info{border-left:none;border-top:1px solid var(--line)}
-  .modal-img img{max-height:44vh}
+  /* 手机端弹窗：整卡收进一屏，竖向滚动，不再左右拖动 */
+  .modal-ov{padding:8px;align-items:center}
+  .modal{width:100%;max-width:100%;max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);border-radius:12px}
+  .modal-top{padding:9px 12px;gap:8px}
+  .modal-top .pos{font-size:10px;flex:none}
+  .modal-top .ttl{font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .modal-nav{gap:6px;flex:none}
+  .modal-top .icon-btn{width:30px;height:30px;font-size:14px}
+  .modal-body{grid-template-columns:minmax(0,1fr);overflow-x:hidden;overflow-y:auto;width:100%}
+  .modal-info{border-left:none;border-top:1px solid var(--line);padding:14px 14px 16px;gap:12px}
+  .modal-img{min-height:0;min-width:0}
+  .modal-img img{width:100%;height:auto;max-width:100%;max-height:38vh;object-fit:contain}
+  .mi-head .al{font-size:11.5px}
+  .mi-head .ac{font-size:21px;overflow-wrap:anywhere}
+  .mi-head .rg{font-size:13px}
+  .mi-stats{gap:7px}
+  .mi-stat{padding:7px 5px}
+  .mi-stat .n{font-size:18px}
+  .mi-stat .l{font-size:8.5px;letter-spacing:.05em}
+  .mi-grid{grid-template-columns:auto minmax(0,1fr);gap:6px 10px;font-size:12px}
+  .mi-remarks{height:auto;max-height:96px}
   .bar-row{grid-template-columns:minmax(96px,130px) 1fr 56px;gap:8px}
   .toolbar select{max-width:130px;flex:1}
   .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
   .maker-legend{grid-template-columns:1fr}
   .ds-actions{width:100%}
   .ds-actions .btn{flex:1}
+}
+@media (max-width:420px){
+  .modal-ov{padding:6px}
+  .modal{max-height:calc(100vh - 12px);max-height:calc(100dvh - 12px)}
+  .modal-img img{max-height:34vh}
+  .mi-actions{gap:6px}
+  .mi-actions .btn{padding:8px 10px;font-size:12px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
@@ -631,8 +661,8 @@ main{max-width:1360px;padding:calc(var(--nav-h) + 30px) 24px 48px}
 /* ---------- themes ---------- */
 html.theme-yellow{--cyan:#f5c518;--accent-rgb:245,197,24}
 html.theme-fr24{
-  --bg:#eef0f2;--bg2:#e5e8eb;--panel:#ffffff;--panel2:#f6f7f8;--panel3:#eceff2;
-  --line:#dde1e5;--line2:#c6ccd2;
+  --bg:#e7eaed;--bg2:#dde2e6;--panel:#ffffff;--panel2:#f6f7f8;--panel3:#eceff2;
+  --line:#d5dbe0;--line2:#bbc4cc;
   --ink:#1b1f23;--ink2:#4a525a;--ink3:#78818a;
   --cyan:#f5c518;--accent-rgb:245,197,24;
   --amber:#1a73e8;--green:#1f8f4e;--pink:#d6427a;--blue:#1a73e8;--violet:#6a54c8;--coral:#cc3344;
@@ -663,7 +693,7 @@ html.theme-fr24 .hero-eyebrow{color:var(--ink3)}
 html.theme-fr24 .hero.has-cover .hero-eyebrow,html.theme-fr24 .hero.has-cover .hero-meta{color:var(--ink2)}
 html.theme-fr24 .hero-meta,html.theme-fr24 .hero-meta .mono,html.theme-fr24 .hero-meta b{color:var(--ink2)}
 html.theme-fr24 .hero-meta .aw{color:var(--amber)}
-html.theme-fr24 .card{background:#fff;border-color:var(--line);border-radius:8px;box-shadow:0 1px 3px #14202e0f}
+html.theme-fr24 .card{background:#fff;border-color:var(--line);border-radius:8px;box-shadow:0 2px 8px #14202e1a}
 html.theme-fr24 .card-h{margin:-20px -22px 16px;padding:12px 22px;background:#24282c;border-bottom:1px solid #1a1d20;border-radius:7px 7px 0 0;align-items:center}
 html.theme-fr24 .card-h h3{color:#f5c518;font-weight:700}
 html.theme-fr24 .card-h .en{color:#e9edf0}
@@ -837,11 +867,11 @@ html.theme-yellow .mi-stat .n{color:var(--cyan)}
 .spot-map-tiles img.sm-base{opacity:1;filter:contrast(1.14) brightness(1.16)}
 .spot-map-tiles img.sm-ref{opacity:.6;filter:contrast(1.03) brightness(1.03)}
 .spot-map-tiles img.sm-osm{opacity:.8;filter:grayscale(1) brightness(.9) contrast(1.15)}
-html.theme-fr24 .spot-map-tiles img.sm-base{opacity:1;filter:contrast(1.08) brightness(1.02)}
-html.theme-fr24 .spot-map-tiles img.sm-ref{opacity:.66}
-html.theme-fr24 .spot-map-tiles img.sm-osm{opacity:.85;filter:grayscale(1) brightness(1.06) contrast(1.08)}
+html.theme-fr24 .spot-map-tiles img.sm-base{opacity:1;filter:contrast(1.28) brightness(.97)}
+html.theme-fr24 .spot-map-tiles img.sm-ref{opacity:.9;filter:contrast(1.12)}
+html.theme-fr24 .spot-map-tiles img.sm-osm{opacity:.92;filter:grayscale(1) brightness(.98) contrast(1.24)}
 .spot-map-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,22,25,.86) 0%,rgba(20,22,25,.62) 40%,rgba(20,22,25,.08) 100%),linear-gradient(180deg,rgba(20,22,25,.24),rgba(20,22,25,.1))}
-html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,255,.86) 0%,rgba(255,255,255,.62) 40%,rgba(255,255,255,.2) 100%),linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.1))}
+html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.46) 40%,rgba(255,255,255,.08) 100%),linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.05))}
 .spot-plane{position:absolute;left:74%;top:76%;width:30px;height:30px;z-index:2;color:var(--cyan);transform:translate(-50%,-50%) rotate(var(--rot,0deg));filter:drop-shadow(0 0 7px rgba(var(--accent-rgb),.7));transition:left .3s ease,top .3s ease,transform .3s ease}
 .spot-plane[hidden]{display:none}
 .spot-plane svg{display:block;width:100%;height:100%}
@@ -853,7 +883,7 @@ html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,25
 .spot-next{margin-left:10px;flex:none;background:rgba(var(--accent-rgb),0.08);border:1px solid rgba(var(--accent-rgb),0.32);color:var(--cyan);border-radius:999px;padding:5px 12px;font-size:11.5px;font-family:var(--mono);cursor:pointer;transition:background .2s,border-color .2s}
 .spot-next:hover{background:rgba(var(--accent-rgb),0.16);border-color:rgba(var(--accent-rgb),0.55)}
 .spot-next:disabled{opacity:.45;cursor:not-allowed}
-.spotlight-body{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(310px,.88fr);gap:22px;align-items:start}
+.spotlight-body{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(310px,.88fr);gap:22px;align-items:stretch}
 .spot-photo{position:relative;display:block;min-height:0;border-radius:14px;overflow:hidden;background:#0b0c0d;border:1px solid var(--line)}
 .spot-photo img{display:block;width:100%;height:auto;min-height:0;max-height:none;object-fit:contain;transition:transform .55s cubic-bezier(.2,.8,.3,1)}
 .spot-photo:hover img{transform:scale(1.035)}
@@ -862,7 +892,7 @@ html.theme-fr24 .spot-map-shade{background:linear-gradient(90deg,rgba(255,255,25
 .spot-photo-reg{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.05em;color:var(--cyan);background:#15181bd9;border:1px solid rgba(var(--accent-rgb),0.42);border-radius:6px;padding:3px 8px;backdrop-filter:blur(4px)}
 .spot-photo-likes{font-family:var(--mono);font-size:10px;font-weight:600;color:#ffb0cf;background:#15181bd9;border:1px solid #ff7ab655;border-radius:6px;padding:3px 7px;backdrop-filter:blur(4px)}
 .spot-photo-open{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:#fff;background:#15181bcc;border:1px solid rgba(var(--accent-rgb),0.35);padding:4px 8px;border-radius:999px}
-.spot-panel{display:flex;flex-direction:column;min-width:0}
+.spot-panel{display:flex;flex-direction:column;min-width:0;height:100%}
 .spot-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
 .spot-head-text{min-width:0}
 .spot-airline-row{display:flex;align-items:baseline;gap:8px;min-width:0}
@@ -914,7 +944,7 @@ html.theme-fr24 .spot-linkinfo b{color:#1b1f23}
 html.theme-fr24 .spot-live{border-top-color:var(--line)}
 html.theme-fr24 .spot-live-title{color:#1b1f23}
 html.theme-fr24 .spot-live-sub{color:#59616a}
-html.theme-fr24 .spot-reg-inline{border-color:#d7dbe0;color:#59616a}
+html.theme-fr24 .spot-reg-inline{border-color:rgba(245,197,24,.45);color:var(--cyan);text-shadow:0 1px 2px rgba(0,0,0,.16)}
 .spot-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:12px}
 .spot-action,.spot-link{font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;border-radius:999px;padding:6px 11px;cursor:pointer;text-decoration:none;color:var(--cyan);background:rgba(var(--accent-rgb),0.07);border:1px solid rgba(var(--accent-rgb),0.32);transition:background .2s,border-color .2s}
 .spot-action:hover,.spot-link:hover{background:rgba(var(--accent-rgb),0.15);border-color:rgba(var(--accent-rgb),0.55)}
@@ -1168,8 +1198,10 @@ html.theme-fr24 .spot-next:hover{background:#ffd83d;border-color:#ffd83d}
     <div class="card span12" id="cardTimeline">
       <div class="card-h"><h3>上传时间线</h3><span class="en">UPLOAD TIMELINE</span>
         <div class="tl-toggle" id="tlToggle">
-          <button data-mode="uploaded" class="on">按上传月</button>
-          <button data-mode="date">按拍摄月</button>
+          <button type="button" data-field="uploaded" data-grain="month" class="on">按上传月</button>
+          <button type="button" data-field="date" data-grain="month">按拍摄月</button>
+          <button type="button" data-field="uploaded" data-grain="year">按上传年</button>
+          <button type="button" data-field="date" data-grain="year">按拍摄年</button>
         </div>
       </div>
       <div class="tl-wrap" id="tlWrap"><div class="tl-tip" id="tlTip"></div></div>
@@ -1435,32 +1467,43 @@ $('switchBtn').addEventListener('click', function () { guardedExit(switchPhotogr
 $('bootClose').addEventListener('click', closeOverlay);
 
 /* ---------- network layer: fetch with timeout, hidden-iframe document fallback ---------- */
+function looksChallenge(t) {
+  return !t || t.length < 3000 || /cf-challenge|Just a moment|请稍候|Enable JavaScript/i.test(t.slice(0, 3000));
+}
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 function iframeDoc(url) {
   return new Promise(function (resolve, reject) {
     var f = document.createElement('iframe');
-    f.setAttribute('sandbox', 'allow-same-origin');
-    f.style.cssText = 'position:absolute;left:-9999px;top:0;width:1px;height:1px;border:0;visibility:hidden';
-    var settled = false;
-    var timer = setTimeout(function () { if (!settled) { settled = true; f.remove(); reject({ retry: true, code: 'timeout' }); } }, 25000);
-    f.onload = function () {
+    // allow-scripts is required for the Cloudflare challenge page to run and auto-reload
+    f.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+    f.style.cssText = 'position:absolute;left:-10000px;top:0;width:1200px;height:800px;border:0;opacity:0;pointer-events:none';
+    var settled = false, deadline = Date.now() + 22000;
+    function finish(fn, val) {
       if (settled) return;
-      settled = true; clearTimeout(timer);
+      settled = true;
+      clearInterval(timer); clearTimeout(hard);
+      f.remove();
+      fn(val);
+    }
+    function check(force) {
+      if (settled) return;
       var html = '';
       try { html = f.contentDocument && f.contentDocument.documentElement ? f.contentDocument.documentElement.outerHTML : ''; } catch (e) {}
-      f.remove();
-      if (html.length > 3000 && !/cf-challenge|Just a moment/i.test(html.slice(0, 3000))) resolve(html);
-      else reject({ retry: true, code: 'cf-doc' });
-    };
+      if (html && !looksChallenge(html)) { finish(resolve, html); return; }
+      if (force || Date.now() > deadline) finish(reject, { retry: true, code: 'cf-doc' });
+    }
+    var timer = setInterval(function () { check(false); }, 700);
+    var hard = setTimeout(function () { check(true); }, 24000);
+    f.onload = function () { check(false); };
     f.src = url;
     document.body.appendChild(f);
   });
 }
-function loadDoc(url) {
+function fetchDoc(url) {
   return new Promise(function (resolve, reject) {
     var settled = false;
     var ctl = ('AbortController' in window) ? new AbortController() : null;
-    function viaIframe() { iframeDoc(url).then(resolve, reject); }
-    var timer = setTimeout(function () { if (!settled) { settled = true; if (ctl) ctl.abort(); viaIframe(); } }, 12000);
+    var timer = setTimeout(function () { if (!settled) { settled = true; if (ctl) ctl.abort(); reject({ retry: true, code: 'timeout' }); } }, 12000);
     fetch(url, { credentials: 'include', signal: ctl ? ctl.signal : undefined }).then(function (r) {
       if (settled) return;
       if (r.status === 429 || r.status === 503) { settled = true; clearTimeout(timer); reject({ retry: true, code: r.status }); return; }
@@ -1469,15 +1512,31 @@ function loadDoc(url) {
       r.text().then(function (t) {
         if (settled) return;
         settled = true; clearTimeout(timer);
-        if (t.length < 3000 || /cf-challenge|Just a moment/i.test(t.slice(0, 3000))) viaIframe();
+        if (looksChallenge(t)) reject({ retry: true, code: 'cf' });
         else resolve(t);
-      }, function () { if (!settled) { settled = true; clearTimeout(timer); viaIframe(); } });
-    }, function () {
-      if (settled) return;
-      settled = true; clearTimeout(timer);
-      viaIframe();
-    });
+      }, function () { if (!settled) { settled = true; clearTimeout(timer); reject({ retry: true, code: 'body' }); } });
+    }, function () { if (!settled) { settled = true; clearTimeout(timer); reject({ retry: true, code: 'network' }); } });
   });
+}
+var docPreferIframe = false;
+async function loadDoc(url) {
+  if (docPreferIframe) {
+    try { return await iframeDoc(url); } catch (e) { docPreferIframe = false; }
+  }
+  var err = null;
+  try { return await fetchDoc(url); }
+  catch (e) { err = e; if (e && e.retry === false) throw e; }
+  if (err && (err.code === 429 || err.code === 503)) throw err;
+  // A Cloudflare challenge often clears a moment after the page finishes loading.
+  if (err && (err.code === 403 || err.code === 'cf')) {
+    await sleep(1500);
+    try { return await fetchDoc(url); }
+    catch (e) { err = e; if (e && e.retry === false) throw e; }
+    if (err && (err.code === 429 || err.code === 503)) throw err;
+  }
+  // XHR/fetch is challenged while a document navigation is allowed: load it in an iframe.
+  try { var html = await iframeDoc(url); docPreferIframe = true; return html; }
+  catch (e) { if (err && err.code) e.code = err.code; throw e; }
 }
 
 /* ---------- parsing ---------- */
@@ -3301,16 +3360,33 @@ function renderMakers() {
   });
 }
 
-var tlMode = 'uploaded';
-function monthKey(d) { return d ? d.slice(0, 7) : ''; }
-function buildSeries(mode) {
-  var keys = PHOTOS.map(function (p) { return monthKey(p[mode]); }).filter(Boolean).sort();
+var tlMode = 'uploaded', tlGrain = 'month';
+function tlField(mode) { return mode === 'date' ? 'date' : 'uploaded'; }
+function periodKey(d, grain) {
+  if (!d) return '';
+  var s = String(d);
+  if (!/^\d{4}/.test(s)) return '';
+  return grain === 'year' ? s.slice(0, 4) : (s.length >= 7 ? s.slice(0, 7) : '');
+}
+function buildSeries(field, grain) {
+  var counts = {}, keys = [];
+  PHOTOS.forEach(function (p) {
+    var k = periodKey(p[field], grain);
+    if (!k) return;
+    counts[k] = (counts[k] || 0) + 1;
+    keys.push(k);
+  });
   if (!keys.length) return [];
+  keys.sort();
+  var out = [];
+  if (grain === 'year') {
+    var y0 = +keys[0].slice(0, 4), y1 = +keys[keys.length - 1].slice(0, 4);
+    for (var yy = y0; yy <= y1; yy++) out.push({ k: String(yy), n: counts[yy] || 0 });
+    return out;
+  }
   var start = keys[0], end = keys[keys.length - 1];
-  var out = [], y = +start.slice(0, 4), m = +start.slice(5, 7);
+  var y = +start.slice(0, 4), m = +start.slice(5, 7);
   var ey = +end.slice(0, 4), em = +end.slice(5, 7);
-  var counts = {};
-  PHOTOS.forEach(function (p) { var k = monthKey(p[mode]); if (k) counts[k] = (counts[k] || 0) + 1; });
   while (y < ey || (y === ey && m <= em)) {
     var k = y + '-' + String(m).padStart(2, '0');
     out.push({ k: k, n: counts[k] || 0 });
@@ -3320,9 +3396,11 @@ function buildSeries(mode) {
 }
 function renderTimeline() {
   var wrap = $('tlWrap'), tip = $('tlTip');
-  var series = buildSeries(tlMode);
+  var field = tlField(tlMode);
+  var series = buildSeries(field, tlGrain);
   var old = wrap.querySelector('svg'); if (old) old.remove();
   if (!series.length) return;
+  var isYear = tlGrain === 'year';
   var W = Math.max(320, wrap.clientWidth), H = 210, padL = 40, padR = 14, padT = 16, padB = 26;
   var maxN = Math.max.apply(null, series.map(function (s) { return s.n; })) || 1;
   var iw = W - padL - padR, ih = H - padT - padB;
@@ -3341,24 +3419,28 @@ function renderTimeline() {
       '<text x="' + (padL - 7) + '" y="' + (yy + 3.5) + '" text-anchor="end" font-size="9.5" fill="' + (themeIsFr24() ? '#7d858e' : '#6d746f') + '" font-family="IBM Plex Mono,monospace">' + v + '</text>';
   }
   var xl = '';
+  var lblStep = 1;
+  if (isYear) lblStep = Math.max(1, Math.ceil(series.length / Math.max(2, Math.floor(iw / 30))));
   series.forEach(function (s, i) {
-    if (s.k.slice(5) === '01' || i === 0) {
-      xl += '<text x="' + X(i) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="9.5" fill="' + (themeIsFr24() ? '#7d858e' : '#6d746f') + '" font-family="IBM Plex Mono,monospace">' + s.k.slice(0, 4) + '</text>';
+    if (isYear ? (i % lblStep === 0 || i === series.length - 1) : (s.k.slice(5) === '01' || i === 0)) {
+      var atEdge = isYear && i === series.length - 1 && i > 0;
+      xl += '<text x="' + (atEdge ? W - padR : X(i)) + '" y="' + (H - 8) + '" text-anchor="' + (atEdge ? 'end' : 'middle') + '" font-size="9.5" fill="' + (themeIsFr24() ? '#7d858e' : '#6d746f') + '" font-family="IBM Plex Mono,monospace">' + (isYear ? s.k : s.k.slice(0, 4)) + '</text>';
       xl += '<line x1="' + X(i) + '" y1="' + padT + '" x2="' + X(i) + '" y2="' + (padT + ih) + '" stroke="' + (themeIsFr24() ? '#dfe3e7' : '#2a3036') + '" stroke-dasharray="3 4"/>';
     }
   });
   var dots = series.map(function (s, i) {
-    var on = state.month && s.k === state.month && state.monthField === tlMode;
+    var on = state.month && s.k === state.month && state.monthField === field;
     return '<circle cx="' + X(i) + '" cy="' + Y(s.n) + '" r="' + (on ? 3.6 : 2.4) + '" fill="' + (on ? themeAccent() : (themeIsFr24() ? '#ffffff' : '#141619')) + '" stroke="' + themeAccent() + '" stroke-width="1.4"/>';
   }).join('');
-  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="每月上传数量时间线">' +
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="' +
+    (isYear ? (field === 'date' ? '每年拍摄数量时间线' : '每年上传数量时间线') : (field === 'date' ? '每月拍摄数量时间线' : '每月上传数量时间线')) + '">' +
     '<defs><linearGradient id="tlg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + themeAccent() + '" stop-opacity=".34"/><stop offset="1" stop-color="' + themeAccent() + '" stop-opacity="0"/></linearGradient></defs>' +
     grid + xl +
     '<path d="' + area + '" fill="url(#tlg)"/>' +
     '<path d="' + line + '" fill="none" stroke="' + themeAccent() + '" stroke-width="2" stroke-linejoin="round"/>' + dots +
     '<line id="tlCross" x1="0" y1="' + padT + '" x2="0" y2="' + (padT + ih) + '" stroke="' + themeAccent() + '" stroke-width="1" stroke-dasharray="4 3" opacity="0"/>' +
     '<circle id="tlDot" r="4.5" fill="' + themeAccent() + '" stroke="' + (themeIsFr24() ? '#ffffff' : '#0b0c0d') + '" stroke-width="1.5" opacity="0"/>' +
-    '<rect id="tlHit" x="' + padL + '" y="' + padT + '" width="' + iw + '" height="' + ih + '" fill="transparent" style="cursor:pointer"><title>点击某个月份筛选图库</title></rect>' +
+    '<rect id="tlHit" x="' + padL + '" y="' + padT + '" width="' + iw + '" height="' + ih + '" fill="transparent" style="cursor:pointer"><title>' + (isYear ? '点击某个年份筛选图库' : '点击某个月份筛选图库') + '</title></rect>' +
     '</svg>';
   wrap.insertAdjacentHTML('afterbegin', svg);
   var hit = $('tlHit'), cross = $('tlCross'), dot = $('tlDot');
@@ -3372,7 +3454,7 @@ function renderTimeline() {
     hoverIdx = i;
     cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.setAttribute('opacity', '1');
     dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('opacity', '1');
-    tip.innerHTML = '<b>' + s.k + '</b> · ' + s.n + ' 张' + (tlMode === 'date' ? ' 拍摄' : ' 上传');
+    tip.innerHTML = '<b>' + s.k + (isYear ? ' 年' : '') + '</b> · ' + s.n + ' 张' + (field === 'date' ? ' 拍摄' : ' 上传');
     tip.style.opacity = '1';
     var tw = tip.offsetWidth;
     var px = x / sx;
@@ -3394,12 +3476,12 @@ function renderTimeline() {
   hit.addEventListener('click', function (e) {
     var s = series[nearestIndex(e.clientX)];
     if (!s || !s.n) return;
-    setMonthFilter(s.k, tlMode);
+    setMonthFilter(s.k, field);
   });
   tip.addEventListener('click', function () {
     var s = hoverIdx >= 0 ? series[hoverIdx] : null;
     if (!s || !s.n) return;
-    setMonthFilter(s.k, tlMode);
+    setMonthFilter(s.k, field);
   });
   tip.addEventListener('mouseleave', function () {
     cross.setAttribute('opacity', '0'); dot.setAttribute('opacity', '0'); tip.style.opacity = '0';
@@ -3407,7 +3489,8 @@ function renderTimeline() {
 }
 $('tlToggle').querySelectorAll('button').forEach(function (b) {
   b.addEventListener('click', function () {
-    tlMode = b.dataset.mode;
+    tlMode = b.getAttribute('data-field') === 'date' ? 'date' : 'uploaded';
+    tlGrain = b.getAttribute('data-grain') === 'year' ? 'year' : 'month';
     $('tlToggle').querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
     renderTimeline();
   });
@@ -3762,7 +3845,7 @@ function computeFiltered() {
     if (state.year && p.year !== state.year) return false;
     if (state.camera && p.camBody !== state.camera) return false;
     if (state.lens && p.lens !== state.lens) return false;
-    if (state.month && String(p[state.monthField || 'uploaded'] || '').slice(0, 7) !== state.month) return false;
+    if (state.month && String(p[state.monthField || 'uploaded'] || '').slice(0, state.month.length) !== state.month) return false;
     if (state.cargo) {
       if (/^Airport$/i.test(p.aircraft || '')) return false;
       if (state.cargo === 'military') { if (!p.military) return false; }
@@ -3816,7 +3899,7 @@ function renderGrid() {
 function renderChips() {
   var h = '';
   if (state.q.trim()) h += '<span class="chip">搜索: ' + esc(state.q.trim()) + '<button data-k="q" aria-label="清除搜索">✕</button></span>';
-  if (state.month) h += '<span class="chip">' + (state.monthField === 'date' ? '拍摄' : '上传') + ': ' + esc(state.month) + '<button data-k="month" aria-label="清除筛选">✕</button></span>';
+  if (state.month) h += '<span class="chip">' + (state.monthField === 'date' ? '拍摄' : '上传') + (state.month.length === 4 ? '年' : '月') + ': ' + esc(state.month) + '<button data-k="month" aria-label="清除筛选">✕</button></span>';
   Object.keys(FILTER_KEYS).forEach(function (k) {
     if (state[k]) {
       var v = state[k];
@@ -4370,6 +4453,7 @@ try { if (window.parent !== window) SPOT_PARENT_MODE = window.parent.__JP_STATS_
 var SPOT_MODE = SPOT_PARENT_MODE === 'userscript' ? 'companion' : 'link';
 var SPOT_EXT_READY = false, SPOT_EXT_TOKEN = '', SPOT_EXT_SEEN = false;
 var spotCurrent = null, spotAutoLeft = 0, spotReqId = 0, spotBusy = false;
+var spotReadyRetries = 0, spotNoRecord = false, spotReadyTimer = null;
 var spotWin = null, spotToken = '', spotReady = false, spotPendingReg = '';
 var spotWaitTimer = null, spotQueryTimer = null, spotLastReport = null;
 var SPOT_POPUP_BASE = 'https://www.flightradar24.com/';
@@ -4446,8 +4530,15 @@ function spotDrawMap(lat, lon, track, kind) {
     refPath = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_' + (light ? 'Light' : 'Dark') + '_Gray_Reference/MapServer/tile/' + z + '/';
   }
   var html = '';
-  for (var dy = -2; dy <= 2; dy++) {
-    for (var dx = -3; dx <= 3; dx++) {
+  var card = $('spotlightCard');
+  var W = Math.max(map.clientWidth || 0, card ? card.clientWidth : 0, window.innerWidth || 0);
+  var H = Math.max(map.clientHeight || 0, card ? card.clientHeight : 0, 600);
+  var mxPx = W * mx / 100, myPx = H * my / 100;
+  // Cover the whole card, not just a fixed box around the right-offset marker.
+  var dxStart = Math.floor((fx - mxPx) / 256) - 1, dxEnd = Math.ceil((fx - mxPx + W) / 256);
+  var dyStart = Math.floor((fy - myPx) / 256) - 1, dyEnd = Math.ceil((fy - myPx + H) / 256);
+  for (var dy = dyStart; dy <= dyEnd; dy++) {
+    for (var dx = dxStart; dx <= dxEnd; dx++) {
       var tx = ((cx + dx) % p.n + p.n) % p.n, ty = cy + dy;
       if (ty < 0 || ty >= p.n) continue;
       var left = 'calc(' + mx + '% + ' + ((dx * 256) - fx) + 'px)';
@@ -4516,6 +4607,9 @@ function spotSetStatus(main, sub, pill, live) {
 }
 function spotSetPhoto(p) {
   spotCurrent = p;
+  spotReadyRetries = 0;
+  spotNoRecord = false;
+  clearTimeout(spotReadyTimer);
   spotClearMap();
   var img = $('spotImg');
   var full = p.full || p.thumb || PLACEHOLDER;
@@ -4695,19 +4789,19 @@ function spotOpenPopup(focus) {
   $('spotConnect').hidden = true;
   $('spotFocus').hidden = false;
   spotSetStatus(tt('正在连接 FR24…', 'Connecting to FR24…'),
-    tt('正在打开 FR24 查询窗口，请保持该窗口开启。', 'Opening the FR24 query window; keep it open.'),
+    tt('首次连接可能需要几秒完成 FR24 验证，请保持窗口开启。', 'The first connection may need a few seconds for FR24 verification; keep the window open.'),
     tt('连接中', 'Connecting'));
   $('spotNote').textContent = tt('正在连接 FR24…', 'Connecting to FR24…');
   clearTimeout(spotWaitTimer);
   spotWaitTimer = setTimeout(function () {
     if (!spotReady) {
       spotSetStatus(tt('等待 FR24 窗口…', 'Waiting for FR24…'),
-        tt('未检测到 FR24 伴随脚本。请确认已安装最新油猴版，并允许弹窗。', 'FR24 companion script not detected. Install the latest userscript build and allow popups.'),
+        tt('FR24 仍在加载或等待验证。请确认窗口已开启，稍后会自动继续。', 'FR24 is still loading or waiting for verification; keep the window open and it will continue automatically.'),
         tt('等待中', 'Waiting'));
       $('spotConnect').hidden = false;
       $('spotRetry').hidden = false;
     }
-  }, 12000);
+  }, 20000);
   return true;
 }
 function spotQueryTimeout() {
@@ -4741,6 +4835,15 @@ function spotLookup(p) {
   spotQueryTimer = setTimeout(function () { if (spotBusy) spotQueryTimeout(); }, 30000);
   spotTick();
 }
+function spotScheduleLookup(delay) {
+  if (SPOT_MODE === 'extension' || !spotCurrent || spotBusy || spotLastReport || spotNoRecord || spotReadyRetries >= 3) return;
+  clearTimeout(spotReadyTimer);
+  spotReadyTimer = setTimeout(function () {
+    if (SPOT_MODE === 'extension' || !spotReady || !spotCurrent || spotBusy || spotLastReport || spotNoRecord) return;
+    spotReadyRetries++;
+    spotLookup(spotCurrent);
+  }, delay);
+}
 function spotSelect(p, auto, reason) {
   if (!p) {
     spotSetStatus(tt('没有可查询的照片', 'No queryable photo'),
@@ -4764,6 +4867,7 @@ function spotSelect(p, auto, reason) {
 }
 function spotAutoNext(reason) {
   if (spotAutoLeft <= 0) {
+    spotNoRecord = true;
     spotSetStatus(tt('没有可用的航班记录', 'No usable flight record'),
       tt('已自动尝试多张照片，请手动换一张或重试。', 'Tried several photos; change or retry.'), tt('无记录', 'No record'));
     $('spotRetry').hidden = false;
@@ -4816,6 +4920,8 @@ function spotRenderReport(r) {
     return;
   }
   spotLastReport = r;
+  spotNoRecord = false;
+  spotReadyRetries = 0;
   spotRenderLinkInfo(spotCurrent);
   if ($('spotLive')) $('spotLive').hidden = false;
   var ac = r.aircraft || {};
@@ -4949,10 +5055,10 @@ window.addEventListener('message', function (ev) {
     clearTimeout(spotWaitTimer);
     $('spotConnect').hidden = true;
     $('spotFocus').hidden = !(spotWin && !spotWin.closed);
-    if (first && spotPendingReg) {
-      spotPendingReg = '';
-      if (spotCurrent) spotLookup(spotCurrent);
-    }
+    // The popup can finish a Cloudflare challenge and reload after its first ready;
+    // allow a few ready-triggered requeries so the first photo is not left blank.
+    spotPendingReg = '';
+    spotScheduleLookup(first ? 800 : 1200);
     return;
   }
   if (d.type === 'status') return;
@@ -4974,11 +5080,15 @@ window.addEventListener('message', function (ev) {
         d.message || tt('请点击「重新查询」。', 'Click Retry.'), tt('失败', 'Failed'));
       $('spotRetry').hidden = false;
     }
+    spotScheduleLookup(2500);
     spotTick();
   }
 });
 if ($('spotNext')) $('spotNext').addEventListener('click', spotManualNext);
 if ($('spotConnect')) $('spotConnect').addEventListener('click', function () {
+  spotNoRecord = false;
+  spotReadyRetries = 0;
+  clearTimeout(spotReadyTimer);
   spotPendingReg = spotCurrent ? spotCurrent.reg : '';
   spotOpenPopup(false);
 });
@@ -4989,6 +5099,9 @@ if ($('spotFocus')) $('spotFocus').addEventListener('click', function () {
 });
 if ($('spotRetry')) $('spotRetry').addEventListener('click', function () {
   spotAutoLeft = 4;
+  spotNoRecord = false;
+  spotReadyRetries = 0;
+  clearTimeout(spotReadyTimer);
   if (!spotCurrent) return;
   if (SPOT_MODE === 'extension') spotExtLookup(spotCurrent);
   else spotLookup(spotCurrent);
@@ -5793,8 +5906,10 @@ var I18N_DICT = {
  "相机": "Camera",
  "镜头": "Lens",
  "无设备信息": "No gear information",
- "按上传月": "By upload",
- "按拍摄月": "By shot",
+ "按上传月": "By upload month",
+ "按拍摄月": "By shot month",
+ "按上传年": "By upload year",
+ "按拍摄年": "By shot year",
  "最高浏览": "Most viewed",
  "最多点赞": "Most liked",
  "默认（最多照片）": "Default (most photos)",
@@ -5930,9 +6045,13 @@ var I18N_DICT = {
  "排序方式": "Sort by",
  "搜索照片": "Search photos",
  "每月上传数量时间线": "Monthly upload timeline",
+ "每月拍摄数量时间线": "Monthly shot timeline",
+ "每年上传数量时间线": "Yearly upload timeline",
+ "每年拍摄数量时间线": "Yearly shot timeline",
  "可拖动旋转的世界机场地球仪": "Draggable world airports globe",
  "点赞量 Likes": "Likes",
  "点击某个月份筛选图库": "Click a month to filter the gallery",
+ "点击某个年份筛选图库": "Click a year to filter the gallery",
  "退出统计台": "Exit dashboard",
  "清理缓存": "Clear cache",
  "收起筛选": "Collapse",
@@ -6012,6 +6131,7 @@ var I18N_RULES = [
     [/^张照片 · ([\d.]+)%$/, "photos · $1%"],
     [/^· (\d+) 张 上传$/, "· $1 photos uploaded"],
     [/^· (\d+) 张 拍摄$/, "· $1 photos shot"],
+    [/^(\d{4}) 年$/, "$1"],
     [/^· (\d+) 张$/, "· $1 photos"],
     [/^(\d+) 张照片$/, "$1 photos"],
     [/^(\d+) 张详情$/, "$1 details"],
@@ -6041,7 +6161,7 @@ var I18N_RULES = [
     [/^读取照片列表 第 (\d+) 页 · 已获取 ([\d,]+) 张…$/, "Photo list page $1 · $2 fetched…"],
     [/^深度抓取 (\d+) \/ (\d+)$/, "Deep fetch $1 / $2"],
 ];
-var I18N_PREFIX = [['搜索','Search'],['机场','Airport'],['航司','Airline'],['机型','Type'],['系列','Family'],['制造商','Maker'],['国家','Country'],['年份','Year'],['相机','Camera'],['镜头','Lens'],['类型','Category'],['获奖','Award'],['上传','Uploaded'],['拍摄','Shot']];
+var I18N_PREFIX = [['搜索','Search'],['机场','Airport'],['航司','Airline'],['机型','Type'],['系列','Family'],['制造商','Maker'],['国家','Country'],['年份','Year'],['相机','Camera'],['镜头','Lens'],['类型','Category'],['获奖','Award'],['上传年','Upload year'],['拍摄年','Shot year'],['上传','Uploaded'],['拍摄','Shot']];
 function i18nText(s) {
   var t = String(s).trim();
   if (!t) return s;
